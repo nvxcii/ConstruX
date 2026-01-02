@@ -1,0 +1,65 @@
+# Watchtower Core - Privileged Layer
+# DO NOT commit sensitive data
+
+# CRITICAL: Never commit these
+*.db
+*.sqlite
+*.sqlite3
+*signature*.json
+local/
+.watchtower/
+
+# User configurations (may contain sensitive paths)
+config.json
+*.local.json
+
+# Logs and runtime data
+*.log
+logs/
+*.pid
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Temporary
+.tmp/
+temp/

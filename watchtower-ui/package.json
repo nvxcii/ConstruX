@@ -1,0 +1,24 @@
+{
+  "name": "watchtower-ui",
+  "version": "1.0.0",
+  "description": "Watchtower Visible Layer - Public-safe field visualization",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "vercel deploy"
+  },
+  "keywords": [
+    "watchtower",
+    "field",
+    "glyphs",
+    "visualization"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "dependencies": {}
+}

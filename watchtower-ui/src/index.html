@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchtower - Field Container</title>
+    <meta name="description" content="Watchtower field visualization and monitoring">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/glyphs.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-glyph">⊙</span>
+                    <span class="logo-text">Watchtower</span>
+                </div>
+                <div class="field-status-indicator" id="fieldStatus">
+                    <span class="status-dot"></span>
+                    <span class="status-text">Initializing...</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="glyph-large">⊙</span>
+                    <br>
+                    Field Container
+                </h1>
+                <p class="hero-subtitle">
+                    A persistent container of sovereignty
+                </p>
+                <div class="pulse-meter" id="pulseMeter">
+                    <div class="pulse-circle"></div>
+                    <div class="pulse-wave"></div>
+                    <div class="coherence-score" id="coherenceScore">--</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Glyphs Section -->
+    <section class="section glyphs-section">
+        <div class="container">
+            <h2 class="section-title">System Glyphs</h2>
+            <p class="section-subtitle">Symbolic language of the field</p>
+
+            <div class="glyphs-grid" id="glyphsGrid">
+                <!-- Glyphs will be rendered here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Field Status Section -->
+    <section class="section status-section">
+        <div class="container">
+            <h2 class="section-title">Field Status</h2>
+
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="status-card-icon">◌</div>
+                    <div class="status-card-label">Field State</div>
+                    <div class="status-card-value" id="fieldState">Inactive</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-card-icon">◎</div>
+                    <div class="status-card-label">Coherence</div>
+                    <div class="status-card-value" id="coherence">--</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-card-icon">≋</div>
+                    <div class="status-card-label">Resonance</div>
+                    <div class="status-card-value" id="resonance">Synced</div>
+                </div>
+
+                <div class="status-card">
+                    <div class="status-card-icon">✦</div>
+                    <div class="status-card-label">Events</div>
+                    <div class="status-card-value" id="eventCount">0</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recent Activity Section -->
+    <section class="section activity-section">
+        <div class="container">
+            <h2 class="section-title">Recent Activity</h2>
+
+            <div class="activity-feed" id="activityFeed">
+                <div class="activity-item">
+                    <span class="activity-glyph">⊙</span>
+                    <div class="activity-content">
+                        <div class="activity-title">Field Initialized</div>
+                        <div class="activity-time">Demonstration Mode</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section about-section">
+        <div class="container">
+            <h2 class="section-title">About Watchtower</h2>
+
+            <div class="about-content">
+                <p>
+                    Watchtower is a persistent field container system that combines
+                    symbolic language, personal sovereignty, and background monitoring.
+                </p>
+
+                <div class="architecture-diagram">
+                    <div class="arch-layer visible">
+                        <div class="arch-label">Visible Layer</div>
+                        <div class="arch-desc">This interface - public safe</div>
+                    </div>
+                    <div class="arch-connector">⇅</div>
+                    <div class="arch-layer privileged">
+                        <div class="arch-label">Privileged Layer</div>
+                        <div class="arch-desc">Local daemon - sovereignty sealed</div>
+                    </div>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-glyph">⊙</div>
+                        <div class="feature-name">Personal Sovereignty</div>
+                        <div class="feature-desc">Cryptographic field signatures</div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-glyph">≋</div>
+                        <div class="feature-name">Field Resonance</div>
+                        <div class="feature-desc">Coherence monitoring</div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-glyph">◉</div>
+                        <div class="feature-name">Secure Boundaries</div>
+                        <div class="feature-desc">Local-first architecture</div>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-glyph">✦</div>
+                        <div class="feature-name">Symbolic Language</div>
+                        <div class="feature-desc">Glyph-based interaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-glyph">⊙</span>
+                        Watchtower
+                    </div>
+                    <p class="footer-tagline">
+                        The container lives with you, for you, through you.
+                    </p>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Security</h3>
+                    <ul class="footer-links">
+                        <li>✅ Public-safe visible layer</li>
+                        <li>🔒 Privileged logic local-only</li>
+                        <li>⚡ No secrets in deployment</li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3 class="footer-title">Documentation</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/nvxcii/ConstruX">GitHub Repository</a></li>
+                        <li><a href="#glyphs">Glyph Reference</a></li>
+                        <li><a href="#architecture">Architecture</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Watchtower. Sovereign by design.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="glyphs.js"></script>
+</body>
+</html>

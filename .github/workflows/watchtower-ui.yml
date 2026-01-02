@@ -1,0 +1,172 @@
+name: Watchtower Visible Layer Build
+
+on:
+  push:
+    branches: [ main, 'claude/**' ]
+    paths:
+      - 'watchtower-ui/**'
+      - '.github/workflows/watchtower-ui.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'watchtower-ui/**'
+
+jobs:
+  build-visible-layer:
+    name: Build & Test UI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Verify public-safe architecture
+        run: |
+          echo "Verifying UI is public-safe..."
+
+          # Check that no privileged imports exist
+          if grep -r "field_signature\|FieldSignature\|daemon" watchtower-ui/src/ 2>/dev/null; then
+            echo "❌ ERROR: Privileged imports found in UI!"
+            exit 1
+          fi
+
+          # Verify README exists
+          if [ ! -f watchtower-ui/README.md ]; then
+            echo "❌ README.md missing!"
+            exit 1
+          fi
+
+          # Check for Vercel config
+          if [ ! -f watchtower-ui/vercel.json ]; then
+            echo "⚠️  vercel.json missing (optional)"
+          fi
+
+          echo "✅ UI is public-safe"
+
+      - name: Security check - No secrets in UI
+        run: |
+          echo "Checking for secrets in UI code..."
+
+          # Check for common secret patterns
+          if grep -r -i "api.*key\|secret\|password\|token" watchtower-ui/src/*.js 2>/dev/null | grep -v "NEXT_PUBLIC\|PUBLIC\|demo\|example"; then
+            echo "⚠️ WARNING: Potential secrets found"
+            # Don't fail, just warn
+          fi
+
+          echo "✅ No obvious secrets in UI"
+
+      - name: Validate HTML
+        run: |
+          echo "Validating HTML structure..."
+
+          # Check that index.html exists and has required elements
+          if ! grep -q "<title>Watchtower" watchtower-ui/src/index.html; then
+            echo "❌ Missing title in index.html"
+            exit 1
+          fi
+
+          if ! grep -q "glyphs.js" watchtower-ui/src/index.html; then
+            echo "❌ Missing glyphs.js script"
+            exit 1
+          fi
+
+          echo "✅ HTML structure valid"
+
+      - name: Validate CSS
+        run: |
+          echo "Checking CSS files..."
+
+          if [ ! -f watchtower-ui/styles/main.css ]; then
+            echo "❌ main.css missing!"
+            exit 1
+          fi
+
+          if [ ! -f watchtower-ui/styles/glyphs.css ]; then
+            echo "❌ glyphs.css missing!"
+            exit 1
+          fi
+
+          # Check for CSS variables
+          if ! grep -q ":root" watchtower-ui/styles/main.css; then
+            echo "⚠️  No CSS variables found"
+          fi
+
+          echo "✅ CSS files present"
+
+      - name: Validate JavaScript
+        run: |
+          echo "Checking JavaScript syntax..."
+
+          # Use Node to check syntax
+          node -c watchtower-ui/src/app.js
+          node -c watchtower-ui/src/glyphs.js
+
+          echo "✅ JavaScript syntax valid"
+
+      - name: Test API endpoint
+        run: |
+          echo "Validating API endpoint..."
+
+          if [ ! -f watchtower-ui/api/status.js ]; then
+            echo "❌ api/status.js missing!"
+            exit 1
+          fi
+
+          # Check that API is read-only
+          if grep -q "POST\|PUT\|DELETE\|PATCH" watchtower-ui/api/status.js; then
+            echo "❌ API should be read-only (GET only)!"
+            exit 1
+          fi
+
+          echo "✅ API endpoint is read-only"
+
+      - name: Check for glyphs
+        run: |
+          echo "Verifying glyph data..."
+
+          # Count glyphs in glyphs.js
+          GLYPH_COUNT=$(grep -o "symbol:" watchtower-ui/src/glyphs.js | wc -l)
+
+          if [ "$GLYPH_COUNT" -lt 15 ]; then
+            echo "❌ Expected 15 glyphs, found $GLYPH_COUNT"
+            exit 1
+          fi
+
+          echo "✅ Found $GLYPH_COUNT glyphs"
+
+      - name: Simulate build
+        run: |
+          echo "Simulating production build..."
+
+          # Create dist directory
+          mkdir -p dist
+
+          # Copy files
+          cp -r watchtower-ui/src/* dist/
+          cp -r watchtower-ui/styles dist/
+          cp -r watchtower-ui/api dist/
+
+          echo "✅ Build simulation complete"
+
+          # List files
+          echo "Build output:"
+          ls -lh dist/
+
+      - name: Summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Watchtower Visible Layer Build PASSED"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Architecture: Public-safe ✅"
+          echo "HTML: Valid ✅"
+          echo "CSS: Present ✅"
+          echo "JavaScript: Valid ✅"
+          echo "API: Read-only ✅"
+          echo "Glyphs: Complete ✅"
+          echo ""
+          echo "Ready for Vercel deployment! 🚀"

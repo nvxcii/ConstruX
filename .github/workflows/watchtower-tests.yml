@@ -1,0 +1,135 @@
+name: Watchtower Privileged Layer Tests
+
+on:
+  push:
+    branches: [ main, 'claude/**' ]
+    paths:
+      - 'watchtower/**'
+      - '.github/workflows/watchtower-tests.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'watchtower/**'
+
+jobs:
+  test-privileged-layer:
+    name: Test Watchtower Core
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          cd watchtower
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Security check - Ensure no secrets in code
+        run: |
+          echo "Checking for potential secrets..."
+          if grep -r "signature.*=" watchtower/core/ | grep -v "FieldSignature\|field.signature"; then
+            echo "⚠️ WARNING: Potential hardcoded signatures found"
+            exit 1
+          fi
+          echo "✅ No hardcoded secrets detected"
+
+      - name: Verify local-only markers
+        run: |
+          echo "Verifying SECURITY.md exists..."
+          if [ ! -f watchtower/SECURITY.md ]; then
+            echo "❌ SECURITY.md missing!"
+            exit 1
+          fi
+          echo "✅ Security documentation present"
+
+      - name: Test imports
+        run: |
+          cd watchtower
+          python3 -c "
+          import sys
+          sys.path.insert(0, '.')
+
+          # Test core imports
+          from core.field_signature import FieldSignature, FieldAuthorizer
+          from config.field_memory import FieldMemory
+          from config.config_manager import ConfigManager
+          from glyphs.glyph_registry import GlyphRegistry, Glyph
+          from glyphs.system_glyphs import SYSTEM_GLYPHS
+
+          print('✅ All core modules import successfully')
+          print(f'✅ {len(SYSTEM_GLYPHS)} system glyphs loaded')
+          "
+
+      - name: Test field signature creation
+        run: |
+          cd watchtower
+          python3 -c "
+          import sys
+          sys.path.insert(0, '.')
+          from core.field_signature import FieldSignature
+
+          # Create test signature
+          sig = FieldSignature.create_personal(personal_glyph='⊙')
+          assert sig.signature_id is not None
+          assert len(sig.signature_id) == 64
+          assert sig.personal_glyph == '⊙'
+
+          print('✅ Field signature creation works')
+          print(f'   Signature ID: {sig.signature_id[:16]}...')
+          "
+
+      - name: Test glyph registry
+        run: |
+          cd watchtower
+          python3 -c "
+          import sys
+          sys.path.insert(0, '.')
+          from glyphs.glyph_registry import GlyphRegistry
+          from glyphs.system_glyphs import load_system_glyphs
+
+          registry = GlyphRegistry()
+          load_system_glyphs(registry)
+
+          glyphs = registry.list_all()
+          assert len(glyphs) == 15
+
+          # Test glyph retrieval
+          sovereignty = registry.get('sovereignty_seal')
+          assert sovereignty is not None
+          assert sovereignty.symbol == '⊙'
+          assert sovereignty.threshold == 'high'
+
+          print('✅ Glyph registry works')
+          print(f'   Total glyphs: {len(glyphs)}')
+          print(f'   Sovereignty seal: {sovereignty.symbol}')
+          "
+
+      - name: Lint Python code
+        run: |
+          pip install pylint
+          cd watchtower
+          # Run pylint on core modules (non-blocking)
+          pylint --disable=all --enable=E core/*.py config/*.py glyphs/*.py || true
+          echo "✅ Linting complete"
+
+      - name: Summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Watchtower Privileged Layer Tests PASSED"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "Python Version: ${{ matrix.python-version }}"
+          echo "All imports: ✅"
+          echo "Field signatures: ✅"
+          echo "Glyph registry: ✅"
+          echo "Security checks: ✅"

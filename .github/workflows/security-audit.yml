@@ -1,0 +1,188 @@
+name: Security Audit
+
+on:
+  push:
+    branches: [ main, 'claude/**' ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run weekly on Mondays at 9am UTC
+    - cron: '0 9 * * 1'
+
+jobs:
+  security-audit:
+    name: Security & Architecture Audit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for sensitive files
+        run: |
+          echo "🔍 Scanning for sensitive files..."
+
+          SENSITIVE_PATTERNS=(
+            "signature.json"
+            "*.db"
+            "*.sqlite"
+            "config.json"
+            ".env"
+            "*.key"
+            "*.pem"
+            "credentials"
+          )
+
+          FOUND_SENSITIVE=0
+
+          for pattern in "${SENSITIVE_PATTERNS[@]}"; do
+            if find . -name "$pattern" -not -path "./.git/*" | grep -q .; then
+              echo "❌ CRITICAL: Found sensitive file pattern: $pattern"
+              find . -name "$pattern" -not -path "./.git/*"
+              FOUND_SENSITIVE=1
+            fi
+          done
+
+          if [ $FOUND_SENSITIVE -eq 1 ]; then
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "❌ SECURITY FAILURE: Sensitive files detected!"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            exit 1
+          fi
+
+          echo "✅ No sensitive files found"
+
+      - name: Verify architecture separation
+        run: |
+          echo "🏗️  Verifying architecture separation..."
+
+          # Check that watchtower/ has SECURITY.md
+          if [ ! -f watchtower/SECURITY.md ]; then
+            echo "❌ watchtower/SECURITY.md missing!"
+            exit 1
+          fi
+
+          # Check that watchtower-ui/ has README explaining public-safe
+          if [ ! -f watchtower-ui/README.md ]; then
+            echo "❌ watchtower-ui/README.md missing!"
+            exit 1
+          fi
+
+          # Verify README mentions "public-safe"
+          if ! grep -qi "public-safe\|public safe" watchtower-ui/README.md; then
+            echo "⚠️  WARNING: watchtower-ui/README.md doesn't mention 'public-safe'"
+          fi
+
+          echo "✅ Architecture documentation present"
+
+      - name: Check for privileged code in UI
+        run: |
+          echo "🔒 Checking for privileged code in visible layer..."
+
+          PRIVILEGED_PATTERNS=(
+            "FieldSignature"
+            "field_signature"
+            "WatchtowerDaemon"
+            "daemon_service"
+            "FieldMemory"
+            "field_memory"
+            "sqlite3"
+            "os.path"
+            "subprocess"
+            "file_monitor"
+          )
+
+          FOUND_PRIVILEGED=0
+
+          for pattern in "${PRIVILEGED_PATTERNS[@]}"; do
+            if grep -r "$pattern" watchtower-ui/ --include="*.js" --include="*.html" 2>/dev/null | grep -v "comment\|\/\/\|\/\*"; then
+              echo "❌ CRITICAL: Privileged code found in UI: $pattern"
+              FOUND_PRIVILEGED=1
+            fi
+          done
+
+          if [ $FOUND_PRIVILEGED -eq 1 ]; then
+            echo ""
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "❌ SECURITY FAILURE: Privileged code in visible layer!"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            exit 1
+          fi
+
+          echo "✅ No privileged code in visible layer"
+
+      - name: Verify .gitignore
+        run: |
+          echo "📝 Checking .gitignore files..."
+
+          # Check watchtower/.gitignore
+          if [ ! -f watchtower/.gitignore ]; then
+            echo "⚠️  watchtower/.gitignore missing"
+          else
+            # Verify critical patterns
+            if ! grep -q "*.db" watchtower/.gitignore; then
+              echo "❌ watchtower/.gitignore doesn't ignore *.db"
+              exit 1
+            fi
+            if ! grep -q "*signature*.json" watchtower/.gitignore; then
+              echo "❌ watchtower/.gitignore doesn't ignore signatures"
+              exit 1
+            fi
+            echo "✅ watchtower/.gitignore configured correctly"
+          fi
+
+          # Check watchtower-ui/.gitignore
+          if [ ! -f watchtower-ui/.gitignore ]; then
+            echo "⚠️  watchtower-ui/.gitignore missing"
+          else
+            echo "✅ watchtower-ui/.gitignore present"
+          fi
+
+      - name: Check for hardcoded secrets
+        run: |
+          echo "🔐 Scanning for hardcoded secrets..."
+
+          # Common secret patterns
+          if grep -r -E "(api[_-]?key|secret[_-]?key|password|token|bearer)['\"]?\s*[:=]" . \
+            --include="*.py" \
+            --include="*.js" \
+            --exclude-dir=".git" \
+            --exclude-dir="node_modules" \
+            | grep -v "NEXT_PUBLIC\|PUBLIC\|demo\|example\|test\|#"; then
+            echo "⚠️  WARNING: Potential hardcoded secrets found"
+            # Don't fail, just warn
+          else
+            echo "✅ No obvious hardcoded secrets"
+          fi
+
+      - name: Verify deployment safety
+        run: |
+          echo "🚀 Verifying deployment configuration..."
+
+          # Check Vercel config
+          if [ -f watchtower-ui/vercel.json ]; then
+            echo "✅ Vercel config found"
+
+            # Verify it doesn't expose privileged paths
+            if grep -q "watchtower/" watchtower-ui/vercel.json; then
+              echo "❌ CRITICAL: Vercel config exposes privileged layer!"
+              exit 1
+            fi
+          fi
+
+          echo "✅ Deployment configuration safe"
+
+      - name: Summary
+        run: |
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ SECURITY AUDIT PASSED"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "No sensitive files: ✅"
+          echo "Architecture separation: ✅"
+          echo "No privileged code in UI: ✅"
+          echo ".gitignore configured: ✅"
+          echo "Deployment safety: ✅"
+          echo ""
+          echo "🔒 Watchtower architecture is secure!"

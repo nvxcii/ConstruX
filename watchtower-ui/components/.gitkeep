@@ -1,0 +1,9 @@
+# Watchtower UI Components
+
+Place React/Web components here when implementing:
+- GlyphDisplay.js
+- FieldStatus.js
+- PulseMeter.js
+- AlertPanel.js
+
+Currently using vanilla JavaScript in src/.

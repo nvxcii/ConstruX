@@ -1,0 +1,9 @@
+# Watchtower UI Public Assets
+
+Place public assets here:
+- Icons
+- Glyph SVG files
+- Images
+- Fonts
+
+This directory is served as static files by Vercel.

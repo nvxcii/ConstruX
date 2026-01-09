@@ -8,8 +8,9 @@ from .core.primal_variables import PrimalVariables
 from .frameworks.merged_frameworks import MergedFrameworks
 from .equations.perpetual_equations import PerpetualEquations
 from .integration.multi_ai_integration import WhiteMirrorAIOrchestrator
+from .workflow_assistant import WorkflowAssistant
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __author__ = "White Mirror Protocol Contributors"
 
 __all__ = [
@@ -17,5 +18,6 @@ __all__ = [
     'PrimalVariables',
     'MergedFrameworks',
     'PerpetualEquations',
-    'WhiteMirrorAIOrchestrator'
+    'WhiteMirrorAIOrchestrator',
+    'WorkflowAssistant'
 ]

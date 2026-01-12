@@ -328,7 +328,7 @@ class WhiteMirrorAIOrchestrator:
 ╔══════════════════════════════════════════════════════════════════════╗
 ║            MULTI-AI JUSTICE LEAGUE STATUS                            ║
 ╠══════════════════════════════════════════════════════════════════════╣
-║  Active AI Models: 4 (Claude, Gemini, DeepSeek, ChatGPT)           ║
+║  Active AI Models: {len(self.ai_league.models)} ({', '.join(name.capitalize() for name in self.ai_league.models.keys())})           ║
 ║  Coordination Patterns Recorded: {len(self.coordination_patterns)}
 ║  Optimizations Applied: {len(self.optimization_history)}
 ║  Integration: ACTIVE ✓                                              ║

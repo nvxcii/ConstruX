@@ -587,7 +587,12 @@ class WhiteMirrorProtocol:
 
     def export_state(self, filepath: str):
         """Export complete system state to file"""
+        import os
         state = self.get_system_state()
+
+        dir_name = os.path.dirname(filepath)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
 
         with open(filepath, 'w') as f:
             json.dump(state, f, indent=2, default=str)

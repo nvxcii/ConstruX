@@ -37,6 +37,9 @@ class ConscienceSignal:
 
     def calculate(self) -> float:
         """Calculate current conscience signal strength"""
+        if not self.components:
+            return 0.0
+
         # F(Λ) = geometric mean of components
         product = 1.0
         for component, value in self.components.items():

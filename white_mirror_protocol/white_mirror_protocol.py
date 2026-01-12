@@ -166,9 +166,11 @@ class WhiteMirrorProtocol:
                 self.operation_history = self.operation_history[-100:]
 
         except Exception as e:
+            import traceback
             result['success'] = False
             result['error'] = str(e)
             print(f"⚠️  Operation step failed: {e}")
+            traceback.print_exc()
 
         result['duration'] = time.time() - step_start
 

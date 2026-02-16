@@ -1,15 +1,19 @@
 """
 Semantic analysis utilities for the Mobius traversal protocol.
 
-Provides keyword extraction, entity recognition, and multi-dimensional
-relevance scoring without heavy ML dependencies.
+Provides keyword extraction, entity recognition, directory-as-content
+analysis, and multi-dimensional relevance scoring. The core insight:
+directories are not containers -- they are semantic content. A path
+like ``intelligence/evidence_database.py`` carries meaning independent
+of the file it names; the nesting *is* a sentence.
 """
 
+import os
 import re
 import math
 from collections import Counter
 from datetime import datetime, timezone
-from typing import Set, Dict, Optional, List, Tuple
+from typing import Any, Set, Dict, Optional, List, Tuple
 
 
 # Common English stop words for keyword filtering
@@ -82,7 +86,12 @@ class SemanticAnalyzer:
         # Quoted strings (names, descriptions, identifiers)
         for match in _QUOTED_STRING.finditer(text):
             candidate = match.group(1).strip()
-            if not candidate.startswith(("http", "/", ".", "#")):
+            if (
+                not candidate.startswith(("http", "/", ".", "#", "(", ")", "{"))
+                and "\n" not in candidate
+                and not candidate.endswith(("(", ")", "{", "}", "[", "]", ","))
+                and candidate.count(" ") < 8
+            ):
                 entities.add(candidate)
 
         return entities
@@ -198,6 +207,127 @@ class SemanticAnalyzer:
         mag_a = math.sqrt(sum(v ** 2 for v in vec_a.values())) or 1e-10
         mag_b = math.sqrt(sum(v ** 2 for v in vec_b.values())) or 1e-10
         return dot / (mag_a * mag_b)
+
+    # ── Directory-as-Content analysis ────────────────────────────────
+
+    def analyze_directory_semantics(self, dir_path: str) -> Dict[str, Any]:
+        """
+        Treat a directory as a semantic entity, not a container.
+
+        A directory's meaning is encoded in:
+          - Its name (the primary semantic signal)
+          - Its depth / position in the hierarchy (scope)
+          - Its siblings (what it's grouped with = category)
+          - Its children (what it contains = definition)
+          - Its parent (what subsumes it = context)
+
+        Returns a semantic profile for the directory as content.
+        """
+        name = os.path.basename(dir_path)
+        parent = os.path.basename(os.path.dirname(dir_path))
+
+        # Decompose directory name into semantic tokens
+        # Handle snake_case, kebab-case, CamelCase, dot.notation
+        tokens = self._decompose_name(name)
+
+        # Sibling directories = semantic category peers
+        siblings: List[str] = []
+        parent_dir = os.path.dirname(dir_path)
+        if os.path.isdir(parent_dir):
+            try:
+                siblings = [
+                    e for e in os.listdir(parent_dir)
+                    if os.path.isdir(os.path.join(parent_dir, e))
+                    and e != name
+                    and not e.startswith(".")
+                ]
+            except OSError:
+                pass
+
+        # Child entries = the directory's "definition"
+        children: List[str] = []
+        try:
+            children = [e for e in os.listdir(dir_path) if not e.startswith(".")]
+        except OSError:
+            pass
+
+        child_tokens: Set[str] = set()
+        for child in children:
+            child_tokens.update(self._decompose_name(child))
+
+        return {
+            "path": dir_path,
+            "name": name,
+            "tokens": tokens,
+            "parent_name": parent,
+            "sibling_names": siblings,
+            "child_names": children,
+            "child_tokens": child_tokens,
+            "depth": dir_path.count(os.sep),
+            # The "sentence" this directory speaks:
+            # parent > name > [children]
+            "semantic_sentence": f"{parent}/{name} containing [{', '.join(children[:10])}]",
+        }
+
+    def score_directory_relevance(
+        self, dir_semantics: Dict[str, Any], context: str
+    ) -> float:
+        """
+        Score a directory's relevance to the conversation context.
+        The directory IS content; its structure IS meaning.
+        """
+        context_kw = self.extract_keywords(context)
+        if not context_kw:
+            return 0.0
+
+        score = 0.0
+
+        # Directory name tokens vs context (40% -- strongest signal)
+        dir_tokens = set(t.lower() for t in dir_semantics["tokens"])
+        name_overlap = len(dir_tokens & context_kw) / max(len(dir_tokens), 1)
+        score += name_overlap * 0.4
+
+        # Child tokens vs context (30% -- what it contains defines it)
+        child_tokens = set(t.lower() for t in dir_semantics["child_tokens"])
+        if child_tokens:
+            child_overlap = len(child_tokens & context_kw) / max(len(child_tokens), 1)
+            score += child_overlap * 0.3
+
+        # Sibling names vs context (20% -- categorical peers)
+        sibling_tokens: Set[str] = set()
+        for sib in dir_semantics["sibling_names"]:
+            sibling_tokens.update(t.lower() for t in self._decompose_name(sib))
+        if sibling_tokens:
+            sib_overlap = len(sibling_tokens & context_kw) / max(len(sibling_tokens), 1)
+            score += sib_overlap * 0.2
+
+        # Semantic sentence match (10% -- full path context)
+        sentence = dir_semantics["semantic_sentence"].lower()
+        sentence_matches = sum(1 for kw in context_kw if kw in sentence)
+        score += min(sentence_matches / max(len(context_kw), 1), 1.0) * 0.1
+
+        return min(score, 1.0)
+
+    @staticmethod
+    def _decompose_name(name: str) -> List[str]:
+        """
+        Break a file/directory name into semantic tokens.
+        Handles: snake_case, kebab-case, CamelCase, dot.notation.
+        Strips extensions.
+        """
+        # Remove extension
+        name = os.path.splitext(name)[0]
+        # Split on separators
+        parts = re.split(r"[_\-./\\]+", name)
+        # Further split CamelCase
+        expanded: List[str] = []
+        for part in parts:
+            camel_parts = re.findall(r"[A-Z]?[a-z]+|[A-Z]+(?=[A-Z][a-z]|\d|\b)", part)
+            if camel_parts:
+                expanded.extend(camel_parts)
+            elif part:
+                expanded.append(part)
+        return [t.lower() for t in expanded if len(t) > 1]
 
     # ── private helpers ──────────────────────────────────────────────
 

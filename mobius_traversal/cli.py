@@ -5,6 +5,7 @@ Usage:
     python -m mobius_traversal <root_dir> [root_dir ...] --context "query text"
     python -m mobius_traversal /path/to/code --context "authentication flow"
     python -m mobius_traversal . --context-file query.txt --output results.json
+    python -m mobius_traversal . --context "query" --index .mobius_index.json
 """
 
 import argparse
@@ -87,6 +88,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Number of top relevant files to return (default: 20)",
     )
     parser.add_argument(
+        "--index",
+        type=str,
+        default=None,
+        help="Path to persistent index file (enables indexer mode)",
+    )
+    parser.add_argument(
         "--verbose", "-v",
         action="count",
         default=0,
@@ -119,6 +126,7 @@ def print_summary(results: dict) -> None:
     """Print a human-readable summary of traversal results."""
     meta = results.get("traversal_metadata", {})
     artifacts = results.get("relevant_artifacts", [])
+    directories = results.get("relevant_directories", [])
     network = results.get("semantic_network", {})
     gaps = results.get("continuity_gaps", [])
     insights = results.get("mobius_insights", {})
@@ -129,9 +137,13 @@ def print_summary(results: dict) -> None:
     print()
 
     print(f"  Recursion depth achieved : {meta.get('depth_achieved', 0)}")
+    print(f"  Surface closed           : {meta.get('surface_closed', False)}")
     print(f"  Convergence score        : {meta.get('convergence_score', 0):.2%}")
     print(f"  Total files scanned      : {meta.get('total_files_scanned', 0)}")
+    print(f"  Total dirs scanned       : {meta.get('total_directories_scanned', 0)}")
     print(f"  Relevant files found     : {meta.get('relevant_files_found', 0)}")
+    print(f"  Relevant dirs found      : {meta.get('relevant_directories_found', 0)}")
+    print(f"  Original query preserved : {meta.get('original_query_preserved', True)}")
     print()
 
     if artifacts:
@@ -145,6 +157,19 @@ def print_summary(results: dict) -> None:
             print(f"  {i:2d}. [{score:.3f}] {path}")
             if entities:
                 print(f"      entities: {', '.join(entities)}")
+        print()
+
+    if directories:
+        print("-" * 70)
+        print("  DIRECTORIES AS CONTENT (container = content)")
+        print("-" * 70)
+        for d in directories:
+            score = d.get("relevance_score", 0)
+            path = d.get("path", "?")
+            sentence = d.get("semantic_sentence", "")
+            print(f"  [{score:.3f}] {path}")
+            if sentence:
+                print(f"          \"{sentence}\"")
         print()
 
     hubs = network.get("hub_documents", [])
@@ -181,18 +206,39 @@ def print_summary(results: dict) -> None:
                 print(f"      referenced by: {', '.join(by[:3])}")
         print()
 
+    # Surface closure info
+    surface = insights.get("surface_closure", {})
+    if surface:
+        print("-" * 70)
+        print("  SURFACE TOPOLOGY")
+        print("-" * 70)
+        closed = surface.get("closed", False)
+        passes = surface.get("passes", 0)
+        stability = surface.get("stability", 0)
+        sizes = surface.get("node_set_sizes", [])
+        status = "CLOSED (Mobius property satisfied)" if closed else "OPEN (forced termination)"
+        print(f"    Status     : {status}")
+        print(f"    Passes     : {passes}")
+        print(f"    Stability  : {stability:.2%} (Jaccard similarity)")
+        if sizes:
+            print(f"    Node sets  : {' -> '.join(str(s) for s in sizes)}")
+        print()
+
     evolution = insights.get("context_evolution", [])
     if evolution:
         print("-" * 70)
-        print("  MOBIUS INSIGHTS: CONTEXT EVOLUTION")
+        print("  MOBIUS INSIGHTS: LENS EVOLUTION")
         print("-" * 70)
         for step in evolution:
             depth = step.get("depth", "?")
             novelty = step.get("novelty_score")
             if novelty is not None:
-                new_kw = step.get("new_keywords", 0)
-                new_ent = step.get("new_entities", 0)
-                print(f"    Depth {depth}: novelty={novelty:.1%}, +{new_kw} keywords, +{new_ent} entities")
+                lens_kw = step.get("lens_keywords", 0)
+                lens_ent = step.get("lens_entities", 0)
+                closed = step.get("surface_closed", False)
+                suffix = " [SURFACE CLOSED]" if closed else ""
+                print(f"    Depth {depth}: novelty={novelty:.1%}, "
+                      f"lens=+{lens_kw} keywords/+{lens_ent} entities{suffix}")
         print()
 
     themes = insights.get("emergent_themes", [])
@@ -242,6 +288,7 @@ def main(argv: list = None) -> int:
         novelty_threshold=args.novelty_threshold,
         preview_lines=args.preview_lines,
         top_n=args.top_n,
+        index_path=args.index,
     )
 
     results = engine.execute()

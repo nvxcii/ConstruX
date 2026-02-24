@@ -78,6 +78,20 @@ class MPRPRelayBot(commands.Bot):
         self.add_command(cmd_codex)
         self.add_command(cmd_help_mprp)
 
+    async def on_command_error(self, ctx: commands.Context, error: commands.CommandError):
+        """Handle command errors with user-friendly messages."""
+        if isinstance(error, commands.NoPrivateMessage):
+            await ctx.send(
+                "This command only works in a server, not in DMs.\n"
+                "Head to your Discord server and run the command in a text channel."
+            )
+        elif isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send(f"Missing required argument: `{error.param.name}`. Use `!mprp` for help.")
+        elif isinstance(error, commands.BadArgument):
+            await ctx.send(f"Invalid argument. Use `!mprp` for help.")
+        else:
+            logger.error("Command error in %s: %s", ctx.command, error)
+
     # ═══════════════════════════════════════════════════════════════
     # MESSAGE HANDLING -- THE RELAY CORE
     # ═══════════════════════════════════════════════════════════════
@@ -372,6 +386,7 @@ class MPRPRelayBot(commands.Bot):
 # ═══════════════════════════════════════════════════════════════════
 
 @commands.command(name="setup")
+@commands.guild_only()
 async def cmd_setup(ctx: commands.Context):
     """Create all MPRP channels and the Overseer role."""
     bot: MPRPRelayBot = ctx.bot
@@ -446,6 +461,7 @@ async def cmd_setup(ctx: commands.Context):
 
 
 @commands.command(name="status")
+@commands.guild_only()
 async def cmd_status(ctx: commands.Context):
     """Show relay bot status and channel overview."""
     bot: MPRPRelayBot = ctx.bot
@@ -485,6 +501,7 @@ async def cmd_status(ctx: commands.Context):
 
 
 @commands.command(name="pending")
+@commands.guild_only()
 async def cmd_pending(ctx: commands.Context):
     """List all pending relays awaiting approval."""
     bot: MPRPRelayBot = ctx.bot
@@ -513,6 +530,7 @@ async def cmd_pending(ctx: commands.Context):
 
 
 @commands.command(name="approve")
+@commands.guild_only()
 async def cmd_approve(ctx: commands.Context, relay_id: int, destination: str = None):
     """Approve a pending relay. Usage: !approve <id> [destination]"""
     bot: MPRPRelayBot = ctx.bot
@@ -534,6 +552,7 @@ async def cmd_approve(ctx: commands.Context, relay_id: int, destination: str = N
 
 
 @commands.command(name="reject")
+@commands.guild_only()
 async def cmd_reject(ctx: commands.Context, relay_id: int):
     """Reject a pending relay. Usage: !reject <id>"""
     bot: MPRPRelayBot = ctx.bot
@@ -551,6 +570,7 @@ async def cmd_reject(ctx: commands.Context, relay_id: int):
 
 
 @commands.command(name="route")
+@commands.guild_only()
 async def cmd_route(ctx: commands.Context, relay_id: int, destination: str):
     """Route a pending relay to a specific agent. Usage: !route <id> <agent>"""
     bot: MPRPRelayBot = ctx.bot
@@ -579,6 +599,7 @@ async def cmd_route(ctx: commands.Context, relay_id: int, destination: str):
 
 
 @commands.command(name="codex")
+@commands.guild_only()
 async def cmd_codex(ctx: commands.Context, count: int = 10):
     """Show recent codex entries. Usage: !codex [count]"""
     bot: MPRPRelayBot = ctx.bot

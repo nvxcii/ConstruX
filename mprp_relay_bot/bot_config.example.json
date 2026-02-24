@@ -1,0 +1,42 @@
+{
+  "command_prefix": "!",
+  "guild_id": null,
+  "relay_queue_channel": "relay-queue",
+  "codex_channel": "codex-updates",
+  "overseer_role": "Overseer",
+  "category_name": "MPRP Relay",
+  "agents": {
+    "gemini": {
+      "name": "Gemini",
+      "signature": "~G2.0~",
+      "input_channel": "gemini-in",
+      "color": 4359668,
+      "emoji": "\ud83d\udfe6",
+      "description": "Google Gemini 2.0 - Strategic analysis and research"
+    },
+    "deepseek": {
+      "name": "DeepSeek",
+      "signature": "~DS~",
+      "input_channel": "deepseek-in",
+      "color": 51283,
+      "emoji": "\ud83d\udfe2",
+      "description": "DeepSeek - Technical depth and implementation"
+    },
+    "claude": {
+      "name": "Claude",
+      "signature": "~C4.5~",
+      "input_channel": "claude-in",
+      "color": 14243590,
+      "emoji": "\ud83d\udfe0",
+      "description": "Claude - Synthesis, integration, and conscience layer"
+    },
+    "chatgpt": {
+      "name": "ChatGPT",
+      "signature": "~GPT~",
+      "input_channel": "chatgpt-in",
+      "color": 1090431,
+      "emoji": "\ud83d\udfe3",
+      "description": "ChatGPT - Creative exploration and ideation"
+    }
+  }
+}

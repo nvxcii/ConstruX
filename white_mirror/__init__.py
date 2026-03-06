@@ -46,6 +46,11 @@ from .engines.behavioral_predictor import BehavioralPredictor
 from .bridges.echovault import EchoVault
 from .bridges.human_ai_bridge import HumanAIBridge
 from .orchestrator import WhiteMirrorOrchestrator
+from .verification.synt_glob_verifier import (
+    SYNTGLOBVerifier,
+    get_verification_prompt,
+    get_enhancement_prompt
+)
 
 __all__ = [
     # Core
@@ -70,4 +75,8 @@ __all__ = [
     'HumanAIBridge',
     # Orchestrator
     'WhiteMirrorOrchestrator',
+    # Verification
+    'SYNTGLOBVerifier',
+    'get_verification_prompt',
+    'get_enhancement_prompt',
 ]

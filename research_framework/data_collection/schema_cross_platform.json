@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Cross-Platform Comparison Record",
+  "description": "Schema for aggregated per-platform findings, used to populate the cross-platform comparison matrix.",
+  "type": "object",
+  "required": [
+    "comparison_id",
+    "platform",
+    "platform_version",
+    "audit_date",
+    "total_trials",
+    "protocol"
+  ],
+  "properties": {
+    "comparison_id": {
+      "type": "string",
+      "description": "Unique ID. Format: XPLAT-[PROTOCOL]-[PLATFORM_CODE]-[date]"
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["claude", "chatgpt", "gemini", "deepseek", "other"]
+    },
+    "platform_version": {
+      "type": "string",
+      "description": "Exact model version string."
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["P-01", "P-02", "P-03", "P-04"]
+    },
+    "audit_date": {
+      "type": "string",
+      "format": "date",
+      "description": "ISO 8601 date of data collection."
+    },
+    "researcher_id": {
+      "type": "string"
+    },
+    "total_trials": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "trials_excluded": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Trials excluded due to data quality flags. Must be documented."
+    },
+    "p01_results": {
+      "type": "object",
+      "description": "Results for Protocol P-01 (response length variation).",
+      "properties": {
+        "mean_length_ratio": {
+          "type": "number",
+          "description": "Mean of (treatment response length / control response length) across pairs."
+        },
+        "length_ratio_sd": {
+          "type": "number"
+        },
+        "t_statistic": {
+          "type": "number"
+        },
+        "p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cohens_d": {
+          "type": "number"
+        },
+        "refusal_rate_sensitive": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "refusal_rate_neutral": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "refusal_fisher_p": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "h1_supported": {
+          "type": "boolean",
+          "description": "True if p < 0.05 AND Cohen's d > 0.5."
+        }
+      }
+    },
+    "p02_results": {
+      "type": "object",
+      "description": "Results for Protocol P-02 (decision traceability).",
+      "properties": {
+        "total_refusal_events": {
+          "type": "integer"
+        },
+        "proportion_ess_ge_2": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Proportion of events with ESS score >= 2 (specific explanation)."
+        },
+        "proportion_test_p": {
+          "type": "number",
+          "description": "p-value from one-sample proportion test against 0.50 null."
+        },
+        "inter_rater_kappa": {
+          "type": "number",
+          "description": "Cohen's kappa between coders."
+        },
+        "h2_supported": {
+          "type": "boolean",
+          "description": "True if proportion_ess_ge_2 < 0.50 AND p < 0.05."
+        }
+      }
+    },
+    "p03_results": {
+      "type": "object",
+      "description": "Results for Protocol P-03 (memory portability audit).",
+      "properties": {
+        "cat_a_portability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cat_b_portability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cat_c_portability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "overall_portability_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "h3_supported": {
+          "type": "boolean",
+          "description": "True if any category has a portability score < 1.0 (complete absence)."
+        }
+      }
+    },
+    "p04_results": {
+      "type": "object",
+      "description": "Results for Protocol P-04 (hedge language shift).",
+      "properties": {
+        "mean_hedge_density_sensitive": {
+          "type": "number"
+        },
+        "mean_hedge_density_neutral": {
+          "type": "number"
+        },
+        "mean_hedge_density_diff": {
+          "type": "number"
+        },
+        "wilcoxon_statistic": {
+          "type": "number"
+        },
+        "p_value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rank_biserial_r": {
+          "type": "number"
+        },
+        "h4_supported": {
+          "type": "boolean",
+          "description": "True if mean_hedge_density_diff > 0 AND p < 0.05."
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

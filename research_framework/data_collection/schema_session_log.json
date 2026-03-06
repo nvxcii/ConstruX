@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Session Log",
+  "description": "Schema for logging a complete data collection session. Contains metadata about the session and references to individual trial records.",
+  "type": "object",
+  "required": [
+    "session_id",
+    "date_utc",
+    "platform",
+    "platform_version",
+    "researcher_id",
+    "protocol",
+    "trial_ids"
+  ],
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Unique session ID. Format: SESS-[PLATFORM_CODE]-[YYYYMMDD]-[NNN]"
+    },
+    "date_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Session start time, ISO 8601."
+    },
+    "session_end_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Session end time, ISO 8601."
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["claude", "chatgpt", "gemini", "deepseek", "other"]
+    },
+    "platform_version": {
+      "type": "string"
+    },
+    "platform_access_method": {
+      "type": "string",
+      "enum": ["web_ui", "api", "mobile_app"]
+    },
+    "researcher_id": {
+      "type": "string"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["P-01", "P-02", "P-03", "P-04"]
+    },
+    "trial_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered list of trial IDs in this session."
+    },
+    "trials_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "anomalies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "trial_id": { "type": "string" },
+          "description": { "type": "string" },
+          "action_taken": { "type": "string" }
+        }
+      },
+      "description": "List of anomalies encountered during the session and how they were handled."
+    },
+    "platform_reported_model": {
+      "type": "string",
+      "description": "Model version string as explicitly reported by the platform during the session, if available."
+    },
+    "session_notes": {
+      "type": "string"
+    }
+  }
+}

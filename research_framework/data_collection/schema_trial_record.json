@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Trial Record",
+  "description": "Schema for a single experimental trial. One record per prompt-response pair.",
+  "type": "object",
+  "required": [
+    "trial_id",
+    "protocol",
+    "date_utc",
+    "platform",
+    "platform_version",
+    "prompt_text",
+    "prompt_word_count",
+    "topic_category",
+    "topic_code",
+    "response_text",
+    "response_word_count",
+    "response_refusal",
+    "response_truncated"
+  ],
+  "properties": {
+    "trial_id": {
+      "type": "string",
+      "description": "Unique identifier. Format: [PROTOCOL]-[PLATFORM_CODE]-[NNN]. Example: P01-CL-001",
+      "pattern": "^P0[1-4]-[A-Z]{2,6}-[0-9]{3}$"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["P-01", "P-02", "P-03", "P-04"],
+      "description": "Protocol used to generate this trial."
+    },
+    "pair_id": {
+      "type": "string",
+      "description": "For matched-pair protocols: ID shared by treatment and control in a pair. Format: PAIR-[NNN]"
+    },
+    "pair_role": {
+      "type": "string",
+      "enum": ["treatment", "control"],
+      "description": "Whether this trial is the treatment or control in a matched pair."
+    },
+    "date_utc": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when the prompt was sent."
+    },
+    "platform": {
+      "type": "string",
+      "enum": ["claude", "chatgpt", "gemini", "deepseek", "other"],
+      "description": "AI platform used."
+    },
+    "platform_version": {
+      "type": "string",
+      "description": "Exact model version string as reported by the platform. Example: claude-3-5-sonnet-20241022"
+    },
+    "platform_access_method": {
+      "type": "string",
+      "enum": ["web_ui", "api", "mobile_app"],
+      "description": "How the platform was accessed."
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Identifier for the session this trial belongs to. All trials in the same conversation share a session_id."
+    },
+    "trial_position_in_session": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Position of this prompt in the session (1 = first prompt)."
+    },
+    "prompt_text": {
+      "type": "string",
+      "description": "Full verbatim text of the prompt sent."
+    },
+    "prompt_word_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "topic_category": {
+      "type": "string",
+      "description": "Human-readable topic category. Example: Philosophical critique of AI"
+    },
+    "topic_code": {
+      "type": "string",
+      "description": "Short code from topic category table. Example: PHIL, HIST, TECH"
+    },
+    "topic_type": {
+      "type": "string",
+      "enum": ["sensitive", "neutral"],
+      "description": "Whether this topic is a designated sensitive topic or neutral control."
+    },
+    "response_text": {
+      "type": "string",
+      "description": "Full verbatim text of the platform response."
+    },
+    "response_word_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "response_sentence_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "response_refusal": {
+      "type": "boolean",
+      "description": "True if the platform declined to answer the prompt (full or partial refusal)."
+    },
+    "response_refusal_type": {
+      "type": "string",
+      "enum": ["full", "partial", "none"],
+      "description": "Type of refusal if response_refusal is true."
+    },
+    "response_truncated": {
+      "type": "boolean",
+      "description": "True if the response appears to have been cut short (e.g., ends mid-sentence, or is substantially shorter than the matched control)."
+    },
+    "response_hedge_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of hedge words/phrases detected (for P-04 trials)."
+    },
+    "response_hedge_density": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Hedge words per 100 response words (for P-04 trials)."
+    },
+    "explanation_followup_sent": {
+      "type": "boolean",
+      "description": "For P-02: Was an explanation follow-up prompt sent after a refusal?"
+    },
+    "explanation_response_text": {
+      "type": "string",
+      "description": "For P-02: Text of the platform's explanation response."
+    },
+    "ess_score_coder_1": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "For P-02: Explanation Specificity Scale score from coder 1."
+    },
+    "ess_score_coder_2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "For P-02: Explanation Specificity Scale score from coder 2."
+    },
+    "ess_score_final": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "For P-02: Final agreed ESS score."
+    },
+    "researcher_id": {
+      "type": "string",
+      "description": "Anonymized researcher ID for inter-rater reliability tracking."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text notes on anomalies, platform errors, or anything that might affect data quality."
+    },
+    "data_quality_flag": {
+      "type": "string",
+      "enum": ["ok", "review", "exclude"],
+      "description": "Flag for data quality review. Flagged records must have a reason in notes."
+    }
+  }
+}

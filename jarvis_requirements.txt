@@ -1,0 +1,47 @@
+# Jarvis - macOS AI Assistant Dependencies
+# Install with: pip install -r jarvis_requirements.txt
+
+# ============================================================
+# Core (required)
+# ============================================================
+anthropic>=0.40.0              # Claude API with tool_use support
+
+# ============================================================
+# Voice (optional - install for voice mode)
+# ============================================================
+sounddevice>=0.4.6             # Audio I/O
+numpy>=1.20.0                  # Audio processing
+speech_recognition>=3.10.0     # Google STT fallback
+pyttsx3>=2.90                  # Offline TTS fallback
+# openai>=1.0.0                # Whisper API STT (also needed for hivemind ChatGPT/DeepSeek)
+# elevenlabs>=1.0.0            # ElevenLabs natural TTS
+# pvporcupine>=3.0.0           # Wake word detection ("Hey Jarvis")
+# pydub>=0.25.1                # Audio format conversion for ElevenLabs
+
+# ============================================================
+# Web tools (optional - install for web search/fetch)
+# ============================================================
+requests>=2.31.0               # HTTP client
+beautifulsoup4>=4.12.0         # HTML parsing for web_fetch
+
+# ============================================================
+# macOS Menu Bar App (optional)
+# ============================================================
+# rumps>=0.4.0                 # macOS menu bar app
+
+# ============================================================
+# Hivemind / Multi-AI (optional - install for multi-model tasks)
+# ============================================================
+# openai>=1.0.0                # ChatGPT + DeepSeek APIs
+# google-generativeai>=0.3.0   # Gemini API
+
+# ============================================================
+# Smart Home (optional)
+# ============================================================
+# No extra deps - uses requests (already listed above)
+# Home Assistant: set HOMEASSISTANT_URL and HOMEASSISTANT_TOKEN
+
+# ============================================================
+# Dev / Testing
+# ============================================================
+# pytest>=7.0.0

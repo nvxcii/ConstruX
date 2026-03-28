@@ -238,10 +238,11 @@ class TemporalRecursion:
         if len(self.psi_history) < 2:
             return 0.0
 
-        recent_window = min(10, len(self.psi_history))
+        n = len(self.psi_history)
+        start = max(1, n - 10)
         recent_changes = [
-            abs(self.psi_history[i] - self.psi_history[i-1])
-            for i in range(-recent_window, 0)
+            abs(self.psi_history[i] - self.psi_history[i - 1])
+            for i in range(start, n)
         ]
 
         return sum(recent_changes) / len(recent_changes) if recent_changes else 0.0

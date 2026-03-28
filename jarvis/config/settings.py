@@ -4,14 +4,14 @@ Jarvis Settings - Extends the existing ConfigManager with Jarvis-specific config
 
 import json
 import os
+import sys
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-# Import the existing config system
-sys_path = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import sys
-sys.path.insert(0, sys_path)
-from multi_ai_framework.config.config_manager import ConfigManager
+# Ensure project root is on the path (for multi_ai_framework import when needed)
+_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+if _root not in sys.path:
+    sys.path.insert(0, _root)
 
 
 DEFAULT_JARVIS_CONFIG = {
@@ -59,9 +59,14 @@ class JarvisSettings:
         self.config_path = config_path or self._default_path()
         self.config: Dict[str, Any] = {}
         self._load()
+        self._api_keys = None  # Lazy-loaded to avoid importing multi_ai_framework at startup
 
-        # Reuse ConfigManager for API keys
-        self.api_keys = ConfigManager()
+    @property
+    def api_keys(self):
+        if self._api_keys is None:
+            from multi_ai_framework.config.config_manager import ConfigManager
+            self._api_keys = ConfigManager()
+        return self._api_keys
 
     def _default_path(self) -> str:
         config_dir = Path.home() / ".jarvis"

@@ -12,13 +12,33 @@ from jarvis.config.settings import JarvisSettings
 
 def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
     """Build the orchestrator with all enabled tools registered."""
+    # Initialize persistent memory and auto-tuner
+    from jarvis.memory.persistent_memory import PersistentMemory
+    from jarvis.memory.auto_tuner import AutoTuner
+    from jarvis.scheduler.task_scheduler import TaskScheduler
+
+    memory = PersistentMemory()
+    auto_tuner = AutoTuner(memory)
+    scheduler = TaskScheduler()
+
     orchestrator = Orchestrator(
         api_key=settings.anthropic_api_key,
         model=settings.model,
         max_tokens=settings.max_tokens,
+        memory=memory,
+        auto_tuner=auto_tuner,
+        scheduler=scheduler,
     )
 
     tools = []
+
+    # Memory tool (always enabled - persistent cross-session memory)
+    from jarvis.memory.memory_tool import MemoryTool
+    tools.append(MemoryTool(memory=memory))
+
+    # Scheduler tool (always enabled - deferred and recurring tasks)
+    from jarvis.scheduler.scheduler_tool import SchedulerTool
+    tools.append(SchedulerTool(scheduler=scheduler))
 
     # macOS tools
     if settings.get("tools", "macos_enabled", True):
@@ -133,10 +153,28 @@ def main():
             print(f"  - {name}")
         return
 
-    if args.voice:
-        run_voice_mode(orchestrator, settings)
-    else:
-        run_text_mode(orchestrator, settings.assistant_name)
+    # Start the background scheduler (executes deferred/recurring tasks)
+    def _scheduler_handler(action, arguments):
+        """Handle scheduled task execution via the orchestrator."""
+        if action == "notify":
+            msg = arguments.get("message", "Scheduled task triggered.")
+            print(f"\n[Scheduled] {msg}")
+            return msg
+        return orchestrator.registry.execute(action, **arguments)
+
+    if orchestrator.scheduler:
+        orchestrator.scheduler.start(_scheduler_handler)
+
+    try:
+        if args.voice:
+            run_voice_mode(orchestrator, settings)
+        else:
+            run_text_mode(orchestrator, settings.assistant_name)
+    finally:
+        if orchestrator.scheduler:
+            orchestrator.scheduler.stop()
+        if orchestrator.memory:
+            orchestrator.memory.close()
 
 
 if __name__ == "__main__":

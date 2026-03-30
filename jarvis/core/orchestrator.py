@@ -1,6 +1,7 @@
 """
 Jarvis Orchestrator - The Brain
 Uses Claude's tool_use API to reason about user requests and dispatch tools.
+Integrates persistent memory, auto-tuning, and scheduled tasks.
 """
 
 import sys
@@ -16,9 +17,14 @@ class Orchestrator:
     """Central orchestrator that connects voice/text input to Claude's
     tool_use API and routes tool calls to registered tools.
 
+    Now with:
+        - Persistent memory (injected into system prompt each call)
+        - Auto-tuning (logs tool usage, learns defaults)
+        - Scheduled tasks (background runner for deferred actions)
+
     Flow:
         user input -> conversation history -> Claude API (with tools)
-        -> if tool_use: execute tools, feed results back to Claude
+        -> if tool_use: execute tools, log usage, feed results back
         -> repeat until Claude returns a final text response
         -> return text to user (and optionally speak it)
     """
@@ -30,6 +36,9 @@ class Orchestrator:
         max_tokens: int = 4096,
         system_prompt: Optional[str] = None,
         on_tool_call: Optional[Callable] = None,
+        memory=None,
+        auto_tuner=None,
+        scheduler=None,
     ):
         self.client = Anthropic(api_key=api_key)
         self.model = model
@@ -37,6 +46,9 @@ class Orchestrator:
         self.registry = ToolRegistry()
         self.conversation = ConversationManager(system_prompt=system_prompt)
         self.on_tool_call = on_tool_call  # Optional callback for UI updates
+        self.memory = memory          # PersistentMemory instance
+        self.auto_tuner = auto_tuner  # AutoTuner instance
+        self.scheduler = scheduler    # TaskScheduler instance
 
     def register_tools(self, tools: list) -> None:
         """Register tools with the orchestrator."""
@@ -83,11 +95,32 @@ class Orchestrator:
             self.conversation.add_tool_results(tool_results)
 
     def _call_claude(self):
-        """Make a Claude API call with the current conversation and tools."""
+        """Make a Claude API call with the current conversation and tools.
+
+        Injects persistent memory and auto-tuning context into the
+        system prompt so Claude has cross-session awareness.
+        """
+        # Build dynamic system prompt with memory + tuning context
+        system = self.conversation.system_prompt
+        extra_context = []
+
+        if self.memory:
+            mem_ctx = self.memory.get_context_for_prompt()
+            if mem_ctx:
+                extra_context.append(mem_ctx)
+
+        if self.auto_tuner:
+            tune_ctx = self.auto_tuner.get_tuning_context()
+            if tune_ctx:
+                extra_context.append(tune_ctx)
+
+        if extra_context:
+            system = system + "\n\n--- Persistent Context ---\n" + "\n\n".join(extra_context)
+
         kwargs: Dict[str, Any] = {
             "model": self.model,
             "max_tokens": self.max_tokens,
-            "system": self.conversation.system_prompt,
+            "system": system,
             "messages": self.conversation.get_messages(),
         }
 
@@ -122,6 +155,15 @@ class Orchestrator:
 
             # Execute the tool
             result = self.registry.execute(tool_name, **tool_input)
+
+            # Log tool usage for auto-tuning
+            if self.auto_tuner:
+                success = not str(result).startswith("Error")
+                self.auto_tuner.log_usage(
+                    tool_name, tool_input,
+                    result_summary=str(result)[:200],
+                    success=success,
+                )
 
             results.append({
                 "type": "tool_result",

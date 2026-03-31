@@ -17,9 +17,18 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
     from jarvis.memory.auto_tuner import AutoTuner
     from jarvis.scheduler.task_scheduler import TaskScheduler
 
+    # Initialize DRN framework
+    from jarvis.drn.emergence_detector import EmergenceDetector
+    from jarvis.drn.signature_library import SignatureLibrary
+    from jarvis.drn.emergence_report import EmergenceReportGenerator
+
     memory = PersistentMemory()
     auto_tuner = AutoTuner(memory)
     scheduler = TaskScheduler()
+
+    drn_detector = EmergenceDetector()
+    drn_library = SignatureLibrary()
+    drn_reporter = EmergenceReportGenerator()
 
     orchestrator = Orchestrator(
         api_key=settings.anthropic_api_key,
@@ -28,6 +37,9 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
         memory=memory,
         auto_tuner=auto_tuner,
         scheduler=scheduler,
+        drn_detector=drn_detector,
+        drn_library=drn_library,
+        drn_reporter=drn_reporter,
     )
 
     tools = []
@@ -39,6 +51,10 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
     # Scheduler tool (always enabled - deferred and recurring tasks)
     from jarvis.scheduler.scheduler_tool import SchedulerTool
     tools.append(SchedulerTool(scheduler=scheduler))
+
+    # DRN tool (always enabled - query/manage D3 emergence events)
+    from jarvis.drn.drn_tool import DRNTool
+    tools.append(DRNTool(library=drn_library))
 
     # macOS tools
     if settings.get("tools", "macos_enabled", True):
@@ -175,6 +191,8 @@ def main():
             orchestrator.scheduler.stop()
         if orchestrator.memory:
             orchestrator.memory.close()
+        if orchestrator.drn_library:
+            orchestrator.drn_library.close()
 
 
 if __name__ == "__main__":

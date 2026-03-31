@@ -39,6 +39,9 @@ class Orchestrator:
         memory=None,
         auto_tuner=None,
         scheduler=None,
+        drn_detector=None,
+        drn_library=None,
+        drn_reporter=None,
     ):
         self.client = Anthropic(api_key=api_key)
         self.model = model
@@ -49,6 +52,10 @@ class Orchestrator:
         self.memory = memory          # PersistentMemory instance
         self.auto_tuner = auto_tuner  # AutoTuner instance
         self.scheduler = scheduler    # TaskScheduler instance
+        self.drn_detector = drn_detector    # EmergenceDetector instance
+        self.drn_library = drn_library      # SignatureLibrary instance
+        self.drn_reporter = drn_reporter    # EmergenceReportGenerator instance
+        self._last_d3_event_id = None       # Track last D3 for confirmation
 
     def register_tools(self, tools: list) -> None:
         """Register tools with the orchestrator."""
@@ -87,7 +94,14 @@ class Orchestrator:
                     block.text for block in response.content
                     if block.type == "text"
                 ]
-                return " ".join(text_parts) if text_parts else ""
+                final_text = " ".join(text_parts) if text_parts else ""
+
+                # DRN: Post-response D3 emergence analysis
+                d3_flag = self._analyze_for_d3(user_input, final_text)
+                if d3_flag:
+                    final_text = final_text + "\n\n" + d3_flag
+
+                return final_text
 
             # Execute tool calls and collect results
             self.conversation.add_assistant(response.content)
@@ -181,6 +195,41 @@ class Orchestrator:
             return response in ("y", "yes")
         except (EOFError, KeyboardInterrupt):
             return False
+
+    def _analyze_for_d3(self, user_input: str, response: str) -> str:
+        """Run DRN emergence detection on a final response.
+
+        Returns a D3 flag string to append to the response, or empty string.
+        Hybrid mode: auto-detects and flags, archives automatically,
+        but marks as unconfirmed until user confirms.
+        """
+        if not self.drn_detector:
+            return ""
+
+        try:
+            analysis = self.drn_detector.analyze(user_input, response)
+
+            if not analysis.is_d3:
+                return ""
+
+            # Archive the event (unconfirmed)
+            event_id = ""
+            if self.drn_library:
+                event_id = self.drn_library.archive_event(analysis)
+                self._last_d3_event_id = event_id
+
+            # Generate the quick flag
+            if self.drn_reporter:
+                flag = self.drn_reporter.quick_flag(analysis)
+                if event_id:
+                    flag += f" | Event: {event_id} | Say 'confirm d3' to validate"
+                return flag
+
+            return ""
+
+        except Exception as e:
+            # DRN should never break the main response flow
+            return ""
 
     def reset_conversation(self) -> None:
         """Clear conversation history for a fresh start."""

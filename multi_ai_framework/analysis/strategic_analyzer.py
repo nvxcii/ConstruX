@@ -3,7 +3,7 @@ Strategic Analysis Coordinator
 Integrates leverage calculation, settlement modeling, and AI analysis
 """
 
-from typing import Dict, Any
+from typing import Dict, Any, List
 from ..core.ai_coordinator import AIJusticeLeague
 from .leverage_calculator import LeverageCalculator
 from .settlement_modeler import SettlementModeler

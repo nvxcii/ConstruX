@@ -1,0 +1,36 @@
+{
+  "assistant": {
+    "name": "Jarvis",
+    "model": "claude-sonnet-4-5-20250929",
+    "max_tokens": 4096,
+    "wake_word": "hey jarvis"
+  },
+  "voice": {
+    "enabled": false,
+    "stt_engine": "whisper_api",
+    "tts_engine": "elevenlabs",
+    "elevenlabs_voice_id": "21m00Tcm4TlvDq8ikWAM",
+    "pyttsx3_rate": 175,
+    "pyttsx3_volume": 0.9,
+    "wake_word_enabled": false,
+    "push_to_talk_key": "ctrl+space",
+    "toggle_key": "ctrl+shift+v"
+  },
+  "tools": {
+    "macos_enabled": true,
+    "web_enabled": true,
+    "code_enabled": true,
+    "smart_home_enabled": false,
+    "hivemind_enabled": false
+  },
+  "smart_home": {
+    "backend": "homeassistant",
+    "homeassistant_url": "",
+    "homeassistant_token": ""
+  },
+  "web": {
+    "search_engine": "brave",
+    "brave_api_key": "",
+    "tavily_api_key": ""
+  }
+}

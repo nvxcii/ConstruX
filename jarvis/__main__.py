@@ -10,7 +10,8 @@ from jarvis.core.orchestrator import Orchestrator
 from jarvis.config.settings import JarvisSettings
 
 
-def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
+def create_orchestrator(settings: JarvisSettings, backend: str = "claude",
+                        ollama_model: str = None) -> Orchestrator:
     """Build the orchestrator with all enabled tools registered."""
     # Initialize persistent memory and auto-tuner
     from jarvis.memory.persistent_memory import PersistentMemory
@@ -30,9 +31,17 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
     drn_library = SignatureLibrary()
     drn_reporter = EmergenceReportGenerator()
 
+    # Determine model based on backend
+    if backend == "ollama":
+        model = ollama_model or settings.get("assistant", "ollama_model", "llama3.1")
+        api_key = None
+    else:
+        model = settings.model
+        api_key = settings.anthropic_api_key
+
     orchestrator = Orchestrator(
-        api_key=settings.anthropic_api_key,
-        model=settings.model,
+        api_key=api_key,
+        model=model,
         max_tokens=settings.max_tokens,
         memory=memory,
         auto_tuner=auto_tuner,
@@ -40,6 +49,8 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
         drn_detector=drn_detector,
         drn_library=drn_library,
         drn_reporter=drn_reporter,
+        backend=backend,
+        ollama_base_url=settings.get("assistant", "ollama_url", "http://localhost:11434"),
     )
 
     tools = []
@@ -103,8 +114,10 @@ def create_orchestrator(settings: JarvisSettings) -> Orchestrator:
 
 def run_text_mode(orchestrator: Orchestrator, name: str) -> None:
     """Run Jarvis in interactive text mode (REPL)."""
+    backend_label = f"Local ({orchestrator.model})" if orchestrator.backend == "ollama" else f"Claude ({orchestrator.model})"
     print(f"\n{'='*60}")
     print(f"  {name} - AI Assistant")
+    print(f"  Backend: {backend_label}")
     print(f"  Type 'quit' to exit | 'reset' to clear conversation")
     print(f"  Tools loaded: {orchestrator.registry.tool_count}")
     print(f"{'='*60}\n")
@@ -154,6 +167,10 @@ def main():
     parser.add_argument("--voice", action="store_true", help="Start in voice mode")
     parser.add_argument("--config", default=None, help="Path to config file")
     parser.add_argument("--model", default=None, help="Override Claude model")
+    parser.add_argument("--local", action="store_true",
+                        help="Use local Ollama LLM instead of Claude API (no API key needed)")
+    parser.add_argument("--ollama-model", default=None,
+                        help="Ollama model to use (default: llama3.1). Examples: mistral, gemma2, phi3")
     parser.add_argument("--list-tools", action="store_true", help="List available tools")
     args = parser.parse_args()
 
@@ -161,7 +178,33 @@ def main():
     if args.model:
         settings.set("assistant", "model", args.model)
 
-    orchestrator = create_orchestrator(settings)
+    # Determine backend
+    backend = "ollama" if args.local else "claude"
+
+    # Check Ollama availability when using local mode
+    if backend == "ollama":
+        from jarvis.core.ollama_client import OllamaClient
+        test_client = OllamaClient(
+            model=args.ollama_model or "llama3.1",
+            base_url=settings.get("assistant", "ollama_url", "http://localhost:11434"),
+        )
+        if not test_client.is_available():
+            print("\nError: Ollama is not running.")
+            print("To use local mode, install and start Ollama first:")
+            print("  1. Install: brew install ollama")
+            print("  2. Start:   ollama serve")
+            print("  3. Pull a model: ollama pull llama3.1")
+            print("\nOr run without --local to use Claude API instead.")
+            sys.exit(1)
+
+        models = test_client.list_models()
+        target_model = args.ollama_model or "llama3.1"
+        if models and not any(target_model in m for m in models):
+            print(f"\nWarning: Model '{target_model}' not found locally.")
+            print(f"Available models: {', '.join(models)}")
+            print(f"Pull it with: ollama pull {target_model}\n")
+
+    orchestrator = create_orchestrator(settings, backend=backend, ollama_model=args.ollama_model)
 
     if args.list_tools:
         print("Available tools:")

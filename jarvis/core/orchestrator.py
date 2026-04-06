@@ -7,8 +7,6 @@ Integrates persistent memory, auto-tuning, and scheduled tasks.
 import sys
 from typing import Any, Callable, Dict, List, Optional
 
-from anthropic import Anthropic
-
 from jarvis.core.conversation import ConversationManager
 from jarvis.core.tool_registry import ToolRegistry
 
@@ -17,15 +15,19 @@ class Orchestrator:
     """Central orchestrator that connects voice/text input to Claude's
     tool_use API and routes tool calls to registered tools.
 
+    Supports two backends:
+        - 'claude': Anthropic API (requires API key)
+        - 'ollama': Local Ollama server (no API key needed)
+
     Now with:
         - Persistent memory (injected into system prompt each call)
         - Auto-tuning (logs tool usage, learns defaults)
         - Scheduled tasks (background runner for deferred actions)
 
     Flow:
-        user input -> conversation history -> Claude API (with tools)
+        user input -> conversation history -> LLM API (with tools)
         -> if tool_use: execute tools, log usage, feed results back
-        -> repeat until Claude returns a final text response
+        -> repeat until LLM returns a final text response
         -> return text to user (and optionally speak it)
     """
 
@@ -42,8 +44,16 @@ class Orchestrator:
         drn_detector=None,
         drn_library=None,
         drn_reporter=None,
+        backend: str = "claude",
+        ollama_base_url: str = "http://localhost:11434",
     ):
-        self.client = Anthropic(api_key=api_key)
+        self.backend = backend
+        if backend == "ollama":
+            from jarvis.core.ollama_client import OllamaClient
+            self.client = OllamaClient(model=model, base_url=ollama_base_url)
+        else:
+            from anthropic import Anthropic
+            self.client = Anthropic(api_key=api_key)
         self.model = model
         self.max_tokens = max_tokens
         self.registry = ToolRegistry()

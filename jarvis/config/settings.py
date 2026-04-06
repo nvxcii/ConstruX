@@ -20,6 +20,8 @@ DEFAULT_JARVIS_CONFIG = {
         "model": "claude-sonnet-4-5-20250929",
         "max_tokens": 4096,
         "wake_word": "hey jarvis",
+        "ollama_model": "llama3.1",
+        "ollama_url": "http://localhost:11434",
     },
     "voice": {
         "enabled": False,

@@ -456,6 +456,104 @@
 
     .transmit-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
+    /* ── File attachments ────────────────────────────────────────────────── */
+    #attachments-bar {
+      background: var(--void);
+      border-top: 1px solid var(--border);
+      padding: 10px 32px 8px;
+      flex-shrink: 0;
+    }
+
+    .attach-strip-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: stretch;
+      background: var(--stone);
+      border: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      overflow: hidden;
+    }
+
+    .chip-type {
+      padding: 5px 8px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+    }
+
+    .chip-type.pdf  { background: rgba(200,80,64,0.15);  color: var(--invariant); }
+    .chip-type.doc  { background: rgba(74,158,255,0.15); color: var(--signal); }
+    .chip-type.txt  { background: rgba(45,158,107,0.15); color: var(--fractal); }
+    .chip-type.img  { background: rgba(124,92,191,0.15); color: var(--recursive); }
+    .chip-type.csv  { background: rgba(240,165,0,0.12);  color: var(--gold); }
+
+    .chip-name {
+      padding: 5px 8px;
+      color: var(--white);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chip-size { color: var(--muted); padding: 5px 0; }
+
+    .chip-remove {
+      background: none;
+      border: none;
+      border-left: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 5px 9px;
+      font-size: 13px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .chip-remove:hover { color: var(--invariant); background: rgba(200,80,64,0.1); }
+
+    .chip-uploading { color: var(--signal); animation: blink 1s ease-in-out infinite; }
+
+    /* Attach link row */
+    .attach-row {
+      padding: 0 32px 12px;
+      background: var(--void);
+      flex-shrink: 0;
+    }
+
+    .attach-btn {
+      background: none;
+      border: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .attach-btn:hover { color: var(--gold); }
+    .attach-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
     .hidden { display: none !important; }
 
     @media (max-width: 600px) {
@@ -464,6 +562,8 @@
       #messages  { padding: 16px; }
       .input-area { padding: 12px 16px; }
       #progress-panel { padding: 12px 16px; }
+      #attachments-bar { padding: 10px 16px 8px; }
+      .attach-row { padding: 0 16px 10px; }
     }
   </style>
 </head>
@@ -504,6 +604,12 @@
     </div>
   </div>
 
+  <!-- Attached files strip (shown when files are attached) -->
+  <div id="attachments-bar" class="hidden">
+    <div class="attach-strip-label">Attached Files</div>
+    <div class="chips-row" id="chips-row"></div>
+  </div>
+
   <!-- Input -->
   <div class="input-area">
     <form id="form" class="input-form">
@@ -516,6 +622,21 @@
       />
       <button id="send-btn" type="submit" class="transmit-btn">Transmit</button>
     </form>
+  </div>
+
+  <!-- Attach link + hidden file input -->
+  <div class="attach-row">
+    <input
+      type="file"
+      id="file-input"
+      multiple
+      accept=".pdf,.txt,.md,.csv,.rtf,.docx,.doc,.png,.jpg,.jpeg,.gif,.webp"
+      style="display:none"
+    />
+    <button type="button" id="attach-btn" class="attach-btn"
+            onclick="document.getElementById('file-input').click()">
+      + Attach documents &amp; media
+    </button>
   </div>
 
 <script>
@@ -744,6 +865,102 @@ form.addEventListener('submit', e => {
   e.preventDefault();
   const text = inputEl.value.trim();
   if (text && !inputEl.disabled) send(text);
+});
+
+// ── File attachments ──────────────────────────────────────────────────────────
+const attachmentsBar = document.getElementById('attachments-bar');
+const chipsRow       = document.getElementById('chips-row');
+const fileInput      = document.getElementById('file-input');
+const attachBtn      = document.getElementById('attach-btn');
+
+// server-side index mirrors session['uploads']
+let uploadMeta = [];  // [{name, size, is_image, serverIndex}]
+
+function chipTypeClass(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  if (ext === 'pdf')              return 'pdf';
+  if (['doc','docx'].includes(ext)) return 'doc';
+  if (['png','jpg','jpeg','gif','webp'].includes(ext)) return 'img';
+  if (ext === 'csv')              return 'csv';
+  return 'txt';
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024)        return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderChips() {
+  chipsRow.innerHTML = '';
+  if (uploadMeta.length === 0) {
+    attachmentsBar.classList.add('hidden');
+    return;
+  }
+  attachmentsBar.classList.remove('hidden');
+
+  uploadMeta.forEach((f, localIdx) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `
+      <span class="chip-type ${chipTypeClass(f.name)}">${chipTypeClass(f.name).toUpperCase()}</span>
+      <span class="chip-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="chip-size">&nbsp;· ${fmtSize(f.size)}</span>
+      <button class="chip-remove" title="Remove" onclick="removeChip(${localIdx})">×</button>
+    `;
+    chipsRow.appendChild(chip);
+  });
+}
+
+async function removeChip(localIdx) {
+  const entry = uploadMeta[localIdx];
+  if (!entry) return;
+
+  try {
+    await fetch('/api/remove_upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index: localIdx }),
+    });
+  } catch { /* best-effort */ }
+
+  uploadMeta.splice(localIdx, 1);
+  renderChips();
+}
+
+fileInput.addEventListener('change', async () => {
+  const files = Array.from(fileInput.files);
+  fileInput.value = '';
+
+  for (const file of files) {
+    // Optimistically add a placeholder chip
+    const placeholder = { name: file.name, size: file.size, is_image: false, uploading: true };
+    uploadMeta.push(placeholder);
+    renderChips();
+
+    const fd = new FormData();
+    fd.append('file', file);
+
+    try {
+      const res  = await fetch('/api/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.error) {
+        uploadMeta.pop();
+        addMessage('assistant', `Could not attach "${file.name}": ${data.error}`);
+      } else {
+        placeholder.name     = data.name;
+        placeholder.size     = data.size;
+        placeholder.is_image = data.is_image;
+        placeholder.uploading = false;
+      }
+    } catch {
+      uploadMeta.pop();
+      addMessage('assistant', `Upload failed for "${file.name}" — check your connection.`);
+    }
+
+    renderChips();
+  }
 });
 
 // ── Boot ──────────────────────────────────────────────────────────────────────

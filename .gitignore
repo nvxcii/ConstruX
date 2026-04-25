@@ -1,3 +1,6 @@
+# Uploaded files
+uploads/
+
 # Runtime artifacts
 *.db
 *.sqlite

@@ -10,14 +10,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 # Install multi-AI framework dependencies
 pip install -r multi_ai_framework/requirements.txt
 
-# Install voice mode dependencies
+# Install web interface + voice mode dependencies
 pip install -r requirements.txt
 ```
 
 ### Running
 
 ```bash
-# Run the multi-AI framework with an example mission (from repo root)
+# Run the chat web interface (http://localhost:5000)
+python app.py
+
+# Run the multi-AI framework directly via CLI (from repo root)
 python -m multi_ai_framework.example_usage
 
 # Run voice mode (Linux/macOS)
@@ -49,7 +52,15 @@ export DEEPSEEK_API_KEY=...
 
 ## Architecture
 
-ConstruX has two independent components: the **Multi-AI Framework** and the **Voice Mode** script. There is also a static marketing page (`index.html`) for a product called FOPE.
+ConstruX has three independent components: the **Web Interface**, the **Multi-AI Framework**, and the **Voice Mode** script. There is also a static marketing page (`index.html`) for a product called FOPE.
+
+---
+
+### Web Interface (`app.py` + `templates/chat.html`)
+
+A Flask chat interface for running live missions. The conversation collects four fields (situation, employer, client, violations), then runs all three framework phases in a background thread. The frontend polls `/api/mission/<id>` every 2 seconds for phase progress and renders a results card (leverage score, settlement range, execution package) when complete.
+
+Routes: `GET /` serves the UI · `POST /api/start` begins a session · `POST /api/message` handles each chat turn · `GET /api/mission/<id>` returns mission state.
 
 ---
 

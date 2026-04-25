@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ### Running
 
 ```bash
-# Run the chat web interface (http://localhost:5000)
+# Run the chat web interface (http://localhost:8080)
 python app.py
 
 # Run the multi-AI framework directly via CLI (from repo root)

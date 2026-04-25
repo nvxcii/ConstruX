@@ -17,8 +17,8 @@ pip install -r requirements.txt
 ### Running
 
 ```bash
-# Run the multi-AI framework with an example mission
-cd multi_ai_framework && python example_usage.py
+# Run the multi-AI framework with an example mission (from repo root)
+python -m multi_ai_framework.example_usage
 
 # Run voice mode (Linux/macOS)
 bash start_voice_mode.sh

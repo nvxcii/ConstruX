@@ -18,7 +18,7 @@ pip install -r requirements.txt
 
 ```bash
 # Run the multi-AI framework with an example mission
-python multi_ai_framework/example_usage.py
+cd multi_ai_framework && python example_usage.py
 
 # Run voice mode (Linux/macOS)
 bash start_voice_mode.sh
@@ -32,16 +32,16 @@ bash install_voice_mode.sh
 
 ### API Keys
 
-Copy `multi_ai_framework/config/.env.example` to `multi_ai_framework/config/.env` and populate:
+Set API keys as environment variables before running:
 
-```
-ANTHROPIC_API_KEY=...
-GOOGLE_API_KEY=...
-OPENAI_API_KEY=...
-DEEPSEEK_API_KEY=...
+```bash
+export ANTHROPIC_API_KEY=...
+export GOOGLE_API_KEY=...
+export OPENAI_API_KEY=...
+export DEEPSEEK_API_KEY=...
 ```
 
-`ConfigManager` loads from environment variables first, then falls back to the `.env` file. It will never write API keys back to disk.
+`ConfigManager` reads non-key settings from `~/.multi_ai_framework/config.json` (created automatically), then **overrides** with any matching environment variables. API keys are never persisted to disk by `save()` — environment variables are the only supported way to supply them.
 
 > There is no test suite and no linter configured in this repository.
 

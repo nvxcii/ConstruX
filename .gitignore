@@ -1,0 +1,19 @@
+# Runtime artifacts
+*.db
+*.sqlite
+*.sqlite3
+
+# Output
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+env/
+
+# Secrets
+.env
+*.key

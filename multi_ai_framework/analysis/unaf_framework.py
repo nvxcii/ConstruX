@@ -146,7 +146,10 @@ class UNAFAnalysis:
 
     # Layer 5 – Evidence Weighting & Fallacy Check (P5)
     weighted_evidence: list[Layer5EvidenceItem] = field(default_factory=list)
-    fallacies_identified: dict[str, str] = field(default_factory=dict)  # name → mitigation
+    # Keys are every bias/fallacy the analyst *reviewed* (present or absent).
+    # Value is the mitigation note, or "" / "N/A" when the bias was not found.
+    # The self-audit checks len(keys) >= 5, not the presence of mitigations.
+    fallacies_identified: dict[str, str] = field(default_factory=dict)
     layer5_verified: bool = False
 
     # Layer 6 – Decision & Response (P7 + P6)
@@ -191,41 +194,44 @@ class UNAFFramework:
         checks["L0: no interpretation in evidence"] = analysis.layer0_verified
         checks["L1: 3+ assumptions listed"] = len(analysis.assumptions) >= 3
         checks["L1: each assumption has counter-evidence"] = all(
-            bool(a.counter_evidence.strip()) for a in analysis.assumptions
+            bool((a.counter_evidence or "").strip()) for a in analysis.assumptions
         )
         checks["L2: issue reframed as interests"] = (
-            "vs." in analysis.reframed_issue or "versus" in analysis.reframed_issue.lower()
+            "vs." in (analysis.reframed_issue or "")
+            or "versus" in (analysis.reframed_issue or "").lower()
         )
         checks["L3: pattern + inconsistency + gap identified"] = all([
-            bool(analysis.repeating_pattern.strip()) or len(analysis.sequence) >= 2,
-            bool(analysis.inconsistency.strip()),
-            bool(analysis.gap.strip()),
+            bool((analysis.repeating_pattern or "").strip()) or len(analysis.sequence) >= 2,
+            bool((analysis.inconsistency or "").strip()),
+            bool((analysis.gap or "").strip()),
         ])
 
         # 6–8: Layer 4
         checks["L4: 1+ alternative interpretation"] = len(analysis.interpretations) >= 1
-        checks["L4: skeptic's challenge written"] = bool(analysis.skeptics_challenge.strip())
+        checks["L4: skeptic's challenge written"] = bool((analysis.skeptics_challenge or "").strip())
         checks["L4: absolute language checked/replaced"] = analysis.layer4_verified
 
         # 9–11: Layer 5
         checks["L5: key evidence weighted"] = len(analysis.weighted_evidence) >= 1
+        # The checklist requires 5+ biases *checked* (not necessarily present/mitigated).
+        # fallacies_identified keys represent every bias the analyst reviewed, whether
+        # present or not (value may be "N/A" or empty string for absent biases).
         checks["L5: 5+ biases/fallacies checked"] = len(analysis.fallacies_identified) >= 5
         checks["L5: conclusion does not exceed evidence"] = analysis.layer5_verified
 
         # 12–15: Layer 6
-        checks["L6: uncertainty stated"] = bool(analysis.uncertainty_statement.strip())
-        checks["L6: resolving evidence identified"] = bool(analysis.evidence_to_resolve.strip())
+        checks["L6: uncertainty stated"] = bool((analysis.uncertainty_statement or "").strip())
+        checks["L6: resolving evidence identified"] = bool((analysis.evidence_to_resolve or "").strip())
         checks["L6: action is specific with deadline"] = (
-            bool(analysis.specific_action.strip()) and bool(analysis.deadline.strip())
+            bool((analysis.specific_action or "").strip()) and bool((analysis.deadline or "").strip())
         )
-        checks["L6: fallback position exists"] = bool(analysis.fallback_position.strip())
+        checks["L6: fallback position exists"] = bool((analysis.fallback_position or "").strip())
 
         # 16–18: Layer 7
-        word_count = len(analysis.executive_brief.split())
-        checks["L7: narrative summary (plain language)"] = bool(analysis.narrative_summary.strip())
-        checks["L7: executive brief ≤75 words"] = (
-            bool(analysis.executive_brief.strip()) and word_count <= 75
-        )
+        brief = analysis.executive_brief or ""
+        word_count = len(brief.split())
+        checks["L7: narrative summary (plain language)"] = bool((analysis.narrative_summary or "").strip())
+        checks["L7: executive brief ≤75 words"] = bool(brief.strip()) and word_count <= 75
         checks["L7: action sheet with contingencies"] = (
             len(analysis.action_sheet) >= 1
             and all("if_blocked" in step for step in analysis.action_sheet)
@@ -411,7 +417,7 @@ class UNAFFramework:
             if e.weight == EvidenceWeight.HIGH
         )
         total_evidence = len(analysis.evidence)
-        has_fallback = bool(analysis.fallback_position.strip())
+        has_fallback = bool((analysis.fallback_position or "").strip())
         confidence_ok = analysis.confidence in (ConfidenceLevel.HIGH, ConfidenceLevel.MEDIUM)
 
         if high_weight_count >= 2 and confidence_ok and has_fallback:

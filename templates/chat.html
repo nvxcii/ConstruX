@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Λ Mission Interface — Multi-AI Orchestration</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --obsidian: #080a0e;
+      --void:     #0d1017;
+      --stone:    #141820;
+      --slate:    #1e2530;
+      --border:   #2a3340;
+      --gold:     #c9a227;
+      --gold-light:#e8c84a;
+      --gold-dim: #7a601a;
+      --white:    #f0ede6;
+      --muted:    #8a8070;
+      --signal:   #4a9eff;
+      --recursive:#7c5cbf;
+      --fractal:  #2d9e6b;
+      --invariant:#c85040;
+      --enforcement:#e05080;
+      --remedy:   #40b0a0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { height: 100%; }
+
+    body {
+      height: 100%;
+      height: 100dvh;
+      background: var(--obsidian);
+      color: var(--white);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.75;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Noise texture */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .masthead {
+      position: relative;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--void);
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .masthead::before {
+      content: '';
+      position: absolute;
+      top: -120px; left: 50%; transform: translateX(-50%);
+      width: 500px; height: 300px;
+      background: radial-gradient(ellipse, rgba(201,162,39,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .lambda-sigil {
+      font-family: 'Cinzel', serif;
+      font-size: 38px;
+      font-weight: 900;
+      color: var(--gold);
+      letter-spacing: -1px;
+      text-shadow: 0 0 30px rgba(201,162,39,0.3);
+      animation: breathe 4s ease-in-out infinite;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+
+    @keyframes breathe {
+      0%, 100% { text-shadow: 0 0 30px rgba(201,162,39,0.3); }
+      50%       { text-shadow: 0 0 70px rgba(201,162,39,0.6), 0 0 100px rgba(201,162,39,0.2); }
+    }
+
+    .masthead-text h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+
+    .masthead-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+
+    .version-badge {
+      margin-left: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 5px 14px;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    #status-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 5px 14px;
+      border: 1px solid rgba(74,158,255,0.25);
+      color: var(--signal);
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .pulse-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--signal);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* ── Messages ────────────────────────────────────────────────────────── */
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-track { background: transparent; }
+    #messages::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .msg-row { display: flex; flex-direction: column; }
+    .msg-row.user  { align-items: flex-end; }
+    .msg-row.assistant { align-items: flex-start; }
+
+    .msg-sender {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      margin-bottom: 5px;
+    }
+
+    .msg-bubble {
+      max-width: 600px;
+      padding: 16px 22px;
+      font-family: 'Crimson Pro', serif;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--white);
+    }
+
+    .msg-bubble.user {
+      background: var(--slate);
+      border: 1px solid var(--border);
+      border-right: 3px solid var(--gold-dim);
+    }
+
+    .msg-bubble.assistant {
+      background: var(--stone);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+    }
+
+    .msg-bubble strong { color: var(--gold-light); font-weight: 600; }
+    .msg-bubble em     { color: var(--muted); }
+    .msg-bubble code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: rgba(201,162,39,0.08);
+      border: 1px solid rgba(201,162,39,0.2);
+      padding: 1px 6px;
+      color: var(--gold-light);
+    }
+
+    /* ── Results Card ────────────────────────────────────────────────────── */
+    .results-card {
+      max-width: 600px;
+      background: var(--stone);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--fractal);
+    }
+
+    .results-top {
+      padding: 16px 22px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-top .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--fractal);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .results-top h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .results-section {
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .results-section:last-child { border-bottom: none; }
+
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    /* Leverage */
+    .leverage-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 6px;
+    }
+
+    .leverage-track {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+    }
+
+    .leverage-fill { height: 100%; transition: width 1s ease; }
+
+    .leverage-score {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .leverage-risk {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    /* Settlement */
+    .settlement-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2px;
+      margin-bottom: 12px;
+    }
+
+    .s-cell {
+      background: var(--void);
+      border: 1px solid var(--border);
+      padding: 12px 8px;
+      text-align: center;
+    }
+
+    .s-cell.mid { border-color: var(--gold-dim); }
+
+    .s-cell-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .s-cell-value {
+      font-family: 'Cinzel', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+    }
+
+    .settlement-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    .settlement-meta strong { color: var(--white); font-weight: 400; }
+
+    /* Execution */
+    .exec-row {
+      font-family: 'Crimson Pro', serif;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .exec-row strong { color: var(--white); font-weight: 400; }
+
+    /* ── Progress Panel ──────────────────────────────────────────────────── */
+    #progress-panel {
+      background: var(--void);
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      flex-shrink: 0;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-header .section-label { margin-bottom: 0; }
+
+    #phase-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--signal);
+      text-transform: uppercase;
+    }
+
+    .phase-track {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3px;
+      margin-bottom: 6px;
+    }
+
+    .phase-seg {
+      height: 2px;
+      background: var(--border);
+      transition: background 0.5s ease;
+    }
+
+    .phase-seg.active {
+      background: var(--signal);
+      animation: seg-pulse 1.2s ease-in-out infinite;
+    }
+
+    .phase-seg.done { background: var(--fractal); }
+
+    @keyframes seg-pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    .phase-names {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3px;
+    }
+
+    .phase-names span {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: var(--muted);
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ── Input ───────────────────────────────────────────────────────────── */
+    .input-area {
+      background: var(--void);
+      border-top: 1px solid var(--border);
+      padding: 14px 32px;
+      flex-shrink: 0;
+    }
+
+    .input-form {
+      display: flex;
+      gap: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .input-field {
+      flex: 1;
+      background: var(--stone);
+      border: 1px solid var(--border);
+      border-bottom: 1px solid var(--gold-dim);
+      color: var(--white);
+      font-family: 'Crimson Pro', serif;
+      font-size: 15px;
+      padding: 10px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-field::placeholder {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .input-field:focus { border-color: var(--gold-dim); border-bottom-color: var(--gold); }
+    .input-field:disabled { opacity: 0.4; }
+
+    .transmit-btn {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    .transmit-btn:hover:not(:disabled) {
+      background: rgba(201,162,39,0.07);
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .transmit-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    /* ── File attachments ────────────────────────────────────────────────── */
+    #attachments-bar {
+      background: var(--void);
+      border-top: 1px solid var(--border);
+      padding: 10px 32px 8px;
+      flex-shrink: 0;
+    }
+
+    .attach-strip-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: stretch;
+      background: var(--stone);
+      border: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      overflow: hidden;
+    }
+
+    .chip-type {
+      padding: 5px 8px;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+    }
+
+    .chip-type.pdf  { background: rgba(200,80,64,0.15);  color: var(--invariant); }
+    .chip-type.doc  { background: rgba(74,158,255,0.15); color: var(--signal); }
+    .chip-type.txt  { background: rgba(45,158,107,0.15); color: var(--fractal); }
+    .chip-type.img  { background: rgba(124,92,191,0.15); color: var(--recursive); }
+    .chip-type.csv  { background: rgba(240,165,0,0.12);  color: var(--gold); }
+
+    .chip-name {
+      padding: 5px 8px;
+      color: var(--white);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chip-size { color: var(--muted); padding: 5px 0; }
+
+    .chip-remove {
+      background: none;
+      border: none;
+      border-left: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      padding: 5px 9px;
+      font-size: 13px;
+      line-height: 1;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .chip-remove:hover { color: var(--invariant); background: rgba(200,80,64,0.1); }
+
+    .chip-uploading { color: var(--signal); animation: blink 1s ease-in-out infinite; }
+
+    /* Attach link row */
+    .attach-row {
+      padding: 0 32px 12px;
+      background: var(--void);
+      flex-shrink: 0;
+    }
+
+    .attach-btn {
+      background: none;
+      border: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      cursor: pointer;
+      padding: 0;
+      transition: color 0.2s;
+    }
+
+    .attach-btn:hover { color: var(--gold); }
+    .attach-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .masthead  { padding: 14px 16px; }
+      .version-badge { display: none; }
+      #messages  { padding: 16px; }
+      .input-area { padding: 12px 16px; }
+      #progress-panel { padding: 12px 16px; }
+      #attachments-bar { padding: 10px 16px 8px; }
+      .attach-row { padding: 0 16px 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="masthead">
+    <span class="lambda-sigil">Λ</span>
+    <div class="masthead-text">
+      <h1>Mission Interface</h1>
+      <p class="masthead-sub">Claude · Gemini · DeepSeek · ChatGPT</p>
+    </div>
+    <div class="version-badge">Multi-AI Orchestration · Live Execution</div>
+    <div id="status-badge" class="hidden">
+      <span class="pulse-dot"></span>
+      <span id="status-text">Initializing</span>
+    </div>
+  </header>
+
+  <!-- Messages -->
+  <div id="messages"></div>
+
+  <!-- Phase Progress -->
+  <div id="progress-panel" class="hidden">
+    <div class="progress-header">
+      <span class="section-label">Mission Progress</span>
+      <span id="phase-label"></span>
+    </div>
+    <div class="phase-track">
+      <div class="phase-seg" id="p1"></div>
+      <div class="phase-seg" id="p2"></div>
+      <div class="phase-seg" id="p3"></div>
+    </div>
+    <div class="phase-names">
+      <span>I · Intelligence</span>
+      <span>II · Analysis</span>
+      <span>III · Execution</span>
+    </div>
+  </div>
+
+  <!-- Attached files strip (shown when files are attached) -->
+  <div id="attachments-bar" class="hidden">
+    <div class="attach-strip-label">Attached Files</div>
+    <div class="chips-row" id="chips-row"></div>
+  </div>
+
+  <!-- Input -->
+  <div class="input-area">
+    <form id="form" class="input-form">
+      <input
+        id="input"
+        type="text"
+        autocomplete="off"
+        placeholder="Transmit your signal…"
+        class="input-field"
+      />
+      <button id="send-btn" type="submit" class="transmit-btn">Transmit</button>
+    </form>
+  </div>
+
+  <!-- Attach link + hidden file input -->
+  <div class="attach-row">
+    <input
+      type="file"
+      id="file-input"
+      multiple
+      accept=".pdf,.txt,.md,.csv,.rtf,.docx,.doc,.png,.jpg,.jpeg,.gif,.webp"
+      style="display:none"
+    />
+    <button type="button" id="attach-btn" class="attach-btn"
+            onclick="document.getElementById('file-input').click()">
+      + Attach documents &amp; media
+    </button>
+  </div>
+
+<script>
+const messagesEl    = document.getElementById('messages');
+const form          = document.getElementById('form');
+const inputEl       = document.getElementById('input');
+const sendBtn       = document.getElementById('send-btn');
+const progressPanel = document.getElementById('progress-panel');
+const phaseLabelEl  = document.getElementById('phase-label');
+const statusBadge   = document.getElementById('status-badge');
+const statusTextEl  = document.getElementById('status-text');
+
+let pollingTimer = null;
+let lastPhase    = 0;
+
+// ── Markdown ──────────────────────────────────────────────────────────────────
+function esc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function md(text) {
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/\n/g, '<br>');
+}
+
+// ── Message rendering ─────────────────────────────────────────────────────────
+function addMessage(role, text) {
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = role === 'user' ? 'You' : 'Mission Control';
+
+  const bubble = document.createElement('div');
+  bubble.className = `msg-bubble ${role}`;
+  bubble.innerHTML = md(text);
+
+  row.appendChild(sender);
+  row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+// ── Results card ──────────────────────────────────────────────────────────────
+function fmt(n) {
+  return (n != null && n !== '') ? '$' + Number(n).toLocaleString() : 'N/A';
+}
+
+function addResults(result) {
+  const strategic  = result.strategic_analysis   || {};
+  const leverage   = strategic.leverage_analysis  || {};
+  const settlement = strategic.settlement_prediction || {};
+  const execution  = result.execution_plan        || {};
+  const deployment = execution.deployment_summary || {};
+
+  const score = leverage.overall_leverage_score;
+  const risk  = leverage.risk_to_opponent || 'N/A';
+  const range = settlement.predicted_range || {};
+  const pct   = typeof score === 'number' ? Math.min(100, Math.max(0, score)) : 0;
+  const barColor = pct >= 70 ? '#2d9e6b' : pct >= 40 ? '#c9a227' : '#c85040';
+
+  const row  = document.createElement('div');
+  row.className = 'msg-row assistant';
+
+  const sender = document.createElement('div');
+  sender.className = 'msg-sender';
+  sender.textContent = 'Mission Control';
+
+  const card = document.createElement('div');
+  card.className = 'results-card';
+  card.innerHTML = `
+    <div class="results-top">
+      <div class="section-label">Mission Complete · All Phases Executed</div>
+      <h3>Strategic Analysis Results</h3>
+    </div>
+
+    <div class="results-section">
+      <div class="section-label">Leverage Score</div>
+      <div class="leverage-row">
+        <div class="leverage-track">
+          <div class="leverage-fill" style="width:${pct}%;background:${barColor}"></div>
+        </div>
+        <span class="leverage-score" style="color:${barColor}">${score ?? 'N/A'}<span style="font-size:13px;color:var(--muted);font-family:'Crimson Pro',serif;">/100</span></span>
+      </div>
+      <div class="leverage-risk">Risk to opponent — ${risk}</div>
+    </div>
+
+    <div class="results-section">
+      <div class="section-label">Settlement Range</div>
+      <div class="settlement-grid">
+        <div class="s-cell">
+          <div class="s-cell-label">Low</div>
+          <div class="s-cell-value">${fmt(range.low)}</div>
+        </div>
+        <div class="s-cell mid">
+          <div class="s-cell-label">Mid</div>
+          <div class="s-cell-value">${fmt(range.mid)}</div>
+        </div>
+        <div class="s-cell">
+          <div class="s-cell-label">High</div>
+          <div class="s-cell-value">${fmt(range.high)}</div>
+        </div>
+      </div>
+      <div class="settlement-meta">
+        <span>Recommended demand — <strong>${fmt(settlement.recommended_demand)}</strong></span>
+        <span>Floor — <strong>${fmt(settlement.recommended_floor)}</strong></span>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="section-label">Execution Package</div>
+      <div class="exec-row">Complaints prepared — <strong>${deployment.total_complaints ?? 'N/A'}</strong></div>
+      <div class="exec-row">Media approach — <strong>${deployment.media_approach || 'N/A'}</strong></div>
+    </div>
+  `;
+
+  row.appendChild(sender);
+  row.appendChild(card);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+// ── Phase bar ─────────────────────────────────────────────────────────────────
+function setPhase(n, state) {
+  const el = document.getElementById('p' + n);
+  if (!el) return;
+  el.className = 'phase-seg' + (state === 'done' ? ' done' : state === 'active' ? ' active' : '');
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────────
+function startPolling(missionId) {
+  progressPanel.classList.remove('hidden');
+  statusBadge.classList.remove('hidden');
+  lastPhase = 0;
+
+  pollingTimer = setInterval(async () => {
+    let data;
+    try {
+      const res = await fetch('/api/mission/' + missionId);
+      data = await res.json();
+    } catch { return; }
+
+    // Update phase bars
+    for (let i = 1; i <= 3; i++) {
+      if (data.phase > i)       setPhase(i, 'done');
+      else if (data.phase === i) setPhase(i, 'active');
+      else                       setPhase(i, '');
+    }
+
+    if (data.phase_label) {
+      phaseLabelEl.textContent = data.phase_label;
+      statusTextEl.textContent  = data.phase_label;
+    }
+
+    // Announce phase transitions
+    if (data.phase > lastPhase) {
+      const labels = ['', 'Intelligence Gathering', 'Strategic Analysis', 'Execution Planning'];
+      if (lastPhase > 0 && data.phase <= 3) {
+        addMessage('assistant',
+          `Phase ${lastPhase} complete. Initiating Phase ${data.phase}: ${labels[data.phase]}…`);
+      }
+      lastPhase = data.phase;
+    }
+
+    if (data.status === 'complete') {
+      clearInterval(pollingTimer);
+      for (let i = 1; i <= 3; i++) setPhase(i, 'done');
+      setTimeout(() => progressPanel.classList.add('hidden'), 1200);
+      statusBadge.classList.add('hidden');
+      addResults(data.result || {});
+      setEnabled(true);
+
+    } else if (data.status === 'error') {
+      clearInterval(pollingTimer);
+      progressPanel.classList.add('hidden');
+      statusBadge.classList.add('hidden');
+      addMessage('assistant', `Mission error:\n\n${data.error}`);
+      setEnabled(true);
+    }
+  }, 2000);
+}
+
+// ── Input ─────────────────────────────────────────────────────────────────────
+function setEnabled(on) {
+  inputEl.disabled  = !on;
+  sendBtn.disabled  = !on;
+  if (on) inputEl.focus();
+}
+
+async function send(text) {
+  addMessage('user', text);
+  inputEl.value = '';
+  setEnabled(false);
+
+  let data;
+  try {
+    const res = await fetch('/api/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    data = await res.json();
+  } catch {
+    addMessage('assistant', 'Transmission error — signal lost. Please retry.');
+    setEnabled(true);
+    return;
+  }
+
+  for (const msg of (data.messages || [])) {
+    addMessage(msg.role, msg.text);
+    if (msg.mission_id) {
+      startPolling(msg.mission_id);
+      return;
+    }
+  }
+
+  setEnabled(true);
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const text = inputEl.value.trim();
+  if (text && !inputEl.disabled) send(text);
+});
+
+// ── File attachments ──────────────────────────────────────────────────────────
+const attachmentsBar = document.getElementById('attachments-bar');
+const chipsRow       = document.getElementById('chips-row');
+const fileInput      = document.getElementById('file-input');
+const attachBtn      = document.getElementById('attach-btn');
+
+// server-side index mirrors session['uploads']
+let uploadMeta = [];  // [{name, size, is_image, serverIndex}]
+
+function chipTypeClass(filename) {
+  const ext = filename.split('.').pop().toLowerCase();
+  if (ext === 'pdf')              return 'pdf';
+  if (['doc','docx'].includes(ext)) return 'doc';
+  if (['png','jpg','jpeg','gif','webp'].includes(ext)) return 'img';
+  if (ext === 'csv')              return 'csv';
+  return 'txt';
+}
+
+function fmtSize(bytes) {
+  if (bytes < 1024)        return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderChips() {
+  chipsRow.innerHTML = '';
+  if (uploadMeta.length === 0) {
+    attachmentsBar.classList.add('hidden');
+    return;
+  }
+  attachmentsBar.classList.remove('hidden');
+
+  uploadMeta.forEach((f, localIdx) => {
+    const chip = document.createElement('div');
+    chip.className = 'file-chip';
+    chip.innerHTML = `
+      <span class="chip-type ${chipTypeClass(f.name)}">${chipTypeClass(f.name).toUpperCase()}</span>
+      <span class="chip-name" title="${esc(f.name)}">${esc(f.name)}</span>
+      <span class="chip-size">&nbsp;· ${fmtSize(f.size)}</span>
+      <button class="chip-remove" title="Remove" onclick="removeChip(${localIdx})">×</button>
+    `;
+    chipsRow.appendChild(chip);
+  });
+}
+
+async function removeChip(localIdx) {
+  const entry = uploadMeta[localIdx];
+  if (!entry) return;
+
+  try {
+    await fetch('/api/remove_upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ index: localIdx }),
+    });
+  } catch { /* best-effort */ }
+
+  uploadMeta.splice(localIdx, 1);
+  renderChips();
+}
+
+fileInput.addEventListener('change', async () => {
+  const files = Array.from(fileInput.files);
+  fileInput.value = '';
+
+  for (const file of files) {
+    // Optimistically add a placeholder chip
+    const placeholder = { name: file.name, size: file.size, is_image: false, uploading: true };
+    uploadMeta.push(placeholder);
+    renderChips();
+
+    const fd = new FormData();
+    fd.append('file', file);
+
+    try {
+      const res  = await fetch('/api/upload', { method: 'POST', body: fd });
+      const data = await res.json();
+
+      if (data.error) {
+        uploadMeta.pop();
+        addMessage('assistant', `Could not attach "${file.name}": ${data.error}`);
+      } else {
+        placeholder.name     = data.name;
+        placeholder.size     = data.size;
+        placeholder.is_image = data.is_image;
+        placeholder.uploading = false;
+      }
+    } catch {
+      uploadMeta.pop();
+      addMessage('assistant', `Upload failed for "${file.name}" — check your connection.`);
+    }
+
+    renderChips();
+  }
+});
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+(async () => {
+  setEnabled(false);
+  const res  = await fetch('/api/start', { method: 'POST' });
+  const data = await res.json();
+  (data.messages || []).forEach(m => addMessage(m.role, m.text));
+  setEnabled(true);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,481 @@
+{% extends "layout.html" %}
+{% block title %}Λ {{ m.name or m.id }} — ConstruX{% endblock %}
+
+{% block head %}
+<style>
+  .mission-meta-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .meta-chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    background: var(--stone);
+    border: 1px solid var(--border);
+    padding: 3px 10px;
+  }
+
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .detail-card {
+    background: var(--stone);
+    border: 1px solid var(--border);
+  }
+
+  .detail-card-head {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  .detail-card-body { padding: 16px 18px; }
+
+  .kv-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(42,51,64,0.4);
+    font-size: 14px;
+  }
+
+  .kv-row:last-child { border-bottom: none; }
+
+  .kv-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    flex-shrink: 0;
+  }
+
+  .kv-val { color: var(--white); text-align: right; }
+
+  /* Leverage */
+  .leverage-display { padding: 20px 18px; }
+
+  .lev-big-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 10px;
+  }
+
+  .lev-big-track { flex: 1; height: 4px; background: var(--border); }
+  .lev-big-fill  { height: 100%; }
+
+  .lev-big-score {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    font-weight: 900;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .lev-dimensions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 2px;
+    margin-top: 14px;
+  }
+
+  .lev-dim-cell {
+    background: var(--void);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+  }
+
+  .lev-dim-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .lev-dim-val {
+    font-family: 'Cinzel', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .lev-mini-bar { height: 2px; background: var(--border); margin-top: 5px; }
+  .lev-mini-fill { height: 100%; }
+
+  /* Settlement */
+  .settlement-hero {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 1fr;
+    gap: 2px;
+    margin-bottom: 14px;
+  }
+
+  .sh-cell {
+    background: var(--void);
+    border: 1px solid var(--border);
+    padding: 16px 12px;
+    text-align: center;
+  }
+
+  .sh-cell.mid { border-color: var(--gold-dim); background: rgba(201,162,39,0.03); }
+
+  .sh-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sh-value {
+    font-family: 'Cinzel', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+  }
+
+  .sh-cell.mid .sh-value { color: var(--gold); }
+
+  .demand-box {
+    background: rgba(201,162,39,0.05);
+    border: 1px solid var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .demand-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+
+  .demand-value {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+
+  /* Phase tabs */
+  .phase-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phase-tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 12px 20px;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .phase-tab:hover { color: var(--white); }
+  .phase-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .phase-content { padding: 20px; display: none; }
+  .phase-content.active { display: block; }
+
+  .json-block {
+    background: var(--void);
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    line-height: 1.7;
+    color: var(--muted);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .json-block::-webkit-scrollbar { width: 4px; height: 4px; }
+  .json-block::-webkit-scrollbar-thumb { background: var(--border); }
+
+  /* Files */
+  .files-list { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .file-pill {
+    background: var(--stone);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+  }
+
+  .alert-panel {
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .alert-panel pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    margin-top: 8px;
+  }
+
+  .alert-error  { background: rgba(200,80,64,0.06); border: 1px solid var(--invariant); border-left: 3px solid var(--invariant); }
+  .alert-error .alert-title  { color: var(--invariant); }
+  .alert-error pre           { color: var(--invariant); }
+
+  .alert-running { background: rgba(74,158,255,0.06); border: 1px solid var(--signal); border-left: 3px solid var(--signal); }
+  .alert-running .alert-title { color: var(--signal); }
+
+  .alert-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="section-label">Mission Report</div>
+  <h1>{{ m.name or m.id }}</h1>
+  <div class="mission-meta-row">
+    <span class="meta-chip">{{ m.case_id or m.id }}</span>
+    <span class="badge badge-{{ m.status }}">{{ m.status }}</span>
+    {% if m.created_at %}<span class="meta-chip">{{ m.created_at | shortdate }}</span>{% endif %}
+    {% if m.completed_at and m.status == 'complete' %}
+    <span class="meta-chip">Completed {{ m.completed_at | shortdate }}</span>
+    {% endif %}
+  </div>
+</div>
+
+<div class="page-body">
+
+  <div class="action-bar">
+    <a href="/history" class="btn btn-ghost" style="padding:8px 16px;font-size:9px">← History</a>
+    {% if m.status == 'complete' %}
+    <a href="/mission/{{ m.id }}/export.json" class="btn btn-ghost" style="padding:8px 16px;font-size:9px">Export JSON</a>
+    {% endif %}
+    <a href="/mission/new" class="btn btn-gold" style="padding:8px 16px;font-size:9px;margin-left:auto">+ New Mission</a>
+  </div>
+
+  {% if m.status == 'error' %}
+  <div class="alert-panel alert-error">
+    <div class="alert-title">Mission Failed</div>
+    <pre>{{ m.error_text or 'Unknown error' }}</pre>
+  </div>
+  {% endif %}
+
+  {% if m.status == 'running' %}
+  <div class="alert-panel alert-running">
+    <div class="alert-title">Mission in progress — refresh to check status</div>
+  </div>
+  {% endif %}
+
+  {% if m.status == 'complete' %}
+
+  <!-- Leverage -->
+  <div class="section-label">Leverage Analysis</div>
+  <div class="detail-card card-green" style="margin-bottom:20px">
+    <div class="detail-card-head">Overall Leverage Score</div>
+    <div class="leverage-display">
+      {% set score = m.leverage_score or 0 %}
+      {% set bar_color = 'var(--fractal)' if score >= 70 else ('var(--gold)' if score >= 40 else 'var(--invariant)') %}
+      <div class="lev-big-row">
+        <div class="lev-big-track">
+          <div class="lev-big-fill" style="width:{{ score }}%;background:{{ bar_color }}"></div>
+        </div>
+        <span class="lev-big-score" style="color:{{ bar_color }}">
+          {{ m.leverage_score or '—' }}<span style="font-size:16px;color:var(--muted);font-family:'Crimson Pro',serif">/100</span>
+        </span>
+      </div>
+      {% if m.risk_to_opponent %}
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px">
+        Risk to opponent — {{ m.risk_to_opponent }}
+      </div>
+      {% endif %}
+      {% if result.strategic_analysis and result.strategic_analysis.leverage_analysis %}
+      {% set lev = result.strategic_analysis.leverage_analysis %}
+      {% if lev.dimension_scores %}
+      <div class="lev-dimensions">
+        {% for dim, val in lev.dimension_scores.items() %}
+        {% set dv = val | float(0) %}
+        {% set dc = 'var(--fractal)' if dv >= 70 else ('var(--gold)' if dv >= 40 else 'var(--invariant)') %}
+        <div class="lev-dim-cell">
+          <div class="lev-dim-name">{{ dim | replace('_', ' ') }}</div>
+          <div class="lev-dim-val" style="color:{{ dc }}">{{ val }}</div>
+          <div class="lev-mini-bar"><div class="lev-mini-fill" style="width:{{ dv }}%;background:{{ dc }}"></div></div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Settlement -->
+  <div class="section-label">Settlement Prediction</div>
+  <div class="detail-card card-gold" style="margin-bottom:20px">
+    <div class="detail-card-head">Predicted Range</div>
+    <div class="detail-card-body">
+      <div class="settlement-hero">
+        <div class="sh-cell">
+          <div class="sh-label">Low</div>
+          <div class="sh-value">{{ m.settlement_low | usd if m.settlement_low else '—' }}</div>
+        </div>
+        <div class="sh-cell mid">
+          <div class="sh-label">Mid (Target)</div>
+          <div class="sh-value">{{ m.settlement_mid | usd if m.settlement_mid else '—' }}</div>
+        </div>
+        <div class="sh-cell">
+          <div class="sh-label">High</div>
+          <div class="sh-value">{{ m.settlement_high | usd if m.settlement_high else '—' }}</div>
+        </div>
+      </div>
+      <div class="demand-box">
+        <div>
+          <div class="demand-label">Recommended Demand</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:2px">
+            Floor: {{ m.settlement_floor | usd if m.settlement_floor else '—' }}
+          </div>
+        </div>
+        <div class="demand-value">{{ m.recommended_demand | usd if m.recommended_demand else '—' }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Execution -->
+  <div class="section-label">Execution Summary</div>
+  <div class="detail-grid" style="margin-bottom:20px">
+    <div class="detail-card card-blue">
+      <div class="detail-card-head">Deployment</div>
+      <div class="detail-card-body">
+        <div class="kv-row">
+          <span class="kv-key">Complaints</span>
+          <span class="kv-val">{{ m.total_complaints or '—' }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Media Approach</span>
+          <span class="kv-val">{{ m.media_approach or '—' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-card-head">Case Identifiers</div>
+      <div class="detail-card-body">
+        <div class="kv-row">
+          <span class="kv-key">Case ID</span>
+          <span class="kv-val" style="font-family:'JetBrains Mono',monospace;font-size:11px">{{ m.case_id or '—' }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Client</span>
+          <span class="kv-val">{{ m.client_name or '—' }}</span>
+        </div>
+        <div class="kv-row">
+          <span class="kv-key">Employer</span>
+          <span class="kv-val">{{ m.employer_name or '—' }}</span>
+        </div>
+        {% if m.violations %}
+        <div class="kv-row">
+          <span class="kv-key">Violations</span>
+          <span class="kv-val" style="font-size:12px;text-align:right">{{ m.violations }}</span>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase data -->
+  <div class="section-label">Phase Data</div>
+  <div style="background:var(--stone);border:1px solid var(--border);margin-bottom:24px">
+    <div class="phase-tabs">
+      <button class="phase-tab active" onclick="showTab(this,'tab-intel')">I · Intelligence</button>
+      <button class="phase-tab" onclick="showTab(this,'tab-analysis')">II · Analysis</button>
+      <button class="phase-tab" onclick="showTab(this,'tab-execution')">III · Execution</button>
+    </div>
+    <div id="tab-intel" class="phase-content active">
+      {% if result.intelligence %}
+      <div class="json-block">{{ result.intelligence | tojson(indent=2) }}</div>
+      {% else %}
+      <div style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px">No intelligence data.</div>
+      {% endif %}
+    </div>
+    <div id="tab-analysis" class="phase-content">
+      {% if result.strategic_analysis %}
+      <div class="json-block">{{ result.strategic_analysis | tojson(indent=2) }}</div>
+      {% else %}
+      <div style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px">No analysis data.</div>
+      {% endif %}
+    </div>
+    <div id="tab-execution" class="phase-content">
+      {% if result.execution_plan %}
+      <div class="json-block">{{ result.execution_plan | tojson(indent=2) }}</div>
+      {% else %}
+      <div style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px">No execution data.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  {% endif %}
+
+  {% if files %}
+  <div class="section-label">Attached Files</div>
+  <div class="files-list" style="margin-bottom:24px">
+    {% for f in files %}<div class="file-pill">{{ f }}</div>{% endfor %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(btn, id) {
+  document.querySelectorAll('.phase-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.phase-content').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(id).classList.add('active');
+}
+</script>
+{% endblock %}

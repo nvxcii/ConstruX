@@ -1,0 +1,208 @@
+{% extends "layout.html" %}
+{% block title %}Λ History — ConstruX{% endblock %}
+
+{% block head %}
+<style>
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .filter-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover        { border-color: var(--muted); color: var(--white); }
+  .filter-btn.f-all        { border-color: var(--gold-dim); color: var(--gold); background: rgba(201,162,39,0.05); }
+  .filter-btn.f-complete   { border-color: var(--fractal); color: var(--fractal); background: rgba(45,158,107,0.06); }
+  .filter-btn.f-running    { border-color: var(--signal); color: var(--signal); background: rgba(74,158,255,0.06); }
+  .filter-btn.f-error      { border-color: var(--invariant); color: var(--invariant); background: rgba(200,80,64,0.06); }
+
+  .search-input {
+    flex: 1;
+    min-width: 180px;
+    background: var(--stone);
+    border: 1px solid var(--border);
+    border-bottom: 1px solid var(--gold-dim);
+    color: var(--white);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 6px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input::placeholder { color: var(--muted); }
+  .search-input:focus { border-bottom-color: var(--gold); }
+
+  .count-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .sortable { cursor: pointer; user-select: none; }
+  .sortable:hover { color: var(--gold); }
+
+  .empty-state {
+    padding: 60px 40px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .empty-state p {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .row-hidden { display: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div class="section-label">Archive</div>
+  <h1>Mission History</h1>
+</div>
+
+<div class="page-body">
+
+  <div class="filter-bar">
+    <button class="filter-btn f-all" onclick="setFilter(this,'all')">All</button>
+    <button class="filter-btn" onclick="setFilter(this,'complete')">Complete</button>
+    <button class="filter-btn" onclick="setFilter(this,'running')">Running</button>
+    <button class="filter-btn" onclick="setFilter(this,'error')">Error</button>
+    <input id="search" class="search-input" type="text" placeholder="Search missions…"
+           oninput="applyFilters()" />
+    <span class="count-label" id="count-label">{{ missions | length }} records</span>
+  </div>
+
+  {% if missions %}
+  <div style="background:var(--stone);border:1px solid var(--border)">
+    <table class="data-table" id="history-table">
+      <thead>
+        <tr>
+          <th class="sortable" onclick="sortTable(0)">Mission <span id="arr0">↕</span></th>
+          <th class="sortable" onclick="sortTable(1)">Client <span id="arr1">↕</span></th>
+          <th class="sortable" onclick="sortTable(2)">Employer <span id="arr2">↕</span></th>
+          <th>Status</th>
+          <th class="sortable" onclick="sortTable(4)">Leverage <span id="arr4">↕</span></th>
+          <th class="sortable" onclick="sortTable(5)">Demand <span id="arr5">↕</span></th>
+          <th>Complaints</th>
+          <th class="sortable" onclick="sortTable(7)">Date <span id="arr7">↓</span></th>
+        </tr>
+      </thead>
+      <tbody id="history-body">
+        {% for m in missions %}
+        <tr data-status="{{ m.status }}"
+            data-search="{{ ((m.name or '') ~ ' ' ~ (m.client_name or '') ~ ' ' ~ (m.employer_name or '')) | lower }}">
+          <td><a href="/mission/{{ m.id }}">{{ m.name or m.id }}</a></td>
+          <td class="td-muted">{{ m.client_name or '—' }}</td>
+          <td class="td-muted">{{ m.employer_name or '—' }}</td>
+          <td><span class="badge badge-{{ m.status }}">{{ m.status }}</span></td>
+          <td>
+            {% if m.leverage_score is not none %}
+            <div class="lev-row">
+              <div class="lev-track">
+                <div class="lev-fill" style="width:{{ m.leverage_score }}%;background:{% if m.leverage_score >= 70 %}var(--fractal){% elif m.leverage_score >= 40 %}var(--gold){% else %}var(--invariant){% endif %}"></div>
+              </div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px">{{ m.leverage_score }}</span>
+            </div>
+            {% else %}<span class="td-muted">—</span>{% endif %}
+          </td>
+          <td style="color:var(--gold)">{{ m.recommended_demand | usd if m.recommended_demand else '—' }}</td>
+          <td class="td-muted">{{ m.total_complaints or '—' }}</td>
+          <td class="td-muted">{{ m.created_at | shortdate }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <p>No missions yet</p>
+    <a href="/mission/new" class="btn btn-gold">+ Launch First Mission</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentFilter = 'all';
+let sortCol = 7;
+let sortAsc = false;
+
+function setFilter(btn, filter) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.className = 'filter-btn';
+  });
+  const map = { all:'f-all', complete:'f-complete', running:'f-running', error:'f-error' };
+  btn.classList.add(map[filter] || 'f-all');
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const rows = document.querySelectorAll('#history-body tr');
+  let visible = 0;
+  rows.forEach(row => {
+    const sm = currentFilter === 'all' || row.dataset.status === currentFilter;
+    const qm = !q || (row.dataset.search || '').includes(q);
+    row.classList.toggle('row-hidden', !(sm && qm));
+    if (sm && qm) visible++;
+  });
+  document.getElementById('count-label').textContent = visible + ' records';
+}
+
+function sortTable(col) {
+  if (sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+
+  const tbody = document.getElementById('history-body');
+  const rows  = Array.from(tbody.querySelectorAll('tr'));
+
+  rows.sort((a, b) => {
+    const at = (a.cells[col]?.textContent || '').trim();
+    const bt = (b.cells[col]?.textContent || '').trim();
+    const an = parseFloat(at.replace(/[^0-9.]/g,''));
+    const bn = parseFloat(bt.replace(/[^0-9.]/g,''));
+    const num = !isNaN(an) && !isNaN(bn);
+    const cmp = num ? an - bn : at.localeCompare(bt);
+    return sortAsc ? cmp : -cmp;
+  });
+
+  rows.forEach(r => tbody.appendChild(r));
+
+  [0,1,2,4,5,7].forEach(i => {
+    const el = document.getElementById('arr' + i);
+    if (!el) return;
+    el.textContent = i === sortCol ? (sortAsc ? '↑' : '↓') : '↕';
+    el.style.opacity = i === sortCol ? '1' : '0.4';
+  });
+}
+
+sortTable(7);
+</script>
+{% endblock %}

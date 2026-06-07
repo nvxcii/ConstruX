@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Λ ConstruX{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ── */
+    :root {
+      --obsidian: #080a0e;
+      --void:     #0d1017;
+      --stone:    #141820;
+      --slate:    #1e2530;
+      --border:   #2a3340;
+      --gold:     #c9a227;
+      --gold-light:#e8c84a;
+      --gold-dim: #7a601a;
+      --white:    #f0ede6;
+      --muted:    #8a8070;
+      --signal:   #4a9eff;
+      --recursive:#7c5cbf;
+      --fractal:  #2d9e6b;
+      --invariant:#c85040;
+      --enforcement:#e05080;
+      --remedy:   #40b0a0;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html { height:100%; }
+
+    body {
+      height:100%; height:100dvh;
+      background: var(--obsidian);
+      color: var(--white);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.75;
+      display: flex;
+      overflow: hidden;
+    }
+
+    body::before {
+      content:'';
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events:none; z-index:1000; opacity:0.6;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 210px;
+      min-height: 100dvh;
+      background: var(--void);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 10;
+    }
+
+    .sidebar-logo {
+      padding: 22px 18px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-sigil {
+      font-family: 'Cinzel', serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(201,162,39,0.3);
+      animation: breathe 4s ease-in-out infinite;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    @keyframes breathe {
+      0%,100%{ text-shadow:0 0 20px rgba(201,162,39,0.3); }
+      50%    { text-shadow:0 0 50px rgba(201,162,39,0.6),0 0 80px rgba(201,162,39,0.15); }
+    }
+
+    .sidebar-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .sidebar-brand small {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold-dim);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .sidebar-nav { flex:1; padding: 12px 0; }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .nav-item:hover { color: var(--white); background: rgba(201,162,39,0.04); }
+    .nav-item.active { color: var(--gold); border-left-color: var(--gold); background: rgba(201,162,39,0.06); }
+
+    .nav-icon { font-size: 13px; width: 16px; text-align: center; flex-shrink: 0; }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 18px;
+    }
+
+    .sidebar-footer {
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-footer p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      line-height: 1.8;
+    }
+
+    /* ── Main content ── */
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    .main-content::-webkit-scrollbar { width: 5px; }
+    .main-content::-webkit-scrollbar-track { background: transparent; }
+    .main-content::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* Chat mode */
+    .main-chat {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      padding: 32px 40px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--void);
+    }
+
+    .page-header .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .page-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    /* ── Shared components ── */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* Stat grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 2px;
+    }
+
+    .stat-cell {
+      background: var(--stone);
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Cinzel', serif;
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .data-table th {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold-dim);
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(42,51,64,0.5);
+      color: var(--white);
+      vertical-align: middle;
+    }
+
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(201,162,39,0.02); }
+
+    .data-table a { color: var(--gold); text-decoration: none; }
+    .data-table a:hover { color: var(--gold-light); }
+
+    .td-muted { color: var(--muted) !important; font-size: 13px; }
+
+    /* Status badges */
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+
+    .badge-running  { border-color: var(--signal);    color: var(--signal);    animation: blink 1.4s ease-in-out infinite; }
+    .badge-complete { border-color: var(--fractal);   color: var(--fractal); }
+    .badge-error    { border-color: var(--invariant); color: var(--invariant); }
+
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.35} }
+
+    /* Mini leverage bar */
+    .lev-row { display:flex; align-items:center; gap:8px; }
+    .lev-track { width:60px; height:2px; background:var(--border); flex-shrink:0; }
+    .lev-fill  { height:100%; }
+
+    /* Card block */
+    .card {
+      background: var(--stone);
+      border: 1px solid var(--border);
+    }
+
+    .card-gold  { border-left: 3px solid var(--gold); }
+    .card-green { border-left: 3px solid var(--fractal); }
+    .card-blue  { border-left: 3px solid var(--signal); }
+    .card-red   { border-left: 3px solid var(--invariant); }
+
+    .card-head {
+      padding: 14px 20px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-body { padding: 16px 20px; }
+
+    /* Action button */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding: 10px 22px;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-gold {
+      background: transparent;
+      border: 1px solid var(--gold-dim);
+      color: var(--gold);
+    }
+
+    .btn-gold:hover {
+      background: rgba(201,162,39,0.08);
+      border-color: var(--gold);
+      color: var(--gold-light);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .btn-ghost:hover { border-color: var(--muted); color: var(--white); }
+
+    /* Page body padding */
+    .page-body { padding: 32px 40px; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 700px) {
+      .sidebar { width: 56px; }
+      .sidebar-brand, .nav-item span:last-child, .sidebar-footer p { display: none; }
+      .sidebar-logo { padding: 16px; justify-content: center; }
+      .nav-item { justify-content: center; padding: 12px; }
+      .page-header, .page-body { padding: 20px 16px; }
+    }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="sidebar-sigil">Λ</span>
+      <div class="sidebar-brand">
+        ConstruX
+        <small>Mission Control</small>
+      </div>
+    </div>
+
+    <div class="sidebar-nav">
+      {% set ep = request.endpoint %}
+      <a href="/dashboard" class="nav-item {{ 'active' if ep == 'dashboard' }}">
+        <span class="nav-icon">◈</span><span>Dashboard</span>
+      </a>
+      <a href="/mission/new" class="nav-item {{ 'active' if ep == 'new_mission' }}">
+        <span class="nav-icon">+</span><span>New Mission</span>
+      </a>
+      <div class="nav-divider"></div>
+      <a href="/history" class="nav-item {{ 'active' if ep == 'history' }}">
+        <span class="nav-icon">≡</span><span>History</span>
+      </a>
+      <div class="nav-divider"></div>
+      <a href="/settings" class="nav-item {{ 'active' if ep == 'settings' }}">
+        <span class="nav-icon">⚙</span><span>Settings</span>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <p>Multi-AI Framework</p>
+      <p>Beta v0.1 · 2026</p>
+      <p>∿ ⊙ ⚡</p>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="{% block main_class %}main-content{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

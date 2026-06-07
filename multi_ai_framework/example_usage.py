@@ -6,8 +6,8 @@ Demonstrates how to execute a complete mission
 
 import json
 from pathlib import Path
-from missions.mission_orchestrator import MissionOrchestrator
-from config.config_manager import ConfigManager
+from multi_ai_framework.missions.mission_orchestrator import MissionOrchestrator
+from multi_ai_framework.config.config_manager import ConfigManager
 
 
 def main():

@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNAF v1.0 — Universal Analytical Framework</title>
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy-light: #243460;
+    --navy-lighter: #2e4080;
+    --green: #2d7a4f;
+    --green-light: #3a9e65;
+    --amber: #c47c0a;
+    --amber-light: #e8960d;
+    --red: #b53030;
+    --white: #ffffff;
+    --off-white: #f7f8fa;
+    --gray-100: #f0f2f5;
+    --gray-200: #e2e6ea;
+    --gray-300: #c8ced6;
+    --gray-500: #7a8595;
+    --gray-700: #3e4a5a;
+    --text: #1c2333;
+    --sidebar-width: 240px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-100); color: var(--text); min-height: 100vh; }
+  #app-header { position: fixed; top: 0; left: 0; right: 0; height: 56px; background: var(--navy); display: flex; align-items: center; padding: 0 20px; z-index: 200; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+  #app-header h1 { color: var(--white); font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+  #app-header .subtitle { color: rgba(255,255,255,0.55); font-size: 12px; margin-left: 12px; margin-top: 2px; }
+  #header-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .btn-header { background: rgba(255,255,255,0.12); color: var(--white); border: 1px solid rgba(255,255,255,0.22); padding: 6px 14px; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .btn-header:hover { background: rgba(255,255,255,0.22); }
+  .btn-header.btn-amber { background: var(--amber); border-color: var(--amber-light); }
+  .btn-header.btn-amber:hover { background: var(--amber-light); }
+  #progress-bar-wrap { position: fixed; top: 56px; left: 0; right: 0; height: 34px; background: var(--navy-light); display: flex; align-items: center; padding: 0 20px; z-index: 190; gap: 12px; }
+  #progress-bar-wrap span { color: rgba(255,255,255,0.8); font-size: 11px; font-weight: 600; white-space: nowrap; }
+  #progress-track { flex: 1; height: 8px; background: rgba(255,255,255,0.15); border-radius: 4px; overflow: hidden; }
+  #progress-fill { height: 100%; background: var(--green); border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+  #progress-label { color: rgba(255,255,255,0.7); font-size: 11px; min-width: 70px; text-align: right; }
+  #layout { display: flex; margin-top: 90px; min-height: calc(100vh - 90px); }
+  #sidebar { position: fixed; top: 90px; left: 0; width: var(--sidebar-width); bottom: 0; background: var(--navy); overflow-y: auto; z-index: 150; padding: 12px 0 24px; }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-track { background: transparent; }
+  #sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
+  .sidebar-item { display: flex; align-items: center; padding: 10px 16px; cursor: pointer; color: rgba(255,255,255,0.7); font-size: 13px; transition: background 0.15s, color 0.15s; border-left: 3px solid transparent; gap: 10px; }
+  .sidebar-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .sidebar-item.active { background: rgba(255,255,255,0.12); color: var(--white); border-left-color: #5b9bd5; }
+  .sidebar-item.verified { color: var(--green-light); }
+  .sidebar-item.verified .layer-num { color: var(--green-light); }
+  .sidebar-check { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 9px; }
+  .sidebar-item.verified .sidebar-check { background: var(--green); border-color: var(--green); color: white; }
+  .layer-num { font-weight: 700; font-size: 11px; color: rgba(255,255,255,0.4); min-width: 18px; }
+  .layer-label { flex: 1; line-height: 1.3; }
+  #main { margin-left: var(--sidebar-width); flex: 1; padding: 28px 32px 60px; max-width: calc(100vw - var(--sidebar-width)); }
+  .layer-panel { display: none; max-width: 860px; }
+  .layer-panel.active { display: block; }
+  .layer-header { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--gray-200); }
+  .layer-badge { display: inline-block; background: var(--navy); color: white; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 3px; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .layer-header h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 24px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .layer-header p { color: var(--gray-500); font-size: 14px; line-height: 1.5; }
+  .card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px 24px; margin-bottom: 20px; }
+  .card h3 { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card h3 .card-icon { width: 20px; height: 20px; background: var(--navy); border-radius: 4px; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-700); margin-bottom: 5px; margin-top: 12px; }
+  label:first-child { margin-top: 0; }
+  input[type="text"], input[type="date"], select, textarea { width: 100%; padding: 8px 11px; border: 1px solid var(--gray-300); border-radius: 5px; font-size: 13px; font-family: Georgia, serif; color: var(--text); background: var(--white); transition: border-color 0.15s, box-shadow 0.15s; resize: vertical; }
+  input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus { outline: none; border-color: #5b9bd5; box-shadow: 0 0 0 3px rgba(91,155,213,0.15); }
+  textarea { min-height: 80px; }
+  select { font-family: -apple-system, sans-serif; }
+  .highlight-absolute { background: #fff3cd !important; border-color: var(--amber) !important; box-shadow: 0 0 0 2px rgba(196,124,10,0.25) !important; }
+  .table-wrap { overflow-x: auto; margin-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table th { background: var(--navy); color: white; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; padding: 8px 10px; text-align: left; }
+  table td { padding: 6px 6px; border-bottom: 1px solid var(--gray-200); vertical-align: top; }
+  table tr:last-child td { border-bottom: none; }
+  table tr:nth-child(even) td { background: var(--off-white); }
+  table td input, table td select, table td textarea { border: 1px solid var(--gray-200); border-radius: 3px; padding: 5px 7px; font-size: 12px; width: 100%; min-width: 60px; }
+  table td textarea { min-height: 52px; resize: vertical; }
+  .td-action { width: 32px; text-align: center; }
+  .btn-remove-row { background: none; border: none; color: var(--red); cursor: pointer; font-size: 16px; padding: 2px 4px; border-radius: 3px; line-height: 1; }
+  .btn-remove-row:hover { background: #fde8e8; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 5px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: background 0.15s, transform 0.1s; }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--navy); color: white; }
+  .btn-primary:hover { background: var(--navy-lighter); }
+  .btn-green { background: var(--green); color: white; }
+  .btn-green:hover { background: var(--green-light); }
+  .btn-amber { background: var(--amber); color: white; }
+  .btn-amber:hover { background: var(--amber-light); }
+  .btn-outline { background: transparent; color: var(--navy); border: 1px solid var(--gray-300); }
+  .btn-outline:hover { background: var(--gray-100); }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+  .btn-add-row { background: var(--gray-100); color: var(--navy); border: 1px dashed var(--gray-300); padding: 6px 14px; font-size: 12px; font-weight: 600; border-radius: 5px; cursor: pointer; margin-top: 6px; display: inline-flex; align-items: center; gap: 5px; transition: background 0.15s; }
+  .btn-add-row:hover { background: var(--gray-200); }
+  .verify-bar { margin-top: 28px; padding: 16px 20px; background: var(--gray-100); border: 1px solid var(--gray-200); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .verify-bar p { font-size: 13px; color: var(--gray-500); }
+  .verify-bar.verified-state { background: #edf7f1; border-color: #b0dfc0; }
+  .verify-bar.verified-state p { color: var(--green); font-weight: 600; }
+  .checklist-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
+  .checklist-item:last-child { border-bottom: none; }
+  .checklist-item input[type="checkbox"] { width: 16px; height: 16px; margin-top: 1px; flex-shrink: 0; cursor: pointer; }
+  .checklist-item label { margin: 0; font-size: 13px; font-weight: 500; color: var(--text); cursor: pointer; flex: 1; }
+  .checklist-item .replacement-field { margin-top: 6px; }
+  .notice { padding: 10px 14px; border-radius: 5px; font-size: 13px; margin-bottom: 14px; line-height: 1.5; }
+  .notice-amber { background: #fff8e1; border-left: 3px solid var(--amber); color: #7a4f00; }
+  .notice-blue { background: #e8f0fe; border-left: 3px solid #4a7fd4; color: #1a3a7a; }
+  .notice-green { background: #edf7f1; border-left: 3px solid var(--green); color: #1a5530; }
+  #audit-panel { display: none; margin-top: 20px; }
+  .audit-result { padding: 8px 12px; margin: 4px 0; border-radius: 5px; font-size: 12px; display: flex; align-items: center; gap: 8px; }
+  .audit-pass { background: #edf7f1; color: var(--green); }
+  .audit-fail { background: #fde8e8; color: var(--red); }
+  .audit-score { font-size: 20px; font-weight: 700; color: var(--navy); margin: 12px 0 8px; }
+  .summary-box { position: relative; }
+  .summary-box textarea { min-height: 140px; font-family: Georgia, serif; font-size: 13px; line-height: 1.7; }
+  .word-count { position: absolute; bottom: 8px; right: 12px; font-size: 11px; color: var(--gray-500); background: rgba(255,255,255,0.85); padding: 2px 6px; border-radius: 3px; }
+  #scan-results { display: none; margin-top: 12px; padding: 12px; background: #fff8e1; border: 1px solid #f0c040; border-radius: 6px; font-size: 13px; }
+  #scan-results ul { margin: 8px 0 0 16px; }
+  #scan-results li { margin: 3px 0; }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .radio-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  .radio-group label { display: flex; align-items: center; gap: 5px; font-weight: 500; margin: 0; cursor: pointer; font-size: 13px; }
+  .radio-group input[type="radio"] { width: auto; cursor: pointer; }
+  .field-row { margin-bottom: 14px; }
+  .field-row label { margin-bottom: 4px; }
+  .layer-nav { display: flex; justify-content: space-between; margin-top: 28px; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 700px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    #main { padding: 16px; }
+    #sidebar { width: 200px; }
+    .layer-header h2 { font-size: 20px; }
+  }
+  @media (max-width: 520px) {
+    #sidebar { display: none; }
+    #main { margin-left: 0; max-width: 100vw; }
+  }
+</style>
+</head>
+<body>
+
+<header id="app-header">
+  <h1>UNAF v1.0</h1>
+  <span class="subtitle">Universal Analytical Framework</span>
+  <div id="header-actions">
+    <button class="btn-header btn-amber" onclick="runSelfAudit()">&#10003; Self-Audit</button>
+    <button class="btn-header" onclick="exportMarkdown()">&#8659; Export MD</button>
+  </div>
+</header>
+
+<div id="progress-bar-wrap">
+  <span>VERIFIED</span>
+  <div id="progress-track"><div id="progress-fill"></div></div>
+  <span id="progress-label">0 / 8 layers</span>
+</div>
+
+<div id="layout">
+
+  <nav id="sidebar">
+    <div class="sidebar-item active" data-layer="0" onclick="showLayer(0)">
+      <span class="layer-num">0</span>
+      <span class="layer-label">Exact Capture</span>
+      <span class="sidebar-check" id="check-0"></span>
+    </div>
+    <div class="sidebar-item" data-layer="1" onclick="showLayer(1)">
+      <span class="layer-num">1</span>
+      <span class="layer-label">Hidden Assumptions</span>
+      <span class="sidebar-check" id="check-1"></span>
+    </div>
+    <div class="sidebar-item" data-layer="2" onclick="showLayer(2)">
+      <span class="layer-num">2</span>
+      <span class="layer-label">Question Behind Q</span>
+      <span class="sidebar-check" id="check-2"></span>
+    </div>
+    <div class="sidebar-item" data-layer="3" onclick="showLayer(3)">
+      <span class="layer-num">3</span>
+      <span class="layer-label">Structural Patterns</span>
+      <span class="sidebar-check" id="check-3"></span>
+    </div>
+    <div class="sidebar-item" data-layer="4" onclick="showLayer(4)">
+      <span class="layer-num">4</span>
+      <span class="layer-label">Alt. Interpretations</span>
+      <span class="sidebar-check" id="check-4"></span>
+    </div>
+    <div class="sidebar-item" data-layer="5" onclick="showLayer(5)">
+      <span class="layer-num">5</span>
+      <span class="layer-label">Evidence &amp; Fallacies</span>
+      <span class="sidebar-check" id="check-5"></span>
+    </div>
+    <div class="sidebar-item" data-layer="6" onclick="showLayer(6)">
+      <span class="layer-num">6</span>
+      <span class="layer-label">Decision &amp; Response</span>
+      <span class="sidebar-check" id="check-6"></span>
+    </div>
+    <div class="sidebar-item" data-layer="7" onclick="showLayer(7)">
+      <span class="layer-num">7</span>
+      <span class="layer-label">Summary Generator</span>
+      <span class="sidebar-check" id="check-7"></span>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- LAYER 0 -->
+    <div class="layer-panel active" id="layer-0">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 0</span>
+        <h2>Exact Capture</h2>
+        <p>Record verbatim evidence with full provenance. Do not paraphrase. Capture what was said AND what was conspicuously absent.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">T</span> Evidence Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:16%">Source</th>
+                <th style="width:30%">Verbatim Text</th>
+                <th style="width:14%">Timestamp</th>
+                <th style="width:13%">Type</th>
+                <th style="width:22%">Context / Notes</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody id="evidence-body">
+              <tr>
+                <td><input type="text" placeholder="Who said it"></td>
+                <td><textarea placeholder="Exact words..." rows="3"></textarea></td>
+                <td><input type="text" placeholder="Date / time"></td>
+                <td><select><option value="">-- select --</option><option>Statement</option><option>Document</option><option>Email</option><option>Meeting</option><option>Observation</option><option>Data</option><option>Other</option></select></td>
+                <td><textarea placeholder="Medium, tone, audience..." rows="3"></textarea></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)" title="Remove">x</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addEvidenceRow()">+ Add Row</button>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">0</span> What Was NOT Said</h3>
+        <p style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">Note omissions, topics avoided, questions not answered, and conspicuous silences.</p>
+        <textarea id="l0-not-said" placeholder="List what was conspicuously absent, avoided, or left unsaid..." style="min-height:100px;"></textarea>
+      </div>
+      <div class="verify-bar" id="verify-bar-0">
+        <p>Complete all evidence entries and "not said" field before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(0)">&#10003; Mark Layer 0 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <span></span>
+        <button class="btn btn-primary" onclick="showLayer(1)">Next: Hidden Assumptions &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 1 -->
+    <div class="layer-panel" id="layer-1">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 1</span>
+        <h2>Hidden Assumptions</h2>
+        <p>Identify every unstated premise being treated as fact. Minimum 3 assumptions required.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">A</span> Assumption Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:35%">Assumption Being Made</th>
+                <th style="width:30%">Why It Is Unproven</th>
+                <th style="width:30%">Counter-Evidence</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody id="assumptions-body">
+              <tr>
+                <td><textarea placeholder="State the hidden assumption..." rows="3"></textarea></td>
+                <td><textarea placeholder="What would prove or disprove this..." rows="3"></textarea></td>
+                <td><textarea placeholder="Evidence that contradicts it..." rows="3"></textarea></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+              </tr>
+              <tr>
+                <td><textarea placeholder="State the hidden assumption..." rows="3"></textarea></td>
+                <td><textarea placeholder="What would prove or disprove this..." rows="3"></textarea></td>
+                <td><textarea placeholder="Evidence that contradicts it..." rows="3"></textarea></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+              </tr>
+              <tr>
+                <td><textarea placeholder="State the hidden assumption..." rows="3"></textarea></td>
+                <td><textarea placeholder="What would prove or disprove this..." rows="3"></textarea></td>
+                <td><textarea placeholder="Evidence that contradicts it..." rows="3"></textarea></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addAssumptionRow()">+ Add Row</button>
+      </div>
+      <div class="verify-bar" id="verify-bar-1">
+        <p>Minimum 3 assumptions required. Fill all fields.</p>
+        <button class="btn btn-green" onclick="verifyLayer(1)">&#10003; Mark Layer 1 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(0)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(2)">Next: Question Behind the Question &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 2 -->
+    <div class="layer-panel" id="layer-2">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 2</span>
+        <h2>Question Behind the Question</h2>
+        <p>Excavate the real interrogative beneath the surface. What is truly being asked or needed?</p>
+      </div>
+      <div class="card">
+        <div class="field-row">
+          <label for="l2-surface">1. Surface Question -- What was literally asked?</label>
+          <textarea id="l2-surface" placeholder="The literal question or request as stated..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-unstated">2. Unstated Goal -- What outcome is the asker actually seeking?</label>
+          <textarea id="l2-unstated" placeholder="What result or outcome would satisfy them..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-actual-need">3. Actual Need -- What does the person genuinely need (vs. want)?</label>
+          <textarea id="l2-actual-need" placeholder="Distinguish the underlying need from the stated want..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-reframed">4. Reframed Issue -- How should the question/problem be properly stated?</label>
+          <textarea id="l2-reframed" placeholder="A more accurate framing of the real issue..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-source-fear">5. Source Fear -- What is the other party afraid of?</label>
+          <textarea id="l2-source-fear" placeholder="Fear, vulnerability, or risk driving the question..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-my-fear">6. My Fear -- What am I afraid to discover or admit?</label>
+          <textarea id="l2-my-fear" placeholder="Your own bias, blind spot, or reluctance..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l2-power">7. Power Dynamics -- Who gains and loses from different answers?</label>
+          <textarea id="l2-power" placeholder="Identify stakeholders, interests, and power differentials..."></textarea>
+        </div>
+      </div>
+      <div class="verify-bar" id="verify-bar-2">
+        <p>Complete all 7 fields before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(2)">&#10003; Mark Layer 2 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(1)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(3)">Next: Structural Patterns &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 3 -->
+    <div class="layer-panel" id="layer-3">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 3</span>
+        <h2>Structural Patterns</h2>
+        <p>Map the architecture of the situation: sequences, cycles, inconsistencies, and framing devices.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">S</span> Event Sequence (up to 5 steps)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px">Step</th>
+              <th>Event / Action</th>
+              <th style="width:30%">Significance</th>
+              <th style="width:32px"></th>
+            </tr>
+          </thead>
+          <tbody id="sequence-body">
+            <tr>
+              <td style="text-align:center;font-weight:700;color:var(--gray-500)">1</td>
+              <td><input type="text" placeholder="What happened..."></td>
+              <td><input type="text" placeholder="Why it matters..."></td>
+              <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+            </tr>
+            <tr>
+              <td style="text-align:center;font-weight:700;color:var(--gray-500)">2</td>
+              <td><input type="text" placeholder="What happened..."></td>
+              <td><input type="text" placeholder="Why it matters..."></td>
+              <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="btn-add-row" onclick="addSequenceRow()">+ Add Step (max 5)</button>
+      </div>
+      <div class="card">
+        <div class="grid-2">
+          <div class="field-row">
+            <label for="l3-repeating">Repeating Pattern</label>
+            <textarea id="l3-repeating" placeholder="What cycle or pattern keeps recurring..."></textarea>
+          </div>
+          <div class="field-row">
+            <label for="l3-inconsistency">Inconsistency</label>
+            <textarea id="l3-inconsistency" placeholder="Where the story or evidence contradicts itself..."></textarea>
+          </div>
+          <div class="field-row">
+            <label for="l3-gap">Gap</label>
+            <textarea id="l3-gap" placeholder="What is missing from the sequence or explanation..."></textarea>
+          </div>
+          <div class="field-row">
+            <label for="l3-framing">Framing Device</label>
+            <textarea id="l3-framing" placeholder="How the issue is being framed (metaphor, narrative, lens)..."></textarea>
+          </div>
+          <div class="field-row">
+            <label for="l3-emphasized">What Is Emphasized</label>
+            <textarea id="l3-emphasized" placeholder="What is being foregrounded or amplified..."></textarea>
+          </div>
+          <div class="field-row">
+            <label for="l3-minimized">What Is Minimized</label>
+            <textarea id="l3-minimized" placeholder="What is being downplayed or obscured..."></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="verify-bar" id="verify-bar-3">
+        <p>Fill all structural pattern fields before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(3)">&#10003; Mark Layer 3 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(2)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(4)">Next: Alt. Interpretations &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 4 -->
+    <div class="layer-panel" id="layer-4">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 4</span>
+        <h2>Alternative Interpretations &amp; Skeptic's Challenge</h2>
+        <p>Steel-man competing explanations. Your preferred interpretation must survive rigorous scrutiny.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">I</span> Interpretation Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:22%">Claim / Event</th>
+                <th style="width:22%">Favorable Reading</th>
+                <th style="width:22%">Alternative Reading</th>
+                <th style="width:22%">Neutral Reading</th>
+                <th style="width:10%">Conf.</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody id="interp-body">
+              <tr>
+                <td><textarea placeholder="The claim or event..." rows="3"></textarea></td>
+                <td><textarea placeholder="Best-case interpretation..." rows="3"></textarea></td>
+                <td><textarea placeholder="Adversarial or worst-case..." rows="3"></textarea></td>
+                <td><textarea placeholder="Dispassionate reading..." rows="3"></textarea></td>
+                <td><select><option>H</option><option>M</option><option>L</option></select></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addInterpRow()">+ Add Row</button>
+      </div>
+      <div class="card">
+        <div class="field-row">
+          <label for="l4-parsimonious">Most Parsimonious Explanation (Occam's Razor)</label>
+          <textarea id="l4-parsimonious" placeholder="The simplest explanation that fits all evidence..."></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">S</span> Skeptic's Challenge</h3>
+        <div class="notice notice-amber">State your preferred interpretation, then argue against it as hard as you can.</div>
+        <div class="field-row">
+          <label for="l4-skeptic">Strongest argument against your preferred interpretation</label>
+          <textarea id="l4-skeptic" placeholder="Make the most compelling case that you are wrong..." style="min-height:100px;"></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l4-defeat-evidence">Evidence needed to definitively defeat this challenge</label>
+          <textarea id="l4-defeat-evidence" placeholder="What specific evidence would settle this..."></textarea>
+        </div>
+        <div class="field-row">
+          <label>Does your preferred interpretation survive the challenge?</label>
+          <div class="radio-group">
+            <label><input type="radio" name="l4-survives" value="Yes"> Yes</label>
+            <label><input type="radio" name="l4-survives" value="Partially"> Partially</label>
+            <label><input type="radio" name="l4-survives" value="No"> No -- must revise</label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">!</span> Absolute Language Checker</h3>
+        <div class="notice notice-blue">Check every term below that appears in your analysis. Provide a qualified replacement for each checked item.</div>
+        <button class="btn btn-outline btn-sm" onclick="scanAbsoluteLanguage()" style="margin-bottom:14px;">&#128269; Live Scan All Fields</button>
+        <div id="scan-results"></div>
+        <div id="absolute-checklist"></div>
+        <div class="field-row" style="margin-top:14px;">
+          <label for="l4-verification">Verification -- How will you independently confirm your conclusion?</label>
+          <textarea id="l4-verification" placeholder="Describe the verification method..."></textarea>
+        </div>
+      </div>
+      <div class="verify-bar" id="verify-bar-4">
+        <p>Complete all fields and the skeptic's challenge before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(4)">&#10003; Mark Layer 4 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(3)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(5)">Next: Evidence &amp; Fallacies &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 5 -->
+    <div class="layer-panel" id="layer-5">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 5</span>
+        <h2>Evidence Weighting &amp; Fallacy Check</h2>
+        <p>Assign epistemic weight to each piece of evidence. Audit your reasoning for known cognitive biases.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">W</span> Evidence Weighting Table</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:32%">Evidence Description</th>
+                <th style="width:11%">Weight</th>
+                <th style="width:37%">Rationale for Weight</th>
+                <th style="width:15%">Would Change Mind?</th>
+                <th style="width:32px"></th>
+              </tr>
+            </thead>
+            <tbody id="evidence-weight-body">
+              <tr>
+                <td><textarea placeholder="Describe the piece of evidence..." rows="3"></textarea></td>
+                <td><select><option>H</option><option>M</option><option>L</option></select></td>
+                <td><textarea placeholder="Why does this evidence carry this weight..." rows="3"></textarea></td>
+                <td><select><option>Y</option><option>N</option></select></td>
+                <td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <button class="btn-add-row" onclick="addEvidenceWeightRow()">+ Add Row</button>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">B</span> Fallacy &amp; Bias Check</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:30%">Bias / Fallacy</th>
+                <th style="width:12%">Present?</th>
+                <th style="width:55%">Mitigation / Notes</th>
+              </tr>
+            </thead>
+            <tbody id="fallacy-body"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="verify-bar" id="verify-bar-5">
+        <p>Complete evidence weighting and bias audit before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(5)">&#10003; Mark Layer 5 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(4)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(6)">Next: Decision &amp; Response &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 6 -->
+    <div class="layer-panel" id="layer-6">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 6</span>
+        <h2>Decision &amp; Response</h2>
+        <p>Translate analysis into concrete, accountable action. Define thresholds, owners, and fallbacks.</p>
+      </div>
+      <div class="notice notice-amber" style="margin-bottom:20px;">
+        <strong>Threshold Check:</strong> Before deciding, confirm that Layers 0-5 are verified. Decisions made on incomplete analysis carry elevated epistemic risk.
+      </div>
+      <div class="card">
+        <div class="field-row">
+          <label for="l6-strongest-claim">Strongest Defensible Claim</label>
+          <textarea id="l6-strongest-claim" placeholder="State the most defensible conclusion you can draw from all prior layers..."></textarea>
+        </div>
+        <div class="grid-2">
+          <div class="field-row">
+            <label for="l6-confidence">Confidence Level</label>
+            <select id="l6-confidence">
+              <option value="">-- select --</option>
+              <option>High (&gt;80%)</option>
+              <option>Medium (50-80%)</option>
+              <option>Low (20-50%)</option>
+              <option>Very Low (&lt;20%)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <label for="l6-deadline">Decision / Action Deadline</label>
+            <input type="text" id="l6-deadline" placeholder="Date or timeframe...">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">A</span> Action Definition</h3>
+        <div class="field-row">
+          <label for="l6-action">Specific Action to Take</label>
+          <textarea id="l6-action" placeholder="Describe the concrete action step(s) in precise terms..."></textarea>
+        </div>
+        <div class="grid-2">
+          <div class="field-row">
+            <label for="l6-responsible">Responsible Party</label>
+            <input type="text" id="l6-responsible" placeholder="Who owns this action...">
+          </div>
+          <div class="field-row">
+            <label for="l6-minimum">Minimum Acceptable Outcome</label>
+            <input type="text" id="l6-minimum" placeholder="Floor threshold for success...">
+          </div>
+        </div>
+        <div class="field-row">
+          <label for="l6-walkaway">Walk-Away Threshold</label>
+          <textarea id="l6-walkaway" placeholder="The conditions under which you abandon this course of action..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l6-fallback">Fallback Plan</label>
+          <textarea id="l6-fallback" placeholder="What you do if the primary action fails or is blocked..."></textarea>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">U</span> Uncertainty</h3>
+        <div class="field-row">
+          <label for="l6-uncertainty">Uncertainty Statement</label>
+          <textarea id="l6-uncertainty" placeholder="Explicitly state what you do not know and cannot determine from current evidence..."></textarea>
+        </div>
+        <div class="field-row">
+          <label for="l6-evidence-resolve">Evidence That Would Resolve Key Uncertainties</label>
+          <textarea id="l6-evidence-resolve" placeholder="What specific new information would change your analysis..."></textarea>
+        </div>
+      </div>
+      <div class="verify-bar" id="verify-bar-6">
+        <p>Complete all decision fields before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(6)">&#10003; Mark Layer 6 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(5)">&#8592; Back</button>
+        <button class="btn btn-primary" onclick="showLayer(7)">Next: Summary Generator &#8594;</button>
+      </div>
+    </div>
+
+    <!-- LAYER 7 -->
+    <div class="layer-panel" id="layer-7">
+      <div class="layer-header">
+        <span class="layer-badge">LAYER 7</span>
+        <h2>Summary Generator</h2>
+        <p>Auto-assemble summaries from all prior layers. Edit the generated text to refine as needed.</p>
+      </div>
+      <div class="notice notice-blue" style="margin-bottom:20px;">
+        Click <strong>Auto-Generate Summaries</strong> to pull content from all completed layers. You may edit the generated text.
+      </div>
+      <div style="margin-bottom:24px;">
+        <button class="btn btn-primary" onclick="autoGenerateSummaries()" style="padding:10px 22px;font-size:14px;">
+          &#9889; Auto-Generate Summaries
+        </button>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">N</span> 7A -- Narrative Summary</h3>
+        <p style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">Plain prose synthesis of the full analysis, drawn from Layers 0-6.</p>
+        <div class="summary-box">
+          <textarea id="l7-narrative" placeholder="Click 'Auto-Generate Summaries' to populate this field, or write manually..." style="min-height:200px;" oninput="updateWordCount('l7-narrative','wc-narrative')"></textarea>
+          <span class="word-count" id="wc-narrative">0 words</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">E</span> 7B -- Executive Brief</h3>
+        <p style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">Condensed summary suitable for a senior decision-maker. Target: 150 words or fewer.</p>
+        <div class="summary-box">
+          <textarea id="l7-exec" placeholder="Click 'Auto-Generate Summaries' to populate this field, or write manually..." style="min-height:140px;" oninput="updateWordCount('l7-exec','wc-exec')"></textarea>
+          <span class="word-count" id="wc-exec">0 words</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">A</span> 7C -- Action Sheet</h3>
+        <p style="font-size:12px;color:var(--gray-500);margin-bottom:10px;">Pulled directly from Layer 6 action fields. Edit as needed.</p>
+        <div class="summary-box">
+          <textarea id="l7-action" placeholder="Click 'Auto-Generate Summaries' to populate this field, or write manually..." style="min-height:140px;" oninput="updateWordCount('l7-action','wc-action')"></textarea>
+          <span class="word-count" id="wc-action">0 words</span>
+        </div>
+      </div>
+      <div class="card" id="self-audit-card">
+        <h3><span class="card-icon">V</span> Self-Audit (18 Checks)</h3>
+        <p style="font-size:12px;color:var(--gray-500);margin-bottom:12px;">Runs 18 integrity checks across all layers. Available after Layer 6 is verified.</p>
+        <button class="btn btn-amber" onclick="runSelfAudit()">&#9733; Run Self-Audit</button>
+        <div id="audit-panel"></div>
+      </div>
+      <div class="verify-bar" id="verify-bar-7">
+        <p>Generate and review summaries before verifying.</p>
+        <button class="btn btn-green" onclick="verifyLayer(7)">&#10003; Mark Layer 7 as Verified</button>
+      </div>
+      <div class="layer-nav">
+        <button class="btn btn-outline" onclick="showLayer(6)">&#8592; Back</button>
+        <button class="btn btn-green" onclick="exportMarkdown()" style="padding:10px 20px;">&#8659; Export Full Analysis</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var verifiedLayers = {};
+
+function showLayer(n) {
+  document.querySelectorAll('.layer-panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('layer-' + n).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(function(item) {
+    item.classList.toggle('active', parseInt(item.dataset.layer) === n);
+  });
+  window.scrollTo(0, 0);
+}
+
+function verifyLayer(n) {
+  verifiedLayers[n] = true;
+  var bar = document.getElementById('verify-bar-' + n);
+  bar.classList.add('verified-state');
+  bar.querySelector('p').textContent = 'Layer ' + n + ' verified.';
+  var checkEl = document.getElementById('check-' + n);
+  checkEl.textContent = 'v';
+  checkEl.style.background = 'var(--green)';
+  checkEl.style.borderColor = 'var(--green)';
+  checkEl.style.color = 'white';
+  var sideItem = document.querySelector('.sidebar-item[data-layer="' + n + '"]');
+  sideItem.classList.add('verified');
+  updateProgress();
+}
+
+function updateProgress() {
+  var count = Object.keys(verifiedLayers).length;
+  var pct = (count / 8) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = count + ' / 8 layers';
+}
+
+function removeRow(btn) {
+  var row = btn.closest('tr');
+  var tbody = row.closest('tbody');
+  if (tbody.rows.length > 1) row.remove();
+}
+
+function addEvidenceRow() {
+  var tbody = document.getElementById('evidence-body');
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" placeholder="Who said it"></td>' +
+    '<td><textarea placeholder="Exact words..." rows="3"></textarea></td>' +
+    '<td><input type="text" placeholder="Date / time"></td>' +
+    '<td><select><option value="">-- select --</option><option>Statement</option><option>Document</option><option>Email</option><option>Meeting</option><option>Observation</option><option>Data</option><option>Other</option></select></td>' +
+    '<td><textarea placeholder="Medium, tone, audience..." rows="3"></textarea></td>' +
+    '<td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>';
+  tbody.appendChild(tr);
+}
+
+function addAssumptionRow() {
+  var tbody = document.getElementById('assumptions-body');
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><textarea placeholder="State the hidden assumption..." rows="3"></textarea></td>' +
+    '<td><textarea placeholder="What would prove or disprove this..." rows="3"></textarea></td>' +
+    '<td><textarea placeholder="Evidence that contradicts it..." rows="3"></textarea></td>' +
+    '<td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>';
+  tbody.appendChild(tr);
+}
+
+function addSequenceRow() {
+  var tbody = document.getElementById('sequence-body');
+  if (tbody.rows.length >= 5) { alert('Maximum 5 sequence steps.'); return; }
+  var n = tbody.rows.length + 1;
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td style="text-align:center;font-weight:700;color:var(--gray-500)">' + n + '</td>' +
+    '<td><input type="text" placeholder="What happened..."></td>' +
+    '<td><input type="text" placeholder="Why it matters..."></td>' +
+    '<td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>';
+  tbody.appendChild(tr);
+}
+
+function addInterpRow() {
+  var tbody = document.getElementById('interp-body');
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><textarea placeholder="The claim or event..." rows="3"></textarea></td>' +
+    '<td><textarea placeholder="Best-case interpretation..." rows="3"></textarea></td>' +
+    '<td><textarea placeholder="Adversarial or worst-case..." rows="3"></textarea></td>' +
+    '<td><textarea placeholder="Dispassionate reading..." rows="3"></textarea></td>' +
+    '<td><select><option>H</option><option>M</option><option>L</option></select></td>' +
+    '<td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>';
+  tbody.appendChild(tr);
+}
+
+function addEvidenceWeightRow() {
+  var tbody = document.getElementById('evidence-weight-body');
+  var tr = document.createElement('tr');
+  tr.innerHTML = '<td><textarea placeholder="Describe the piece of evidence..." rows="3"></textarea></td>' +
+    '<td><select><option>H</option><option>M</option><option>L</option></select></td>' +
+    '<td><textarea placeholder="Why does this evidence carry this weight..." rows="3"></textarea></td>' +
+    '<td><select><option>Y</option><option>N</option></select></td>' +
+    '<td class="td-action"><button class="btn-remove-row" onclick="removeRow(this)">x</button></td>';
+  tbody.appendChild(tr);
+}
+
+var ABSOLUTE_TERMS = ['void', 'fatal', 'impossible', 'always', 'never', 'proves', 'obviously', 'clearly'];
+
+(function buildAbsoluteChecklist() {
+  var container = document.getElementById('absolute-checklist');
+  ABSOLUTE_TERMS.forEach(function(term) {
+    var div = document.createElement('div');
+    div.className = 'checklist-item';
+    div.id = 'abs-item-' + term;
+    div.innerHTML = '<input type="checkbox" id="abs-chk-' + term + '" onchange="toggleAbsReplacement(\'' + term + '\')">' +
+      '<div style="flex:1"><label for="abs-chk-' + term + '">"<strong>' + term + '</strong>" -- absolute language</label>' +
+      '<div class="replacement-field" id="abs-rep-' + term + '" style="display:none">' +
+      '<input type="text" placeholder="Replace &quot;' + term + '&quot; with a qualified alternative..."></div></div>';
+    container.appendChild(div);
+  });
+})();
+
+function toggleAbsReplacement(term) {
+  var chk = document.getElementById('abs-chk-' + term);
+  document.getElementById('abs-rep-' + term).style.display = chk.checked ? 'block' : 'none';
+}
+
+function scanAbsoluteLanguage() {
+  var allText = [];
+  document.querySelectorAll('input[type="text"], textarea').forEach(function(el) { allText.push(el.value); });
+  var combined = allText.join(' ').toLowerCase();
+  var found = [];
+  ABSOLUTE_TERMS.forEach(function(term) {
+    if (new RegExp('\\b' + term + '\\b', 'i').test(combined)) found.push(term);
+  });
+  document.querySelectorAll('input[type="text"], textarea').forEach(function(el) {
+    el.classList.remove('highlight-absolute');
+    found.forEach(function(term) {
+      if (new RegExp('\\b' + term + '\\b', 'i').test(el.value)) el.classList.add('highlight-absolute');
+    });
+  });
+  var panel = document.getElementById('scan-results');
+  if (found.length === 0) {
+    panel.style.display = 'block';
+    panel.innerHTML = '<strong style="color:var(--green)">No absolute language detected.</strong>';
+  } else {
+    panel.style.display = 'block';
+    panel.innerHTML = '<strong style="color:var(--amber)">Absolute language found (' + found.length + ' term' + (found.length > 1 ? 's' : '') + '):</strong>' +
+      '<ul>' + found.map(function(t) { return '<li>"<strong>' + t + '</strong>" -- check the box below and provide a replacement</li>'; }).join('') + '</ul>';
+    found.forEach(function(term) {
+      var chk = document.getElementById('abs-chk-' + term);
+      if (chk && !chk.checked) { chk.checked = true; document.getElementById('abs-rep-' + term).style.display = 'block'; }
+    });
+  }
+}
+
+var FALLACIES = ['Confirmation Bias','Anchoring','Availability Heuristic','Authority Bias','Sunk Cost Fallacy','Straw Man','Ad Hominem','Hasty Generalization','False Dichotomy','Slippery Slope'];
+
+(function buildFallacyTable() {
+  var tbody = document.getElementById('fallacy-body');
+  FALLACIES.forEach(function(f, i) {
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td style="font-weight:600;padding:8px 6px;">' + f + '</td>' +
+      '<td><select id="fallacy-present-' + i + '"><option value="N">N</option><option value="Y">Y</option><option value="?">?</option></select></td>' +
+      '<td><textarea id="fallacy-mit-' + i + '" placeholder="How this bias could affect your analysis, and how you are mitigating it..." rows="2"></textarea></td>';
+    tbody.appendChild(tr);
+  });
+})();
+
+function updateWordCount(textareaId, counterId) {
+  var text = document.getElementById(textareaId).value.trim();
+  var words = text ? text.split(/\s+/).length : 0;
+  document.getElementById(counterId).textContent = words + ' word' + (words !== 1 ? 's' : '');
+}
+
+function getVal(id) {
+  var el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function getTableRows(tbodyId) {
+  var rows = [];
+  var tbody = document.getElementById(tbodyId);
+  if (!tbody) return rows;
+  tbody.querySelectorAll('tr').forEach(function(tr) {
+    var cells = [];
+    tr.querySelectorAll('input[type="text"], input[type="date"], textarea, select').forEach(function(el) {
+      cells.push(el.value.trim());
+    });
+    rows.push(cells);
+  });
+  return rows;
+}
+
+function autoGenerateSummaries() {
+  var evidenceRows = getTableRows('evidence-body');
+  var evidenceSummary = evidenceRows.filter(function(r) { return r[1]; }).map(function(r) {
+    return '"' + (r[1] || '[verbatim]') + '" -- ' + (r[0] || 'unnamed source') + (r[2] ? ', ' + r[2] : '');
+  }).join('\n');
+
+  var notSaid = getVal('l0-not-said');
+  var surface = getVal('l2-surface');
+  var actualNeed = getVal('l2-actual-need');
+  var reframed = getVal('l2-reframed');
+  var sourceFear = getVal('l2-source-fear');
+  var myFear = getVal('l2-my-fear');
+  var power = getVal('l2-power');
+  var repeating = getVal('l3-repeating');
+  var inconsistency = getVal('l3-inconsistency');
+  var gap = getVal('l3-gap');
+  var framing = getVal('l3-framing');
+  var parsimonious = getVal('l4-parsimonious');
+  var skeptic = getVal('l4-skeptic');
+  var survivesEl = document.querySelector('input[name="l4-survives"]:checked');
+  var survives = survivesEl ? survivesEl.value : '';
+  var strongestClaim = getVal('l6-strongest-claim');
+  var confidence = getVal('l6-confidence');
+  var action = getVal('l6-action');
+  var responsible = getVal('l6-responsible');
+  var deadline = getVal('l6-deadline');
+  var uncertainty = getVal('l6-uncertainty');
+  var fallback = getVal('l6-fallback');
+  var minimum = getVal('l6-minimum');
+  var walkaway = getVal('l6-walkaway');
+  var evidenceResolve = getVal('l6-evidence-resolve');
+
+  var assumptionRows = getTableRows('assumptions-body');
+  var assumptionsSummary = assumptionRows.filter(function(r) { return r[0] && r[0].length > 3; }).map(function(r, i) {
+    return (i+1) + '. ' + r[0] + (r[2] ? ' (Counter-evidence: ' + r[2] + ')' : '');
+  }).join('\n');
+
+  var narrative = [];
+  if (evidenceSummary) narrative.push('EVIDENCE CAPTURED\n' + evidenceSummary);
+  if (notSaid) narrative.push('NOTABLE ABSENCES\n' + notSaid);
+  if (surface || reframed) narrative.push('THE QUESTION\nSurface: ' + (surface||'--') + '\nReframed: ' + (reframed||'--') + '\nActual need: ' + (actualNeed||'--'));
+  if (sourceFear || myFear) narrative.push('FEARS & STAKES\nSource fear: ' + (sourceFear||'--') + '\nMy fear: ' + (myFear||'--') + '\nPower dynamics: ' + (power||'--'));
+  if (assumptionsSummary) narrative.push('HIDDEN ASSUMPTIONS\n' + assumptionsSummary);
+  if (repeating || inconsistency || gap) narrative.push('STRUCTURAL PATTERNS\nRepeating: ' + (repeating||'--') + '\nInconsistency: ' + (inconsistency||'--') + '\nGap: ' + (gap||'--') + '\nFraming: ' + (framing||'--'));
+  if (parsimonious) narrative.push('MOST PARSIMONIOUS EXPLANATION\n' + parsimonious);
+  if (skeptic) narrative.push("SKEPTIC'S CHALLENGE\n" + skeptic + (survives ? '\nPreferred interpretation survives: ' + survives : ''));
+  if (strongestClaim) narrative.push('CONCLUSION\n' + strongestClaim + (confidence ? ' (Confidence: ' + confidence + ')' : ''));
+  if (uncertainty) narrative.push('KEY UNCERTAINTIES\n' + uncertainty);
+
+  document.getElementById('l7-narrative').value = narrative.join('\n\n');
+  updateWordCount('l7-narrative', 'wc-narrative');
+
+  var execParts = [];
+  if (strongestClaim) execParts.push('FINDING: ' + strongestClaim);
+  if (confidence) execParts.push('CONFIDENCE: ' + confidence);
+  if (parsimonious) execParts.push('BEST EXPLANATION: ' + parsimonious);
+  if (survives) execParts.push('CHALLENGE SURVIVED: ' + survives);
+  if (uncertainty) execParts.push('KEY UNCERTAINTY: ' + uncertainty.split('.')[0] + '.');
+  if (action) execParts.push('RECOMMENDED ACTION: ' + action);
+  if (responsible) execParts.push('OWNER: ' + responsible);
+  if (deadline) execParts.push('DEADLINE: ' + deadline);
+  var execText = execParts.join('\n');
+  var execWords = execText.split(/\s+/);
+  if (execWords.length > 150) execText = execWords.slice(0, 150).join(' ') + '...';
+  document.getElementById('l7-exec').value = execText;
+  updateWordCount('l7-exec', 'wc-exec');
+
+  var actionParts = ['ACTION SHEET -- UNAF Layer 7C', ''];
+  if (strongestClaim) actionParts.push('CLAIM: ' + strongestClaim);
+  if (confidence) actionParts.push('CONFIDENCE: ' + confidence);
+  actionParts.push('');
+  actionParts.push('PRIMARY ACTION');
+  actionParts.push(action || '[not specified]');
+  actionParts.push('');
+  actionParts.push('OWNER: ' + (responsible || '[not specified]'));
+  actionParts.push('DEADLINE: ' + (deadline || '[not specified]'));
+  actionParts.push('MINIMUM ACCEPTABLE: ' + (minimum || '[not specified]'));
+  actionParts.push('WALK-AWAY THRESHOLD: ' + (walkaway || '[not specified]'));
+  actionParts.push('FALLBACK: ' + (fallback || '[not specified]'));
+  actionParts.push('');
+  actionParts.push('UNRESOLVED UNCERTAINTY: ' + (uncertainty || '[not specified]'));
+  if (evidenceResolve) actionParts.push('EVIDENCE NEEDED: ' + evidenceResolve);
+  document.getElementById('l7-action').value = actionParts.join('\n');
+  updateWordCount('l7-action', 'wc-action');
+}
+
+var AUDIT_CHECKS = [
+  { label: 'Layer 0: At least one evidence row with verbatim text', fn: function() {
+    return getTableRows('evidence-body').some(function(r) { return r[1] && r[1].length > 5; });
+  }},
+  { label: 'Layer 0: "What was NOT said" field completed', fn: function() { return getVal('l0-not-said').length > 10; }},
+  { label: 'Layer 1: At least 3 assumptions entered', fn: function() {
+    return getTableRows('assumptions-body').filter(function(r) { return r[0] && r[0].length > 5; }).length >= 3;
+  }},
+  { label: 'Layer 1: Counter-evidence provided for each assumption', fn: function() {
+    var filled = getTableRows('assumptions-body').filter(function(r) { return r[0] && r[0].length > 3; });
+    return filled.length > 0 && filled.every(function(r) { return r[2] && r[2].length > 3; });
+  }},
+  { label: 'Layer 2: Surface question completed', fn: function() { return getVal('l2-surface').length > 5; }},
+  { label: 'Layer 2: Reframed issue differs from surface question', fn: function() {
+    var s = getVal('l2-surface'), r = getVal('l2-reframed');
+    return s.length > 0 && r.length > 0 && s.toLowerCase() !== r.toLowerCase();
+  }},
+  { label: 'Layer 2: My Fear field completed (self-honesty check)', fn: function() { return getVal('l2-my-fear').length > 5; }},
+  { label: 'Layer 3: At least one structural pattern identified', fn: function() {
+    return [getVal('l3-repeating'), getVal('l3-inconsistency'), getVal('l3-gap')].some(function(v) { return v.length > 5; });
+  }},
+  { label: 'Layer 4: Interpretation table has at least one row filled', fn: function() {
+    return getTableRows('interp-body').some(function(r) { return r[0] && r[0].length > 5; });
+  }},
+  { label: "Layer 4: Skeptic's Challenge completed", fn: function() { return getVal('l4-skeptic').length > 10; }},
+  { label: 'Layer 4: Preferred interpretation survival answered', fn: function() {
+    return !!document.querySelector('input[name="l4-survives"]:checked');
+  }},
+  { label: 'Layer 4: All flagged absolute terms have replacements', fn: function() {
+    var ok = true;
+    ABSOLUTE_TERMS.forEach(function(term) {
+      var chk = document.getElementById('abs-chk-' + term);
+      if (chk && chk.checked) {
+        var rep = document.querySelector('#abs-rep-' + term + ' input');
+        if (!rep || !rep.value.trim()) ok = false;
+      }
+    });
+    return ok;
+  }},
+  { label: 'Layer 5: At least one evidence weight entry', fn: function() {
+    return getTableRows('evidence-weight-body').some(function(r) { return r[0] && r[0].length > 5; });
+  }},
+  { label: 'Layer 5: All 10 fallacy rows have mitigation notes', fn: function() {
+    for (var i = 0; i < 10; i++) {
+      var mit = document.getElementById('fallacy-mit-' + i);
+      if (!mit || mit.value.trim().length < 5) return false;
+    }
+    return true;
+  }},
+  { label: 'Layer 6: Strongest defensible claim stated', fn: function() { return getVal('l6-strongest-claim').length > 10; }},
+  { label: 'Layer 6: Specific action defined', fn: function() { return getVal('l6-action').length > 10; }},
+  { label: 'Layer 6: Uncertainty explicitly stated', fn: function() { return getVal('l6-uncertainty').length > 10; }},
+  { label: 'Layer 6: Walk-away threshold defined', fn: function() { return getVal('l6-walkaway').length > 5; }}
+];
+
+function runSelfAudit() {
+  var panel = document.getElementById('audit-panel');
+  panel.style.display = 'block';
+  var pass = 0, total = AUDIT_CHECKS.length;
+  var html = '<div style="margin-top:8px;">';
+  AUDIT_CHECKS.forEach(function(check) {
+    var result = false;
+    try { result = check.fn(); } catch(e) {}
+    if (result) pass++;
+    html += '<div class="audit-result ' + (result ? 'audit-pass' : 'audit-fail') + '">' +
+      (result ? '&#10003;' : '&#10007;') + ' ' + check.label + '</div>';
+  });
+  html += '</div>';
+  var score = Math.round((pass / total) * 100);
+  var scoreColor = score >= 80 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--red)';
+  panel.innerHTML = '<div class="audit-score" style="color:' + scoreColor + '">Score: ' + pass + ' / ' + total + ' (' + score + '%)</div>' + html;
+  showLayer(7);
+  setTimeout(function() { panel.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+}
+
+function exportMarkdown() {
+  var lines = [];
+  var now = new Date().toISOString().split('T')[0];
+  lines.push('# UNAF v1.0 -- Universal Analytical Framework');
+  lines.push('**Exported:** ' + now);
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 0 -- Exact Capture');
+  lines.push('');
+  lines.push('### Evidence Table');
+  lines.push('');
+  lines.push('| Source | Verbatim Text | Timestamp | Type | Context |');
+  lines.push('|--------|---------------|-----------|------|---------|');
+  getTableRows('evidence-body').forEach(function(r) {
+    lines.push('| ' + (r[0]||'') + ' | ' + (r[1]||'').replace(/\n/g,' ') + ' | ' + (r[2]||'') + ' | ' + (r[3]||'') + ' | ' + (r[4]||'').replace(/\n/g,' ') + ' |');
+  });
+  lines.push('');
+  lines.push('### What Was NOT Said');
+  lines.push('');
+  lines.push(getVal('l0-not-said') || '_Not completed._');
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 1 -- Hidden Assumptions');
+  lines.push('');
+  lines.push('| # | Assumption | Why Unproven | Counter-Evidence |');
+  lines.push('|---|-----------|-------------|-----------------|');
+  getTableRows('assumptions-body').forEach(function(r, i) {
+    lines.push('| ' + (i+1) + ' | ' + (r[0]||'').replace(/\n/g,' ') + ' | ' + (r[1]||'').replace(/\n/g,' ') + ' | ' + (r[2]||'').replace(/\n/g,' ') + ' |');
+  });
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 2 -- Question Behind the Question');
+  lines.push('');
+  [['Surface Question','l2-surface'],['Unstated Goal','l2-unstated'],['Actual Need','l2-actual-need'],
+   ['Reframed Issue','l2-reframed'],['Source Fear','l2-source-fear'],['My Fear','l2-my-fear'],['Power Dynamics','l2-power']
+  ].forEach(function(pair) {
+    lines.push('**' + pair[0] + ':** ' + (getVal(pair[1]) || '_Not completed._'));
+    lines.push('');
+  });
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 3 -- Structural Patterns');
+  lines.push('');
+  lines.push('### Event Sequence');
+  lines.push('');
+  getTableRows('sequence-body').forEach(function(r, i) {
+    if (r[1]) lines.push((i+1) + '. **' + r[1] + '** -- ' + (r[2]||''));
+  });
+  lines.push('');
+  [['Repeating Pattern','l3-repeating'],['Inconsistency','l3-inconsistency'],['Gap','l3-gap'],
+   ['Framing Device','l3-framing'],['Emphasized','l3-emphasized'],['Minimized','l3-minimized']
+  ].forEach(function(pair) {
+    lines.push('**' + pair[0] + ':** ' + (getVal(pair[1]) || '_Not completed._'));
+    lines.push('');
+  });
+  lines.push('---');
+  lines.push('');
+  lines.push("## Layer 4 -- Alternative Interpretations & Skeptic's Challenge");
+  lines.push('');
+  lines.push('| Claim | Favorable | Alternative | Neutral | Confidence |');
+  lines.push('|-------|-----------|-------------|---------|------------|');
+  getTableRows('interp-body').forEach(function(r) {
+    lines.push('| ' + (r[0]||'').replace(/\n/g,' ') + ' | ' + (r[1]||'').replace(/\n/g,' ') + ' | ' + (r[2]||'').replace(/\n/g,' ') + ' | ' + (r[3]||'').replace(/\n/g,' ') + ' | ' + (r[4]||'') + ' |');
+  });
+  lines.push('');
+  lines.push('**Most Parsimonious Explanation:** ' + (getVal('l4-parsimonious') || '_Not completed._'));
+  lines.push('');
+  lines.push("**Skeptic's Challenge:** " + (getVal('l4-skeptic') || '_Not completed._'));
+  lines.push('');
+  lines.push('**Evidence to Defeat Challenge:** ' + (getVal('l4-defeat-evidence') || '_Not completed._'));
+  var survivesEl = document.querySelector('input[name="l4-survives"]:checked');
+  lines.push('**Preferred Interpretation Survives:** ' + (survivesEl ? survivesEl.value : '_Not answered._'));
+  lines.push('');
+  lines.push('### Absolute Language Checklist');
+  lines.push('');
+  ABSOLUTE_TERMS.forEach(function(term) {
+    var chk = document.getElementById('abs-chk-' + term);
+    var rep = document.querySelector('#abs-rep-' + term + ' input');
+    var repVal = rep ? rep.value.trim() : '';
+    if (chk && chk.checked) {
+      lines.push('- **"' + term + '"** FLAGGED. Replacement: ' + (repVal || '_none provided_'));
+    } else {
+      lines.push('- "' + term + '" -- not flagged');
+    }
+  });
+  lines.push('');
+  lines.push('**Verification:** ' + (getVal('l4-verification') || '_Not completed._'));
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 5 -- Evidence Weighting & Fallacy Check');
+  lines.push('');
+  lines.push('| Evidence | Weight | Rationale | Would Change Mind |');
+  lines.push('|----------|--------|-----------|------------------|');
+  getTableRows('evidence-weight-body').forEach(function(r) {
+    lines.push('| ' + (r[0]||'').replace(/\n/g,' ') + ' | ' + (r[1]||'') + ' | ' + (r[2]||'').replace(/\n/g,' ') + ' | ' + (r[3]||'') + ' |');
+  });
+  lines.push('');
+  lines.push('### Fallacy Check');
+  lines.push('');
+  lines.push('| Bias | Present | Mitigation |');
+  lines.push('|------|---------|------------|');
+  FALLACIES.forEach(function(f, i) {
+    var present = document.getElementById('fallacy-present-' + i);
+    var mit = document.getElementById('fallacy-mit-' + i);
+    lines.push('| ' + f + ' | ' + (present ? present.value : '') + ' | ' + (mit ? mit.value.replace(/\n/g,' ') : '') + ' |');
+  });
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 6 -- Decision & Response');
+  lines.push('');
+  [['Strongest Defensible Claim','l6-strongest-claim'],['Confidence Level','l6-confidence'],
+   ['Specific Action','l6-action'],['Responsible Party','l6-responsible'],['Deadline','l6-deadline'],
+   ['Minimum Acceptable Outcome','l6-minimum'],['Walk-Away Threshold','l6-walkaway'],
+   ['Fallback Plan','l6-fallback'],['Uncertainty Statement','l6-uncertainty'],
+   ['Evidence to Resolve Uncertainties','l6-evidence-resolve']
+  ].forEach(function(pair) {
+    lines.push('**' + pair[0] + ':** ' + (getVal(pair[1]) || '_Not completed._'));
+    lines.push('');
+  });
+  lines.push('---');
+  lines.push('');
+  lines.push('## Layer 7 -- Summary Generator');
+  lines.push('');
+  lines.push('### 7A -- Narrative Summary');
+  lines.push('');
+  lines.push(getVal('l7-narrative') || '_Not generated._');
+  lines.push('');
+  lines.push('### 7B -- Executive Brief');
+  lines.push('');
+  lines.push(getVal('l7-exec') || '_Not generated._');
+  lines.push('');
+  lines.push('### 7C -- Action Sheet');
+  lines.push('');
+  lines.push(getVal('l7-action') || '_Not generated._');
+  lines.push('');
+  lines.push('---');
+  lines.push('');
+  lines.push('## Self-Audit Results');
+  lines.push('');
+  var pass = 0;
+  AUDIT_CHECKS.forEach(function(check) {
+    var result = false;
+    try { result = check.fn(); } catch(e) {}
+    if (result) pass++;
+    lines.push('- [' + (result ? 'x' : ' ') + '] ' + check.label);
+  });
+  lines.push('');
+  lines.push('**Score: ' + pass + ' / ' + AUDIT_CHECKS.length + ' (' + Math.round((pass/AUDIT_CHECKS.length)*100) + '%)**');
+  lines.push('');
+  lines.push('---');
+  lines.push('_Generated by UNAF v1.0 -- Universal Analytical Framework_');
+
+  var blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'UNAF-analysis-' + now + '.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+updateProgress();
+</script>
+</body>
+</html>

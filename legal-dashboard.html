@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConstruX Legal — Case Dashboard 26STUD00430</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #1e40af;
+            --accent: #3b82f6;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --urgent: #dc2626;
+            --warn: #d97706;
+            --ok: #16a34a;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f1f5f9; color: var(--dark); }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 0; left: 0; height: 100vh; width: 240px;
+            background: var(--dark); overflow-y: auto; z-index: 40;
+            display: flex; flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .sidebar-logo {
+            padding: 20px 16px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .sidebar-logo .badge {
+            background: var(--urgent); color: white; font-size: 9px;
+            font-weight: 700; padding: 2px 6px; border-radius: 3px;
+            letter-spacing: 0.5px; margin-left: 6px; vertical-align: middle;
+        }
+        .nav-section { padding: 12px 8px 4px; font-size: 10px; font-weight: 600;
+            color: #64748b; letter-spacing: 1px; text-transform: uppercase; }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+            border-radius: 6px; margin: 1px 8px; cursor: pointer;
+            font-size: 13px; color: #94a3b8; transition: all 0.2s;
+            text-decoration: none;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.07); color: white; }
+        .nav-item.active { background: var(--primary); color: white; }
+        .nav-item .icon { font-size: 15px; width: 20px; text-align: center; }
+        .matter-tag {
+            font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px;
+            margin-left: auto; letter-spacing: 0.3px;
+        }
+        .status-block {
+            margin: 12px; padding: 12px; border-radius: 8px;
+            background: rgba(220,38,38,0.15); border: 1px solid rgba(220,38,38,0.3);
+        }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%;
+            background: #dc2626; display: inline-block; margin-right: 6px;
+            animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; } 50% { opacity: 0.4; }
+        }
+
+        /* Main content */
+        .main { margin-left: 240px; min-height: 100vh; }
+        .topbar {
+            background: white; border-bottom: 1px solid #e2e8f0;
+            padding: 14px 24px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 30;
+        }
+        .content { padding: 24px; }
+
+        /* Stat cards */
+        .stat-card {
+            background: white; border-radius: 10px; padding: 20px;
+            border: 1px solid #e2e8f0; transition: box-shadow 0.2s;
+        }
+        .stat-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .stat-card .value { font-size: 28px; font-weight: 700; line-height: 1; margin: 6px 0 4px; }
+        .stat-card .label { font-size: 12px; color: #64748b; font-weight: 500; }
+        .stat-card .icon-box {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; margin-bottom: 8px;
+        }
+
+        /* Section headers */
+        .section-head {
+            font-size: 13px; font-weight: 700; color: var(--dark);
+            letter-spacing: 0.3px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .section-head .line { flex: 1; height: 1px; background: #e2e8f0; }
+
+        /* Cards */
+        .card { background: white; border-radius: 10px; border: 1px solid #e2e8f0; overflow: hidden; }
+        .card-head { padding: 14px 16px; border-bottom: 1px solid #f1f5f9;
+            font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+
+        /* Deadline items */
+        .deadline-item {
+            display: flex; align-items: center; gap: 12px; padding: 10px 16px;
+            border-bottom: 1px solid #f8fafc; transition: background 0.15s;
+        }
+        .deadline-item:hover { background: #f8fafc; }
+        .deadline-item:last-child { border-bottom: none; }
+        .dl-badge {
+            font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 4px;
+            min-width: 60px; text-align: center; letter-spacing: 0.3px;
+        }
+
+        /* Evidence layers */
+        .evidence-item {
+            padding: 10px 16px; border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .evidence-item:last-child { border-bottom: none; }
+        .layer-num {
+            width: 24px; height: 24px; border-radius: 50%; background: var(--primary);
+            color: white; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .stars { color: #f59e0b; font-size: 12px; letter-spacing: 1px; }
+
+        /* Task items */
+        .task-item {
+            padding: 10px 16px; border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .task-item:last-child { border-bottom: none; }
+        .priority-num {
+            width: 22px; height: 22px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; margin-top: 1px;
+        }
+
+        /* Document checklist */
+        .doc-item {
+            padding: 8px 16px; border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap: 10px; font-size: 12px;
+        }
+        .doc-item:last-child { border-bottom: none; }
+        .check { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+
+        /* Activity feed */
+        .activity-item {
+            padding: 10px 16px; border-bottom: 1px solid #f1f5f9;
+            display: flex; gap: 10px;
+        }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px;
+        }
+
+        /* Actors */
+        .actor-item {
+            padding: 10px 16px; border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .actor-item:last-child { border-bottom: none; }
+        .actor-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: white; flex-shrink: 0;
+        }
+
+        /* Quick actions */
+        .action-btn {
+            display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+            border-radius: 8px; cursor: pointer; border: none; width: 100%;
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+            transition: all 0.2s; text-align: left;
+        }
+        .action-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .action-btn .icon { font-size: 18px; }
+
+        /* Matter cards */
+        .matter-card { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .matter-head { padding: 14px 16px; display: flex; align-items: center; gap: 10px; }
+        .matter-body { background: white; padding: 14px 16px; }
+
+        /* Mobile sidebar toggle */
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 39; }
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; }
+            .topbar { padding: 12px 16px; }
+            .content { padding: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar Overlay (mobile) -->
+<div class="sidebar-overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="flex items-center gap-2 mb-1">
+            <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">C</div>
+            <span class="text-white font-bold text-base">ConstruX Legal</span>
+        </div>
+        <div class="text-xs text-slate-400 mt-1">
+            Case 26STUD00430
+            <span class="badge">URGENT</span>
+        </div>
+    </div>
+
+    <div class="nav-section">Navigation</div>
+    <a href="#overview" class="nav-item active" onclick="setActive(this)">
+        <span class="icon">◉</span> Overview
+    </a>
+    <a href="#matters" class="nav-item" onclick="setActive(this)">
+        <span class="icon">⚖</span> Matters
+        <span class="matter-tag" style="background:#dc2626;color:white">2</span>
+    </a>
+    <a href="#evidence" class="nav-item" onclick="setActive(this)">
+        <span class="icon">🔍</span> Evidence Vault
+        <span class="matter-tag" style="background:#2563eb;color:white">10</span>
+    </a>
+    <a href="#documents" class="nav-item" onclick="setActive(this)">
+        <span class="icon">📄</span> Documents
+    </a>
+    <a href="#tasks" class="nav-item" onclick="setActive(this)">
+        <span class="icon">✓</span> Task Queue
+        <span class="matter-tag" style="background:#d97706;color:white">5</span>
+    </a>
+    <a href="#actors" class="nav-item" onclick="setActive(this)">
+        <span class="icon">👤</span> Key Actors
+    </a>
+    <a href="#activity" class="nav-item" onclick="setActive(this)">
+        <span class="icon">◎</span> Activity Feed
+    </a>
+
+    <div class="nav-section mt-2">Employment Matter</div>
+    <a href="#employment" class="nav-item" onclick="setActive(this)">
+        <span class="icon">💼</span> FloodAid Inc.
+        <span class="matter-tag" style="background:#7c3aed;color:white">$25K</span>
+    </a>
+
+    <div style="flex:1"></div>
+
+    <div class="status-block mx-2 mb-3">
+        <div class="text-xs text-red-300 font-semibold mb-1">
+            <span class="status-dot"></span>WRIT ACTIVE
+        </div>
+        <div class="text-xs text-slate-400">Issued March 17, 2026</div>
+        <div class="text-xs text-slate-400 mt-1">MO Held: <span class="text-red-300 font-semibold">38+ days</span></div>
+    </div>
+</aside>
+
+<!-- Main Content -->
+<div class="main">
+
+    <!-- Top Bar -->
+    <div class="topbar">
+        <div class="flex items-center gap-3">
+            <button class="md:hidden text-slate-500 text-xl" onclick="toggleSidebar()">☰</button>
+            <div>
+                <div class="font-semibold text-sm text-slate-800">Gateways Apartment LP v. Kyle Theus</div>
+                <div class="text-xs text-slate-500">Los Angeles Superior Court · Dept. 91 · Judge Madokoro</div>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="hidden md:flex items-center gap-2 text-xs bg-red-50 border border-red-200 text-red-700 px-3 py-1.5 rounded-full font-semibold">
+                <span class="status-dot" style="background:#dc2626"></span>
+                WRIT OF POSSESSION ACTIVE
+            </div>
+            <div class="text-xs text-slate-500">Report: Apr 17, 2026</div>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Stat Cards -->
+        <div id="overview" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat-card">
+                <div class="icon-box" style="background:#eff6ff">⚖</div>
+                <div class="value text-blue-700">2</div>
+                <div class="label">Active Matters</div>
+                <div class="text-xs text-slate-400 mt-1">Housing + Employment</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-box" style="background:#fef2f2">⚠</div>
+                <div class="value text-red-600">ACTIVE</div>
+                <div class="label">Writ of Possession</div>
+                <div class="text-xs text-red-400 mt-1">Issued Mar 17, 2026</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-box" style="background:#fefce8">🔍</div>
+                <div class="value text-amber-600">10</div>
+                <div class="label">Evidence Layers</div>
+                <div class="text-xs text-slate-400 mt-1">3 at strength 5/5</div>
+            </div>
+            <div class="stat-card">
+                <div class="icon-box" style="background:#fef2f2">⏱</div>
+                <div class="value text-red-600">38</div>
+                <div class="label">Days MO Held</div>
+                <div class="text-xs text-red-400 mt-1">$2,667 retained by landlord</div>
+            </div>
+        </div>
+
+        <!-- Deadlines + Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+
+            <!-- Deadline Tracker -->
+            <div class="card md:col-span-2">
+                <div class="card-head">
+                    <span>⏰</span> Deadline Tracker
+                    <span class="ml-auto text-xs text-red-500 font-semibold">3 OVERDUE / URGENT</span>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#dc2626;color:white">OVERDUE</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">File Ex Parte Application for Stay of Execution</div>
+                        <div class="text-xs text-slate-500">Dept. 1, Stanley Mosk · 1:30 PM · Online by 10 AM day before</div>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#dc2626;color:white">OVERDUE</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">Return $2,667 Money Orders</div>
+                        <div class="text-xs text-slate-500">Promised Mar 23 · Confirmed again Mar 25 · Not sent as of Apr 17</div>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#d97706;color:white">URGENT</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">Notify PHA / HACLA — Section 8 Voucher</div>
+                        <div class="text-xs text-slate-500">24 CFR §982.555 informal hearing rights at risk</div>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#d97706;color:white">URGENT</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">Confirm Brother Retained Ashley's Receipt</div>
+                        <div class="text-xs text-slate-500">Physical receipt from Mar 13 — most powerful single exhibit</div>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#2563eb;color:white">PARALLEL</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">Send FloodAid $25,000 Demand Letter</div>
+                        <div class="text-xs text-slate-500">5-business-day deadline · DLSE + CRD filings ready</div>
+                    </div>
+                </div>
+                <div class="deadline-item">
+                    <span class="dl-badge" style="background:#16a34a;color:white">ON TRACK</span>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-800">CCP §473(b) Motion Window</div>
+                        <div class="text-xs text-slate-500">6 months from Mar 13, 2026 · Deadline Sep 13, 2026</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-head"><span>⚡</span> Quick Actions</div>
+                <div class="p-3 space-y-2">
+                    <button class="action-btn" style="background:#dc2626;color:white">
+                        <span class="icon">⚖</span>
+                        <div>
+                            <div>File Ex Parte Stay</div>
+                            <div style="font-size:10px;font-weight:400;opacity:0.85">Dept. 1 · 1:30 PM</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" style="background:#1e40af;color:white">
+                        <span class="icon">📨</span>
+                        <div>
+                            <div>Draft PHA Letter</div>
+                            <div style="font-size:10px;font-weight:400;opacity:0.85">24 CFR §982.555</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" style="background:#7c3aed;color:white">
+                        <span class="icon">💼</span>
+                        <div>
+                            <div>Send Employment Demand</div>
+                            <div style="font-size:10px;font-weight:400;opacity:0.85">$25,000 · FloodAid</div>
+                        </div>
+                    </button>
+                    <button class="action-btn" style="background:#374151;color:white">
+                        <span class="icon">📞</span>
+                        <div>
+                            <div>Call Sheriff Division</div>
+                            <div style="font-size:10px;font-weight:400;opacity:0.85">(213) 974-6001</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Matter Cards -->
+        <div id="matters" class="mb-6">
+            <div class="section-head"><span>⚖</span> Active Matters <div class="line"></div></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Housing Matter -->
+                <div class="matter-card">
+                    <div class="matter-head" style="background:#dc2626">
+                        <div class="w-8 h-8 rounded-lg bg-white bg-opacity-20 flex items-center justify-center text-white font-bold text-sm">H</div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-white text-sm">Housing / Unlawful Detainer</div>
+                            <div class="text-xs text-red-100">Case 26STUD00430 · IMMEDIATE</div>
+                        </div>
+                        <span class="text-white text-xs font-bold bg-white bg-opacity-20 px-2 py-1 rounded">WRIT ACTIVE</span>
+                    </div>
+                    <div class="matter-body">
+                        <div class="grid grid-cols-2 gap-3 text-xs mb-3">
+                            <div><div class="text-slate-400 mb-0.5">Judgment</div><div class="font-semibold">$2,452.72</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Payment Tendered</div><div class="font-semibold text-green-600">$2,667.00</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Overpayment</div><div class="font-semibold text-amber-600">+$214.28</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Tenancy</div><div class="font-semibold">~9 years</div></div>
+                        </div>
+                        <div class="text-xs text-slate-600 bg-slate-50 rounded p-2 leading-relaxed">
+                            Judgment entered Mar 13 after non-appearance (family emergency). Full payment accepted same day by Ashley Ross — receipt issued. Reversed Mar 16. Writ issued Mar 17. $2,667 held 38+ days. No sheriff posting yet.
+                        </div>
+                        <div class="mt-2 flex gap-2 flex-wrap">
+                            <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded font-medium">CCP §473(b)</span>
+                            <span class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded font-medium">CCP §1161.5</span>
+                            <span class="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-2 py-0.5 rounded font-medium">Section 8</span>
+                            <span class="text-xs bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded font-medium">Equitable Estoppel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Employment Matter -->
+                <div class="matter-card" id="employment">
+                    <div class="matter-head" style="background:#7c3aed">
+                        <div class="w-8 h-8 rounded-lg bg-white bg-opacity-20 flex items-center justify-center text-white font-bold text-sm">E</div>
+                        <div class="flex-1">
+                            <div class="font-semibold text-white text-sm">Employment / FloodAid Inc.</div>
+                            <div class="text-xs text-purple-100">Wrongful Termination · PARALLEL</div>
+                        </div>
+                        <span class="text-white text-xs font-bold bg-white bg-opacity-20 px-2 py-1 rounded">$25,000</span>
+                    </div>
+                    <div class="matter-body">
+                        <div class="grid grid-cols-2 gap-3 text-xs mb-3">
+                            <div><div class="text-slate-400 mb-0.5">Demand</div><div class="font-semibold text-purple-600">$25,000</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Deadline After Send</div><div class="font-semibold">5 business days</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Termination</div><div class="font-semibold">Dec 5, 2025</div></div>
+                            <div><div class="text-slate-400 mb-0.5">Gap to Accom. Request</div><div class="font-semibold text-red-600">72 hours</div></div>
+                        </div>
+                        <div class="text-xs text-slate-600 bg-slate-50 rounded p-2 leading-relaxed">
+                            Terminated 72 hours after formal accommodation request for back injury. Wages paid via Venmo — no paystubs. Missing hours acknowledged, not paid. Defamatory cropped spreadsheet used to accuse Kyle of extortion.
+                        </div>
+                        <div class="mt-2 flex gap-2 flex-wrap">
+                            <span class="text-xs bg-purple-50 text-purple-600 border border-purple-200 px-2 py-0.5 rounded font-medium">FEHA Retaliation</span>
+                            <span class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded font-medium">LC §203</span>
+                            <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded font-medium">Defamation</span>
+                            <span class="text-xs bg-slate-50 text-slate-600 border border-slate-200 px-2 py-0.5 rounded font-medium">ADA</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evidence Vault + Task Queue -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+            <!-- Evidence Vault -->
+            <div class="card" id="evidence">
+                <div class="card-head">
+                    <span>🔍</span> Evidence Vault — Housing
+                    <span class="ml-auto text-xs text-slate-500">10 layers</span>
+                </div>
+                <div>
+                    <div class="evidence-item">
+                        <div class="layer-num">1</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Email Thread Contradiction</span>
+                                <span class="stars">★★★★★</span>
+                            </div>
+                            <div class="text-xs text-slate-500">"Re: No Payment Received" + money order photos · Digital · Kyle</div>
+                        </div>
+                        <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold flex-shrink-0">KEY</span>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">2</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Money Orders + Purchase Receipts</span>
+                                <span class="stars">★★★★★</span>
+                            </div>
+                            <div class="text-xs text-slate-500">$2,667.00 · Physical · Keenan (brother)</div>
+                        </div>
+                        <span class="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded font-semibold flex-shrink-0">HELD</span>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">3</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Physical Receipt from Ashley Ross</span>
+                                <span class="stars">★★★★★</span>
+                            </div>
+                            <div class="text-xs text-red-500 font-medium">MUST CONFIRM — Brother may hold this</div>
+                        </div>
+                        <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold flex-shrink-0">CONFIRM</span>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">4</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Original Agreement (Martha + Ashley)</span>
+                                <span class="stars">★★★★☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Promissory estoppel · Testimony · Ashley Ross witness</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">5</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">March 11 Confirmation Call</span>
+                                <span class="stars">★★★★☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">5-min call log 2:27 PM · Apparent authority established</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">6</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Post-Payment Disclosure Sequence</span>
+                                <span class="stars">★★★★☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Martha informed before Ashley called Kyle · Reasonable reliance</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">7</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Internal Org. Fragmentation</span>
+                                <span class="stars">★★★☆☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Ashley surprised by Martha's possession-only position</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">8</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Martha's Blocked Number Call</span>
+                                <span class="stars">★★★☆☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Deliberate exclusion of Ashley as witness · Concealed writ</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num">9</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Abandonment Notice Contradiction</span>
+                                <span class="stars">★★★★☆</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Filed Jan 15 · UD filed Jan 16 · Incompatible positions</div>
+                        </div>
+                    </div>
+                    <div class="evidence-item">
+                        <div class="layer-num" style="background:#dc2626">10</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-800">Money Orders Not Sent — 38 Days</span>
+                                <span class="stars">★★★★☆</span>
+                            </div>
+                            <div class="text-xs text-red-500 font-medium">Promised Mar 23 · Confirmed Mar 25 · Not sent Apr 17</div>
+                        </div>
+                        <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold flex-shrink-0">LIVE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task Priority Queue -->
+            <div class="card" id="tasks">
+                <div class="card-head">
+                    <span>✓</span> Task Priority Queue
+                    <span class="ml-auto text-xs text-slate-500">5 tasks</span>
+                </div>
+                <div>
+                    <div class="task-item">
+                        <div class="priority-num" style="background:#dc2626">P1</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-semibold text-slate-800">File Ex Parte Stay Application</span>
+                                <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold">HOUSING</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Dept. 1, Stanley Mosk · 1:30 PM · Online or in-person</div>
+                        </div>
+                        <span class="text-xs font-bold text-red-600 flex-shrink-0">NOW</span>
+                    </div>
+                    <div class="task-item">
+                        <div class="priority-num" style="background:#dc2626">P2</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-semibold text-slate-800">Motion to Set Aside — CCP §473(b)</span>
+                                <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold">HOUSING</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Full declaration + P&A + proposed order · File once stay granted</div>
+                        </div>
+                        <span class="text-xs font-bold text-red-600 flex-shrink-0">NEXT</span>
+                    </div>
+                    <div class="task-item">
+                        <div class="priority-num" style="background:#d97706">P3</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-semibold text-slate-800">PHA / Section 8 Notification</span>
+                                <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold">HOUSING</span>
+                            </div>
+                            <div class="text-xs text-slate-500">24 CFR §982.555 · Informal hearing rights · Certified mail</div>
+                        </div>
+                        <span class="text-xs font-bold text-amber-600 flex-shrink-0">URGENT</span>
+                    </div>
+                    <div class="task-item">
+                        <div class="priority-num" style="background:#0ea5e9">P4</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-semibold text-slate-800">Monitor Ashley Ross Email Thread</span>
+                                <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded font-semibold">HOUSING</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Every response or non-response is evidentiary</div>
+                        </div>
+                        <span class="text-xs font-bold text-blue-500 flex-shrink-0">ONGOING</span>
+                    </div>
+                    <div class="task-item">
+                        <div class="priority-num" style="background:#7c3aed">P5</div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <span class="text-xs font-semibold text-slate-800">FloodAid $25K Demand + DLSE/CRD</span>
+                                <span class="text-xs bg-purple-50 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded font-semibold">EMPLOYMENT</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Ready to send · Regulatory filings prepared · 5-day deadline</div>
+                        </div>
+                        <span class="text-xs font-bold text-purple-600 flex-shrink-0">PARALLEL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Document Checklist + Key Actors -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+
+            <!-- Document Checklist -->
+            <div class="card" id="documents">
+                <div class="card-head">
+                    <span>📄</span> Document Checklist
+                    <span class="ml-auto text-xs"><span class="text-green-600 font-semibold">12 confirmed</span> · <span class="text-red-500 font-semibold">3 critical missing</span></span>
+                </div>
+                <div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>3-Day Notice to Pay or Quit (Dec 8, 2025)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Notice of Belief of Abandonment (Jan 15, 2026)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>UD-100 Complaint (Jan 16, 2026)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>UD-105 Answer (Feb 10, 2026)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>March 13 Minute Order</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Writ of Possession (Mar 17, 2026)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Full Case Register (3 pages)</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Money Orders + Purchase Receipts — $2,667</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Email "Re: No Payment Received" + MO photos</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Mar 25 email — certified mail promise</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Martha blocked-number call transcript</span></div>
+                    <div class="doc-item"><span class="check text-green-500">✓</span><span>Stay Housed LA intake confirmation</span></div>
+                    <div class="doc-item bg-red-50"><span class="check text-red-500">✗</span><span class="text-red-600 font-medium">Physical receipt from Ashley Ross — CONFIRM with Keenan</span></div>
+                    <div class="doc-item bg-red-50"><span class="check text-red-500">✗</span><span class="text-red-600 font-medium">PHA name for Declaration ¶12</span></div>
+                    <div class="doc-item bg-amber-50"><span class="check text-amber-500">!</span><span class="text-amber-700 font-medium">Travel/medical records corroborating Tulare emergency</span></div>
+                    <div class="doc-item bg-amber-50"><span class="check text-amber-500">!</span><span class="text-amber-700 font-medium">Supervisor Michael's written privacy disclosure statement</span></div>
+                </div>
+            </div>
+
+            <!-- Key Actors -->
+            <div class="card" id="actors">
+                <div class="card-head"><span>👤</span> Key Actors</div>
+                <div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#dc2626">KT</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Kyle Theus</div>
+                            <div class="text-xs text-slate-500">Defendant · Self-represented · Section 8 · Tulare, CA</div>
+                        </div>
+                        <span class="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded">DEFENDANT</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#374151">AR</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Ashley Ross</div>
+                            <div class="text-xs text-slate-500">RT & Co. · Accepted payment · Issued receipt · Key witness</div>
+                        </div>
+                        <span class="text-xs bg-amber-50 text-amber-600 border border-amber-200 px-1.5 py-0.5 rounded">WITNESS</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#dc2626">MA</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Martha Acosta</div>
+                            <div class="text-xs text-slate-500">Management · Called from blocked # · "We want possession"</div>
+                        </div>
+                        <span class="text-xs bg-red-50 text-red-600 border border-red-200 px-1.5 py-0.5 rounded">ADVERSE</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#1e40af">CE</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Chris Evans #202135</div>
+                            <div class="text-xs text-slate-500">Kimball Tirey & St. John · (213) 337-0050</div>
+                        </div>
+                        <span class="text-xs bg-slate-50 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded">PLAINTIFF ATTY</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#374151">MM</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Hon. Mike H. Madokoro</div>
+                            <div class="text-xs text-slate-500">Dept. 91 · Stanley Mosk Courthouse</div>
+                        </div>
+                        <span class="text-xs bg-slate-50 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded">JUDGE</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#16a34a">KB</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Keenan (Brother)</div>
+                            <div class="text-xs text-slate-500">Delivered $2,667 · Received receipt · Must confirm if retained</div>
+                        </div>
+                        <span class="text-xs bg-green-50 text-green-600 border border-green-200 px-1.5 py-0.5 rounded">PROXY</span>
+                    </div>
+                    <div class="actor-item">
+                        <div class="actor-avatar" style="background:#7c3aed">KJ</div>
+                        <div class="flex-1">
+                            <div class="text-xs font-semibold text-slate-800">Kendra Jimenez (Robinson)</div>
+                            <div class="text-xs text-slate-500">FloodAid PM · Termination decision-maker · kendra@getfloodaid.com</div>
+                        </div>
+                        <span class="text-xs bg-purple-50 text-purple-600 border border-purple-200 px-1.5 py-0.5 rounded">EMPLOYMENT</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Feed -->
+        <div class="card mb-6" id="activity">
+            <div class="card-head"><span>◎</span> Activity Feed <span class="ml-auto text-xs text-slate-500">Recent events</span></div>
+            <div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Money orders still not returned — Day 38</div>
+                        <div class="text-xs text-slate-500">$2,667 held by landlord since Mar 13. Last promise: Mar 25. Kyle in Tulare waiting.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Apr 17</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Notice discrepancy photograph confirmed</div>
+                        <div class="text-xs text-slate-500">Side-by-side: $528 notice vs $2,384 internal note vs $2,462.72 judgment (4.5x discrepancy).</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Apr 16</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#d97706; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Kyle sends URGENT email re: uncashed money orders</div>
+                        <div class="text-xs text-slate-500">"6 days since certified mail promise." Documents $2,667 for court filing.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 29</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#d97706; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Ashley Ross: "Please move forward as you feel necessary"</div>
+                        <div class="text-xs text-slate-500">Forwarded to Martha and John. Confirms management fully notified of payment dispute.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 26</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#d97706; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Ashley confirms Tulare address — promises to send MOs</div>
+                        <div class="text-xs text-slate-500">"Yes, that is the address I have. I will let you know once we send them out." — 2:52 PM</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 25</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#16a34a; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Stay Housed LA intake completed</div>
+                        <div class="text-xs text-slate-500">Priority area assigned. Office will call back.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 25</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Landlord email: "You are welcome to file a dismissal"</div>
+                        <div class="text-xs text-slate-500">Written non-objection to dismissal. Confirms money orders being returned by certified mail (never sent).</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 23</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">SMOKING GUN: Ashley email "Re: No Payment Received" + MO photos</div>
+                        <div class="text-xs text-slate-500">Simultaneous denial of receipt and photographic proof of possession. Strength 5/5.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 19</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Martha: "We want possession, not the money" (blocked #)</div>
+                        <div class="text-xs text-slate-500">Called from blocked number to exclude Ashley as witness. Did not disclose writ issued 2 days prior.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 19</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Writ of Possession issued</div>
+                        <div class="text-xs text-slate-500">Landlord also called Kyle 3 times same day (4:23, 4:29, 4:48 PM) — all missed.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 17</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Institutional reversal — payment rejected</div>
+                        <div class="text-xs text-slate-500">Ashley contacts Kyle: cannot accept payment. Moving forward with judgment.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 16</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#16a34a; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">$2,667 delivered to Ashley Ross — receipt issued</div>
+                        <div class="text-xs text-slate-500">Same day as judgment. Keenan delivers money orders before 5 PM. Ashley accepts, issues receipt, calls Kyle.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 13 PM</div>
+                </div>
+                <div class="activity-item">
+                    <div class="activity-dot" style="background:#dc2626; margin-top:4px"></div>
+                    <div class="flex-1">
+                        <div class="text-xs font-semibold text-slate-800">Judgment entered — non-appearance (family emergency)</div>
+                        <div class="text-xs text-slate-500">Kyle in Tulare with grandmother. $528 + $1,924.72 = $2,452.72. Possession granted.</div>
+                    </div>
+                    <div class="text-xs text-slate-400 flex-shrink-0">Mar 13 AM</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Legal Aid Resources -->
+        <div class="card mb-6">
+            <div class="card-head"><span>📞</span> Legal Aid Resources</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+                <div class="p-4">
+                    <div class="text-xs font-bold text-green-600 mb-1">PRIMARY TARGET</div>
+                    <div class="font-semibold text-sm text-slate-800">Inner City Law Center</div>
+                    <div class="text-xs text-slate-500">(213) 891-2880</div>
+                    <div class="text-xs text-slate-400 mt-1">Specializes in SRO corridor, downtown LA</div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs font-bold text-blue-600 mb-1">VOICEMAIL LEFT</div>
+                    <div class="font-semibold text-sm text-slate-800">Bet Tzedek Legal Services</div>
+                    <div class="text-xs text-slate-500">(323) 939-0506</div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs font-bold text-blue-600 mb-1">VOICEMAIL LEFT</div>
+                    <div class="font-semibold text-sm text-slate-800">Neighborhood Legal Services</div>
+                    <div class="text-xs text-slate-500">(800) 433-6251</div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs font-bold text-amber-600 mb-1">INTAKE COMPLETE</div>
+                    <div class="font-semibold text-sm text-slate-800">Stay Housed LA</div>
+                    <div class="text-xs text-slate-500">(888) 694-0040</div>
+                    <div class="text-xs text-slate-400 mt-1">Priority area assigned · Awaiting callback</div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs font-bold text-slate-500 mb-1">SELF-HELP</div>
+                    <div class="font-semibold text-sm text-slate-800">Stanley Mosk Self-Help</div>
+                    <div class="text-xs text-slate-500">(213) 830-0845</div>
+                </div>
+                <div class="p-4">
+                    <div class="text-xs font-bold text-red-600 mb-1">VERIFY WRIT STATUS</div>
+                    <div class="font-semibold text-sm text-slate-800">Sheriff Evictions Division</div>
+                    <div class="text-xs text-slate-500">(213) 974-6001</div>
+                    <div class="text-xs text-slate-400 mt-1">Confirm if writ sent to sheriff for execution</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center text-xs text-slate-400 py-4">
+            ConstruX Legal Intelligence · Case 26STUD00430 · Report prepared April 17, 2026 ·
+            <span class="font-mono">Λ = {C, I, L} | ψ = INTACT</span>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+
+    function setActive(el) {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    // Smooth scroll for nav links
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', function(e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // Close mobile sidebar
+                document.getElementById('sidebar').classList.remove('open');
+                document.getElementById('overlay').classList.remove('open');
+            }
+        });
+    });
+
+    // Update active nav on scroll
+    const sections = ['overview', 'matters', 'evidence', 'documents', 'tasks', 'actors', 'activity', 'employment'];
+    const navItems = document.querySelectorAll('.nav-item');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                    if (item.getAttribute('href') === '#' + id) {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        });
+    }, { threshold: 0.3 });
+
+    sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+    });
+</script>
+</body>
+</html>

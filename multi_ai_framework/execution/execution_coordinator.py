@@ -6,6 +6,7 @@ Coordinates multi-front campaign execution across all channels
 from typing import Dict, Any
 from ..core.ai_coordinator import AIJusticeLeague
 from .complaint_generator import ComplaintGenerator
+from .cowork_dispatcher import CoworkDispatcher
 from .media_coordinator import MediaCoordinator
 from .settlement_negotiator import SettlementNegotiator
 
@@ -16,6 +17,7 @@ class ExecutionCoordination:
     def __init__(self, ai_league: AIJusticeLeague):
         self.ai_league = ai_league
         self.complaint_generator = ComplaintGenerator()
+        self.cowork_dispatcher = CoworkDispatcher()
         self.media_coordinator = MediaCoordinator()
         self.settlement_negotiator = SettlementNegotiator()
 
@@ -89,7 +91,7 @@ class ExecutionCoordination:
             campaign_timeline
         )
 
-        return {
+        result = {
             'complaints': [c.to_dict() for c in complaints],
             'media_package': media_package.to_dict(),
             'negotiation_framework': negotiation_framework.to_dict(),
@@ -102,6 +104,14 @@ class ExecutionCoordination:
                 negotiation_framework
             )
         }
+
+        # Optional: generate CoworkDispatch if case_data requests it
+        if case_data.get('generate_dispatch'):
+            print("  📋 Generating CoworkDispatch handoff document...")
+            dispatch_doc = self.cowork_dispatcher.generate_dispatch(case_data)
+            result['cowork_dispatch'] = dispatch_doc.to_dict()
+
+        return result
 
     def _extract_ai_content(self, ai_execution: Dict[str, Any]) -> Dict[str, str]:
         """Extract AI-generated content for different purposes"""

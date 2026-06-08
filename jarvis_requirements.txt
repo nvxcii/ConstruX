@@ -1,0 +1,13 @@
+# Jarvis — ConstruX Command Interface
+# Terminal CLI/REPL for the Multi-AI Justice League Framework
+
+# Core framework dependencies
+anthropic>=0.18.0
+google-generativeai>=0.3.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+reportlab>=4.0
+
+# Terminal UI
+rich>=13.0.0
+prompt_toolkit>=3.0.0

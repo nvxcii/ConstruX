@@ -8,3 +8,6 @@ openai>=1.0.0
 
 # Optional: Python-dotenv for environment variable management
 python-dotenv>=1.0.0
+
+# PDF generation (no external binaries required)
+reportlab>=4.0

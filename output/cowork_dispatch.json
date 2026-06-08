@@ -1,0 +1,878 @@
+{
+  "case_name": "Kyle Theus — Active Legal Matters",
+  "case_id": "26STUD00430",
+  "prepared_date": "April 17, 2026",
+  "classification": "Urgent — Active Enforcement Proceedings",
+  "dispatch_instructions": "This document is a complete handoff brief for Cowork to continue active legal work on two simultaneous matters. Read the full context before executing any task. The housing matter is the immediate priority due to active writ of possession enforcement. The employment matter is in parallel pursuit. Both matters involve the same individual operating under RT & Co. (rtcdevco@gmail.com).",
+  "primary_operator": {
+    "name": "Kyle Theus",
+    "phone": "(310) 910-1164",
+    "email": "rtcdevco@gmail.com",
+    "alt_email": "Kyle_Theus@yahoo.com",
+    "current_location": "Tulare, California — managing remotely",
+    "home_address": "505 S. San Pedro Street, Apt. 221, Los Angeles, CA 90013",
+    "out_of_town_address": "161 S. California Street, Tulare, CA 93274"
+  },
+  "matters": [
+    {
+      "matter_id": "HOUSING",
+      "title": "Unlawful Detainer / Writ of Possession",
+      "urgency": "IMMEDIATE",
+      "status": "Active writ issued March 17, 2026. No sheriff posting confirmed as of March 25. Money orders held by landlord 38+ days. Defendant in Tulare awaiting certified mail that was never sent.",
+      "case_identity": {
+        "case_number": "26STUD00430",
+        "court": "Los Angeles Superior Court, Central District, Stanley Mosk Courthouse",
+        "address": "111 N. Hill Street, Los Angeles, CA 90012",
+        "department": "91",
+        "judge": "Hon. Mike H. Madokoro",
+        "plaintiff": "Gateways Apartment LP / Single Room Occupancy Housing Corporation (SROHC)",
+        "plaintiff_attorneys": "Chris Evans #202135 / Mackenzie Gonzales #333839 / Manisha Bajaj #293791, Kimball Tirey & St. John LLP",
+        "plaintiff_attorney_address": "915 Wilshire Blvd Suite 1650, Los Angeles CA 90017",
+        "plaintiff_attorney_phone": "(213) 337-0050",
+        "plaintiff_attorney_email": "LALTElectronicService@kts-law.com",
+        "defendant": "Kyle Theus — self-represented",
+        "unit": "505 S. San Pedro Street, Apt. 221, Los Angeles, CA 90013",
+        "tenancy_start": "April 24, 2017",
+        "rent_amount": "$907.00/month per lease",
+        "tenant_portion": "$528.00 annually",
+        "unit_built": "2013 — efficiency unit, zero bedrooms",
+        "complaint_filed": "January 16, 2026",
+        "judgment_entered": "March 13, 2026",
+        "judgment_amount": "$2,452.72",
+        "writ_issued": "March 17, 2026",
+        "daily_rental_value": "$30.23"
+      },
+      "actors": [
+        {
+          "role": "plaintiff",
+          "name": "Gateways Apartment LP / SROHC",
+          "contact": "",
+          "organization": "Single Room Occupancy Housing Corporation",
+          "notes": "Operates through on-site management team."
+        },
+        {
+          "role": "plaintiff_attorney",
+          "name": "Chris Evans #202135",
+          "contact": "(213) 337-0050 | LALTElectronicService@kts-law.com",
+          "organization": "Kimball Tirey & St. John LLP",
+          "notes": "Lead attorney of record."
+        },
+        {
+          "role": "plaintiff_attorney",
+          "name": "Mackenzie Gonzales #333839",
+          "contact": "(213) 337-0050",
+          "organization": "Kimball Tirey & St. John LLP",
+          "notes": "Co-counsel."
+        },
+        {
+          "role": "plaintiff_attorney",
+          "name": "Manisha Bajaj #293791",
+          "contact": "(213) 337-0050",
+          "organization": "Kimball Tirey & St. John LLP",
+          "notes": "Co-counsel."
+        },
+        {
+          "role": "management_supervisor",
+          "name": "Martha Acosta",
+          "contact": "Blocked number (deliberately)",
+          "organization": "SROHC Management",
+          "notes": "Decision-maker. Stated 'We want possession, not the money.' Called from blocked number to avoid Ashley as witness. Did not disclose writ issuance during direct conversation."
+        },
+        {
+          "role": "property_agent_witness",
+          "name": "Ashley Ross",
+          "contact": "rtcdevco@gmail.com",
+          "organization": "RT & Co. / SROHC",
+          "notes": "Accepted payment March 13. Issued receipt. Was kept out of loop by Martha. Sent email under subject 'Re: No Payment Received' with money order photos. Confirmed money orders not sent March 25."
+        },
+        {
+          "role": "defendant",
+          "name": "Kyle Theus",
+          "contact": "(310) 910-1164 | rtcdevco@gmail.com",
+          "organization": "Self-represented",
+          "notes": "Nine-year tenant. Section 8 voucher holder. In Tulare managing grandmother's emergency."
+        },
+        {
+          "role": "witness_proxy",
+          "name": "Keenan (brother)",
+          "contact": "Kyle's contact",
+          "organization": "",
+          "notes": "Delivered $2,667 in money orders to Ashley Ross on March 13. Received physical receipt. Must confirm if receipt retained."
+        },
+        {
+          "role": "judge",
+          "name": "Hon. Mike H. Madokoro",
+          "contact": "",
+          "organization": "Dept. 91, Stanley Mosk Courthouse",
+          "notes": "Presiding judge in UD matter."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "April 24, 2017",
+          "event": "Kyle Theus begins tenancy at 505 S. San Pedro Street Unit 221. One-year lease signed. Only tenancy agreement. No prior eviction notices in approximately nine years."
+        },
+        {
+          "date": "December 8, 2025",
+          "event": "Notice to Pay Rent or Quit (CARES Act) posted on door by Martha Acosta. Amount demanded $528.00 for period January 1–December 31, 2025. Posting only — no personal service. Internal annotation shows outstanding balance $2,384 — inconsistent with $528 demanded."
+        },
+        {
+          "date": "December 2025 (within notice window)",
+          "event": "Kyle asks Martha Acosta — with Ashley Ross as witness — whether paying full outstanding balance would result in dismissal. Martha confirms yes. Ashley Ross witnesses this exchange. No mention of possession as separate goal."
+        },
+        {
+          "date": "January 8, 2026",
+          "event": "Complaint prepared by Kimball Tirey & St. John LLP."
+        },
+        {
+          "date": "January 9, 2025 (on verification)",
+          "event": "Martha Acosta verification on UD-100 complaint is dated one year before complaint filed — potential defect."
+        },
+        {
+          "date": "January 15, 2026",
+          "event": "Notice of Belief of Abandonment issued by SROHC, signed by Ashley Ross. Sets lease termination date February 11, 2026. Filed day before UD complaint — mutually incompatible legal positions."
+        },
+        {
+          "date": "January 16, 2026",
+          "event": "UD complaint filed by Gateways Apartment LP — the day after the Abandonment Notice. Limited civil case, amount under $10,000. Plaintiff checked tenancy NOT subject to Tenant Protection Act."
+        },
+        {
+          "date": "January 20, 2026",
+          "event": "Notice of Unlawful Detainer served on Kyle Theus and all occupants."
+        },
+        {
+          "date": "January 28, 2026",
+          "event": "Landlord claims personal service occurred this date. Kyle's Answer disputes this."
+        },
+        {
+          "date": "February 10, 2026",
+          "event": "Kyle files UD-105 Answer — Specific Denials. Fee waiver granted same day. Also constitutes response to Abandonment Notice — one day before February 11 termination date."
+        },
+        {
+          "date": "February 24, 2026",
+          "event": "Plaintiff requests trial setting. Non-jury trial scheduled for March 13, 2026 at 8:30 AM, Department 91. Electronic service to plaintiff's attorney confirmed."
+        },
+        {
+          "date": "February 26, 2026",
+          "event": "Plaintiff files Request for Entry of Default against unnamed occupants only — not Kyle Theus who had filed an Answer. Default entered against unnamed occupants."
+        },
+        {
+          "date": "March 11, 2026",
+          "event": "Kyle contacts Ashley Ross by phone. Confirms payment agreement still operative. Ashley confirms yes. Active logistical coordination begins. Call log documents 5-minute outgoing call at 2:27 PM."
+        },
+        {
+          "date": "March 13, 2026 — 8:30 AM",
+          "event": "Non-jury trial held at Department 91. Kyle not present — in Tulare assisting grandmother with water damage repairs and cancer-related medical situation. Plaintiff appears. Judge enters judgment for plaintiff."
+        },
+        {
+          "date": "March 13, 2026 — judgment",
+          "event": "Judgment entered: Past rent $528.00 plus holdover damages $1,924.72 for total $2,452.72. Possession granted. Lease cancelled and forfeited."
+        },
+        {
+          "date": "March 13, 2026 — 4:30–4:40 PM",
+          "event": "Kyle's brother Keenan arrives at 505 S. San Pedro. Delivers $2,667.00 in money orders to Ashley Ross. First delivery short — Ashley declines partial. Brother returns with corrected full amount. Ashley accepts, issues physical receipt. Transaction complete before 5:00 PM. Exceeds judgment by $214.28."
+        },
+        {
+          "date": "March 13, 2026 — after 4:40 PM",
+          "event": "Ashley calls Kyle. In sequence: (1) states she already informed Martha Acosta of payment; (2) confirms receipt of money orders; (3) asks past-tense whether Kyle was aware of court date. Tells Kyle not to cash money orders — not sure what will happen once things clear up."
+        },
+        {
+          "date": "March 16, 2026",
+          "event": "Ashley contacts Kyle. States they cannot accept payment. Moving forward with judgment. Institutional reversal communicated."
+        },
+        {
+          "date": "March 17, 2026",
+          "event": "Writ of possession issued and filed by plaintiff. Application for writ filed same day. Three missed incoming calls from landlord (Debbie) at 4:23 PM, 4:29 PM, and 4:48 PM — landlord called Kyle three times the day writ was issued."
+        },
+        {
+          "date": "March 19, 2026 (approximately)",
+          "event": "Kyle contacts Ashley. Ashley arranges three-way call with Martha Acosta. Martha refuses to speak in Ashley's presence. Calls Kyle separately from blocked number. States: 'We want judgment. We want possession. We don't want the money; we want possession.' Does not disclose writ issued two days earlier. Kyle makes 10+ outgoing call attempts to reach management throughout day."
+        },
+        {
+          "date": "March 19, 2026",
+          "event": "Ashley sends email from rtcdevco@gmail.com with subject line 'Re: No Payment Received' — simultaneously transmitting photographs of money orders. Documented contradiction. Highest-value evidentiary item."
+        },
+        {
+          "date": "March 23, 2026",
+          "event": "Email from Gateways Apartments states money orders being sent back by certified mail and 'You are more than welcome to reach out to the court to file a dismissal.'"
+        },
+        {
+          "date": "March 25, 2026",
+          "event": "Ashley confirms at 2:52 PM: 'Yes, that is the address I have. I will let you know once we send them out.' Money orders NOT sent. Kyle confirms no sheriff's notice posted on door yet."
+        },
+        {
+          "date": "March 26, 2026",
+          "event": "Ashley emails: 'I have received all of your emails and have forwarded them to Martha and John. Please move forward as you feel necessary.'"
+        },
+        {
+          "date": "March 29, 2026",
+          "event": "Kyle sends URGENT email: 'It has now been six days since I was informed that the money orders were being returned via certified mail.' Documents $2,667.00 figure and delay for court filing."
+        },
+        {
+          "date": "April 16, 2026",
+          "event": "Money orders still not returned — 34 days since landlord first promised to send by certified mail. 38 days since accepted. Kyle remains in Tulare. Side-by-side notice photograph comparison uploaded showing $528 notice vs $2,384 internal balance vs $2,462.72 judgment."
+        }
+      ],
+      "evidence_layers": [
+        {
+          "layer_number": 1,
+          "title": "The Email Thread Contradiction",
+          "description": "Ashley Ross email transmitting money order photographs under subject line 'Re: No Payment Received.' Simultaneous proof of receipt and denial of receipt.",
+          "strength": 5,
+          "evidence_type": "digital",
+          "holder": "Kyle Theus",
+          "notes": "Admission against interest plus impeachment evidence. Highest-value single document."
+        },
+        {
+          "layer_number": 2,
+          "title": "The Money Orders and Purchase Receipts",
+          "description": "Physical instruments totaling $2,667.00 made payable to Gateways Apartments dated March 13, 2026. Continental Express $1,000 serial #31-400340925 plus USPS Money Orders $1,667.00. Purchase receipt stubs proving date and amount.",
+          "strength": 5,
+          "evidence_type": "physical",
+          "holder": "Kyle's brother (Keenan)",
+          "notes": "Physical instruments still in landlord's possession as of April 16."
+        },
+        {
+          "layer_number": 3,
+          "title": "The Physical Receipt Issued by Ashley",
+          "description": "Ashley Ross issued a written receipt to Kyle's brother at the time of payment delivery confirming acceptance of $2,667.00.",
+          "strength": 5,
+          "evidence_type": "physical",
+          "holder": "Kyle's brother (Keenan) — MUST CONFIRM",
+          "notes": "Single most powerful individual document. Brother must be contacted to confirm if retained."
+        },
+        {
+          "layer_number": 4,
+          "title": "The Original Agreement",
+          "description": "Martha Acosta's verbal representation — full payment equals dismissal — witnessed by Ashley Ross. Establishes promissory estoppel and reasonable reliance.",
+          "strength": 4,
+          "evidence_type": "testimony",
+          "holder": "Ashley Ross (witness)",
+          "notes": "Ashley Ross is a witness to Martha's promise. Her cooperation as witness is critical."
+        },
+        {
+          "layer_number": 5,
+          "title": "The Confirmation Call and Logistical Coordination",
+          "description": "Ashley's direct verbal confirmation on March 11 that full payment could still resolve the matter. Active logistical coordination on March 13. Call log documents 5-minute call at 2:27 PM March 11.",
+          "strength": 4,
+          "evidence_type": "testimony",
+          "holder": "Kyle Theus (call log)",
+          "notes": "Phone records corroborate the call. Establishes agency and apparent authority."
+        },
+        {
+          "layer_number": 6,
+          "title": "The Post-Payment Disclosure Sequence",
+          "description": "Martha informed before Ashley called Kyle. Receipt confirmed. Court date disclosed as past-tense question not urgent instruction. No direction to file emergency response.",
+          "strength": 4,
+          "evidence_type": "testimony",
+          "holder": "Kyle Theus",
+          "notes": "Establishes reasonable reliance that matter was handled at supervisory level."
+        },
+        {
+          "layer_number": 7,
+          "title": "The Internal Organizational Fragmentation",
+          "description": "Ashley's documented surprise when informed of Martha's possession-only position. She was operating without knowledge of the supervisory decision.",
+          "strength": 3,
+          "evidence_type": "testimony",
+          "holder": "Ashley Ross (witness)",
+          "notes": "Establishes bad faith — one message to tenant, different internal decision. Ashley kept out of loop by Martha."
+        },
+        {
+          "layer_number": 8,
+          "title": "The Martha Blocked Number Call",
+          "description": "Martha's deliberate avoidance of Ashley as witness. Call from blocked number. Concealment of writ execution during direct conversation. Pretextual stated reason.",
+          "strength": 3,
+          "evidence_type": "testimony",
+          "holder": "Kyle Theus",
+          "notes": "Martha stated 'We want possession, not the money.' Did not disclose writ already issued."
+        },
+        {
+          "layer_number": 9,
+          "title": "The Notice of Belief of Abandonment",
+          "description": "Issued January 15, 2026 — one day before UD complaint filed January 16. Mutually incompatible legal positions pursued simultaneously. Sets abandonment termination date February 11, 2026.",
+          "strength": 4,
+          "evidence_type": "document",
+          "holder": "Kyle Theus",
+          "notes": "Kyle's Answer filed February 10 — one day before termination date — constitutes written response to abandonment."
+        },
+        {
+          "layer_number": 10,
+          "title": "The Money Orders Not Sent — 38+ Days",
+          "description": "As of April 16, 2026 Ashley confirms money orders have not been sent. Kyle has been waiting in Tulare. Landlord's failure to send as promised has directly caused and prolonged Kyle's absence from Los Angeles.",
+          "strength": 4,
+          "evidence_type": "document",
+          "holder": "Kyle Theus (email chain)",
+          "notes": "March 23 email promised certified mail return. March 25 Ashley confirmed address. Still not sent April 16."
+        }
+      ],
+      "legal_defects": [
+        {
+          "level": "notice",
+          "description": "Service by posting only — personal service not properly attempted",
+          "statute_implicated": "CCP §1162"
+        },
+        {
+          "level": "notice",
+          "description": "Amount demanded in notice ($528) inconsistent with internal records ($2,384) and judgment ($2,452.72) — 4.5x discrepancy",
+          "statute_implicated": "CCP §1161(2)"
+        },
+        {
+          "level": "notice",
+          "description": "First notice in nine years — circumstantial evidence of retaliatory or pretextual motive",
+          "statute_implicated": "Civil Code §1942.5"
+        },
+        {
+          "level": "notice",
+          "description": "Abandonment Notice not served with Pay or Quit Notice as should have been",
+          "statute_implicated": "Civil Code §1951.3"
+        },
+        {
+          "level": "complaint",
+          "description": "Abandonment Notice and UD complaint filed on consecutive days asserting mutually incompatible positions",
+          "statute_implicated": "Civil Code §1951.3"
+        },
+        {
+          "level": "complaint",
+          "description": "Verification by Martha Acosta dated January 9, 2025 — one year before complaint filed",
+          "statute_implicated": "CCP §446"
+        },
+        {
+          "level": "complaint",
+          "description": "Tenant Protection Act exemption claimed as 'Not Applicable' without explanation for nine-year tenancy",
+          "statute_implicated": "Civil Code §1946.2"
+        },
+        {
+          "level": "complaint",
+          "description": "Written agreement not attached — claimed exemption for nonpayment only",
+          "statute_implicated": "CCP §1166"
+        },
+        {
+          "level": "judgment",
+          "description": "Money judgment of $2,452.72 awarded at trial based solely on landlord's evidence with no opposing argument",
+          "statute_implicated": "CCP §473(b)"
+        },
+        {
+          "level": "judgment",
+          "description": "Holdover damages calculated through period of actively contested Answer",
+          "statute_implicated": "CCP §1174"
+        },
+        {
+          "level": "judgment",
+          "description": "Judgment amount approximately 4.5 times the notice amount — inconsistency unexplained",
+          "statute_implicated": "CCP §1161(2)"
+        },
+        {
+          "level": "post_judgment",
+          "description": "Payment of $2,667.00 accepted same day as judgment — exceeding judgment amount by $214.28",
+          "statute_implicated": "Civil Code §1161.5"
+        },
+        {
+          "level": "post_judgment",
+          "description": "Physical receipt issued — then payment reversed three days later",
+          "statute_implicated": "Civil Code §1161.5"
+        },
+        {
+          "level": "post_judgment",
+          "description": "Writ executed while payment held — money orders retained 38+ days",
+          "statute_implicated": "Civil Code §1477"
+        },
+        {
+          "level": "post_judgment",
+          "description": "Martha concealed writ execution during direct conversation with defendant",
+          "statute_implicated": "CCP §128.7"
+        },
+        {
+          "level": "post_judgment",
+          "description": "Money orders held without being sent as promised — defendant's return to LA directly caused by reliance on commitment",
+          "statute_implicated": "Equitable Estoppel"
+        }
+      ],
+      "statutes": [
+        {
+          "citation": "CCP §473(b)",
+          "description": "Motion to set aside judgment entered through mistake, surprise, or excusable neglect.",
+          "relevance": "Primary ground. Strong policy favoring merits adjudication per Elston v. City of Turlock."
+        },
+        {
+          "citation": "CCP §1161(2)",
+          "description": "Nonpayment UD requires compliant 3-Day Notice.",
+          "relevance": "Notice defects void the underlying UD."
+        },
+        {
+          "citation": "CCP §1161.5",
+          "description": "Waiver of forfeiture.",
+          "relevance": "Landlord's conduct in accepting payment and coordinating delivery constitutes conduct inconsistent with forfeiture."
+        },
+        {
+          "citation": "Civil Code §1477",
+          "description": "Valid tender and acceptance satisfies obligation.",
+          "relevance": "Payment of $2,667 accepted by authorized agent satisfies and exceeds the judgment obligation."
+        },
+        {
+          "citation": "Civil Code §1942.5",
+          "description": "Prohibition on retaliatory eviction.",
+          "relevance": "Martha's stated reason combined with nine-year tenancy and single delinquency incident suggests pretext."
+        },
+        {
+          "citation": "Civil Code §1951.3",
+          "description": "Notice of Belief of Abandonment.",
+          "relevance": "Filing UD the day after issuing Abandonment Notice creates fundamental legal inconsistency."
+        },
+        {
+          "citation": "24 CFR §982.552 and §982.555",
+          "description": "HUD Section 8 regulations governing PHA authority and tenant informal hearing rights.",
+          "relevance": "PHA must be notified immediately. Informal hearing rights must be preserved before writ execution."
+        },
+        {
+          "citation": "LAHD Tenant Anti-Harassment Ordinance",
+          "description": "Refusing to accept rent payments constitutes harassment under Los Angeles ordinance.",
+          "relevance": "Post-acceptance reversal while retaining funds may constitute harassment."
+        },
+        {
+          "citation": "LAMC §49.99",
+          "description": "LA Just Cause for Eviction Ordinance.",
+          "relevance": "May provide additional protection for nine-year tenancy regardless of Tenant Protection Act exemption."
+        },
+        {
+          "citation": "CCP §918",
+          "description": "Court's inherent power to stay execution.",
+          "relevance": "Primary vehicle for ex parte stay relief."
+        }
+      ],
+      "immediate_actions": [
+        {
+          "action_type": "motion",
+          "title": "Ex Parte Application for Stay of Execution of Writ of Possession",
+          "description": "File in Department 1, Stanley Mosk Courthouse. Incorporates all ten evidentiary layers. Requests stay pending noticed hearing on motion to set aside.",
+          "deadline": "URGENT — before sheriff posts 5-day notice",
+          "filing_location": "Department 1, Stanley Mosk Courthouse, 111 N. Hill Street, Los Angeles, CA 90012",
+          "filing_method": "Online filing before 10:00 AM day before (lacourt.org eFiling) OR in-person 8:30 AM day of for 1:30 PM hearing",
+          "notes": "Given money orders not sent, no reason to wait in Tulare. Return to LA for in-person filing may be most efficient path."
+        },
+        {
+          "action_type": "motion",
+          "title": "Motion to Set Aside Judgment — CCP §473(b)",
+          "description": "Full noticed motion with declaration, points and authorities, and proposed order. File once stay is granted.",
+          "deadline": "File within CCP §473 6-month window from March 13, 2026",
+          "filing_location": "Department 91, Stanley Mosk Courthouse",
+          "filing_method": "Standard noticed motion with 16-court-day notice",
+          "notes": "Must be ready to file immediately once stay granted."
+        },
+        {
+          "action_type": "letter",
+          "title": "PHA Notification Letter",
+          "description": "Notify Kyle's Section 8 case manager of pending UD and request informal hearing rights preservation under 24 CFR §982.555.",
+          "deadline": "URGENT — before writ execution",
+          "filing_location": "Kyle's Public Housing Authority (name TBD)",
+          "filing_method": "Certified mail + email",
+          "notes": "Insert PHA name once confirmed by Kyle."
+        }
+      ],
+      "settlement_target": {
+        "primary_goal": "Clean exit — stipulated dismissal, no eviction judgment on record, no money judgment, neutral reference, Section 8 voucher protected. Kyle does not contest possession.",
+        "proposed_terms": [
+          "Vacate judgment — parties stipulate to vacate any default/judgment and set aside any writ issued",
+          "Dismiss — case dismissed with prejudice upon surrender of possession by agreed date",
+          "No money judgment — no monetary judgment, each side bears own fees",
+          "Reporting — no adverse reporting, neutral reference to future landlords and PHA",
+          "Return of tender — confirm return and voiding of all money orders"
+        ],
+        "walkaway_conditions": [
+          "Any term that results in an eviction judgment on record",
+          "Any term that jeopardizes Section 8 voucher",
+          "Any admission of wrongdoing"
+        ],
+        "notes": "Plaintiff's litigation costs increase with contested motion. Stipulated resolution eliminates risk of sanctions for post-judgment conduct."
+      },
+      "resources": [
+        {
+          "name": "Inner City Law Center",
+          "phone": "(213) 891-2880",
+          "notes": "PRIMARY TARGET — specializes in SRO corridor downtown LA"
+        },
+        {
+          "name": "Bet Tzedek Legal Services",
+          "phone": "(323) 939-0506",
+          "notes": "Voicemail left"
+        },
+        {
+          "name": "Neighborhood Legal Services",
+          "phone": "(800) 433-6251",
+          "notes": "Voicemail left"
+        },
+        {
+          "name": "Stay Housed LA",
+          "phone": "(888) 694-0040",
+          "notes": "Intake completed March 25, 2026. Priority area assigned. Office will call back."
+        },
+        {
+          "name": "Stanley Mosk Self-Help",
+          "phone": "(213) 830-0845",
+          "notes": "Self-help center at courthouse"
+        },
+        {
+          "name": "LAHD Hotline",
+          "phone": "(866) 557-7368",
+          "notes": "Tenant harassment reporting"
+        },
+        {
+          "name": "LA County Sheriff Evictions Division",
+          "phone": "(213) 974-6001",
+          "notes": "Call to confirm writ status and whether sheriff has been activated"
+        }
+      ],
+      "background_notes": "Nine-year tenancy. First eviction notice ever. Section 8 voucher holder. Judgment entered after non-appearance at trial due to family emergency. Full payment accepted same day as judgment then reversed. Landlord pursuing possession-only strategy despite payment."
+    },
+    {
+      "matter_id": "EMPLOYMENT",
+      "title": "Wrongful Termination / Wage Theft — FloodAid Inc.",
+      "urgency": "PARALLEL",
+      "status": "Demand letter ready to send. DLSE and CRD filings prepared. Waiting on Kyle's signal.",
+      "case_identity": {
+        "employer": "FloodAid Inc.",
+        "employment_period": "Approximately November 2025 through December 5, 2025",
+        "termination_date": "December 5, 2025",
+        "role": "Restoration technician",
+        "demand_amount": "$25,000",
+        "demand_deadline": "5 business days from transmission"
+      },
+      "actors": [
+        {
+          "role": "employer",
+          "name": "FloodAid Inc.",
+          "contact": "",
+          "organization": "FloodAid Inc.",
+          "notes": "Restoration company."
+        },
+        {
+          "role": "decision_maker",
+          "name": "Kendra Jimenez (also Kendra Robinson)",
+          "contact": "kendra@getfloodaid.com",
+          "organization": "FloodAid Inc.",
+          "notes": "Project Manager. Termination decision-maker. Attached cropped spreadsheet with incorrect pay rate to falsely accuse Kyle of extortion."
+        },
+        {
+          "role": "payroll",
+          "name": "Jhosa Igno",
+          "contact": "jhosa@getfloodaid.com",
+          "organization": "FloodAid Inc.",
+          "notes": "Payroll supervisor. December 7 email acknowledged missing hours as oversight then did not pay."
+        },
+        {
+          "role": "witness",
+          "name": "Michael (supervisor)",
+          "contact": "Unknown",
+          "organization": "FloodAid Inc.",
+          "notes": "Disclosed private information about Kyle to Kyle's brother. Written statement not yet secured."
+        }
+      ],
+      "timeline": [
+        {
+          "date": "November 2025",
+          "event": "Kyle begins employment at FloodAid Inc. as restoration technician. Wages paid irregularly through Venmo — no proper paystubs per Labor Code §226."
+        },
+        {
+          "date": "December 2, 2025 — 5:58 PM",
+          "event": "Kyle submits formal request for reasonable accommodation for back injury sustained in hit-and-run incident."
+        },
+        {
+          "date": "December 5, 2025 — 4:38 PM",
+          "event": "Kyle terminated via email stating 'at this time we do not need your services.' Exactly 72 hours after accommodation request. Prima facie retaliation under FEHA and ADA."
+        },
+        {
+          "date": "December 7, 2025",
+          "event": "Email acknowledges missing hours as oversight — then payment not made. Waiting time penalties begin accruing under Labor Code §203."
+        },
+        {
+          "date": "December 8, 2025",
+          "event": "Kendra attaches cropped spreadsheet showing incorrect pay rate of $10/hour, used to falsely accuse Kyle of extortion when requesting lawfully owed wages. Defamation per se."
+        }
+      ],
+      "evidence_layers": [
+        {
+          "layer_number": 1,
+          "title": "72-Hour Retaliation Timeline",
+          "description": "Accommodation request December 2 at 5:58 PM. Termination December 5 at 4:38 PM. Exactly 72 hours. Temporal proximity establishes prima facie retaliation.",
+          "strength": 5,
+          "evidence_type": "document",
+          "holder": "Kyle Theus (emails)",
+          "notes": "Core FEHA/ADA retaliation claim."
+        },
+        {
+          "layer_number": 2,
+          "title": "Wage Payment via Venmo — No Paystubs",
+          "description": "Wages paid through Venmo rather than formal payroll. No proper paystubs per Labor Code §226. Payment schedules inconsistent with Labor Code §204.",
+          "strength": 4,
+          "evidence_type": "digital",
+          "holder": "Kyle Theus (Venmo records)",
+          "notes": "Wage theft and paystub violation claims."
+        },
+        {
+          "layer_number": 3,
+          "title": "December 7 Missing Hours Acknowledgment",
+          "description": "Email acknowledged missing hours as oversight — then payment not made.",
+          "strength": 4,
+          "evidence_type": "document",
+          "holder": "Kyle Theus (email)",
+          "notes": "Willful nonpayment. Up to 30 days wages as waiting time penalties under Labor Code §203."
+        },
+        {
+          "layer_number": 4,
+          "title": "Cropped Spreadsheet Defamation",
+          "description": "Kendra attached cropped spreadsheet showing incorrect pay rate of $10/hour to falsely accuse Kyle of extortion when requesting lawfully owed wages.",
+          "strength": 4,
+          "evidence_type": "document",
+          "holder": "Kyle Theus (email)",
+          "notes": "Defamation per se — fabricated evidence used to defame employee is actionable."
+        },
+        {
+          "layer_number": 5,
+          "title": "Privacy Disclosure by Supervisor Michael",
+          "description": "Supervisor Michael disclosed private information about Kyle to Kyle's brother.",
+          "strength": 3,
+          "evidence_type": "testimony",
+          "holder": "Michael (witness) — statement not yet secured",
+          "notes": "Written statement from Michael is identified next step."
+        }
+      ],
+      "legal_defects": [
+        {
+          "level": "termination",
+          "description": "Termination 72 hours after formal accommodation request — temporal proximity prima facie retaliation",
+          "statute_implicated": "Gov. Code §12940(m) FEHA / ADA"
+        },
+        {
+          "level": "termination",
+          "description": "No interactive process engaged before termination",
+          "statute_implicated": "Gov. Code §12940(n)"
+        },
+        {
+          "level": "wages",
+          "description": "Wages paid through Venmo — not proper payroll method",
+          "statute_implicated": "Labor Code §204"
+        },
+        {
+          "level": "wages",
+          "description": "No paystubs provided",
+          "statute_implicated": "Labor Code §226"
+        },
+        {
+          "level": "wages",
+          "description": "Missing hours acknowledged but not paid",
+          "statute_implicated": "Labor Code §203 — waiting time penalties"
+        }
+      ],
+      "statutes": [
+        {
+          "citation": "Gov. Code §12940(m)",
+          "description": "FEHA — employer must provide reasonable accommodation for disability.",
+          "relevance": "Termination after accommodation request establishes prima facie retaliation."
+        },
+        {
+          "citation": "Gov. Code §12940(n)",
+          "description": "FEHA — failure to engage in interactive process.",
+          "relevance": "No discussion of accommodations before termination."
+        },
+        {
+          "citation": "42 USC §12112 (ADA)",
+          "description": "Americans with Disabilities Act — disability discrimination.",
+          "relevance": "Parallel federal claim to FEHA."
+        },
+        {
+          "citation": "Labor Code §203",
+          "description": "Waiting time penalties — up to 30 days wages for willful nonpayment.",
+          "relevance": "Wages acknowledged as owed but not paid."
+        },
+        {
+          "citation": "Labor Code §226",
+          "description": "Accurate paystub requirement.",
+          "relevance": "Venmo payments with no paystubs violate this statute."
+        }
+      ],
+      "immediate_actions": [
+        {
+          "action_type": "letter",
+          "title": "Send FloodAid $25,000 Demand Letter",
+          "description": "Final demand addressed to Kendra Jimenez/Robinson and Jhosa Igno. Five-business-day deadline. All five claims enumerated. Regulatory filings stated as consequence of non-response.",
+          "deadline": "On Kyle's signal",
+          "filing_location": "kendra@getfloodaid.com / jhosa@getfloodaid.com",
+          "filing_method": "Email with read receipt + certified mail",
+          "notes": "Framing: consequences as lawful regulatory filings not direct threats."
+        },
+        {
+          "action_type": "filing",
+          "title": "DLSE Wage Claim",
+          "description": "File with California Division of Labor Standards Enforcement for unpaid wages plus waiting time penalties.",
+          "deadline": "Upon non-response to demand letter",
+          "filing_location": "DLSE — California Labor Commissioner",
+          "filing_method": "Online or in-person",
+          "notes": "Ready to execute."
+        },
+        {
+          "action_type": "filing",
+          "title": "CRD Complaint — FEHA Retaliation",
+          "description": "File with California Civil Rights Department for retaliation and wrongful termination under FEHA.",
+          "deadline": "Upon non-response to demand letter",
+          "filing_location": "California Civil Rights Department",
+          "filing_method": "Online at calcivilrights.ca.gov",
+          "notes": "Ready to execute."
+        }
+      ],
+      "settlement_target": {
+        "primary_goal": "$25,000 settlement demand with 5-business-day deadline.",
+        "proposed_terms": [
+          "Full payment of $25,000 within 10 business days of agreement",
+          "Neutral employment reference",
+          "No admission of wrongdoing required",
+          "Release of all claims upon payment"
+        ],
+        "walkaway_conditions": [
+          "Any amount below $15,000",
+          "Any admission by Kyle of wrongdoing"
+        ],
+        "notes": "Multiple AI analyses (Claude, ChatGPT, DeepSeek, Gemini) produced hybrid demand strategy converging on $25,000."
+      },
+      "resources": [
+        {
+          "name": "DLSE — California Labor Commissioner",
+          "phone": "(844) 522-6734",
+          "notes": "Wage claim filing"
+        },
+        {
+          "name": "California Civil Rights Department (CRD)",
+          "phone": "(800) 884-1684",
+          "notes": "FEHA retaliation complaint"
+        },
+        {
+          "name": "Cal-OSHA",
+          "phone": "(800) 963-9424",
+          "notes": "If applicable safety violations identified"
+        }
+      ],
+      "background_notes": "Employment period approximately November 2025 through December 5, 2025. Termination 72 hours after formal accommodation request for back injury. Wages paid irregularly through Venmo. Multiple claims totaling approximately $35,000 in damages."
+    }
+  ],
+  "task_priorities": [
+    {
+      "priority_number": 1,
+      "matter": "HOUSING",
+      "urgency": "IMMEDIATE",
+      "title": "File Ex Parte Application for Stay of Execution",
+      "description": "Draft and file the complete Ex Parte Application for Stay of Execution incorporating all ten evidentiary layers, the abandonment notice finding, the money orders not sent finding, and the updated grounds. Format for filing at Stanley Mosk Department 1 at 1:30 PM. Kyle must decide between online filing (before 10 AM the day before) or in-person filing (8:30 AM day of hearing).",
+      "dependencies": []
+    },
+    {
+      "priority_number": 2,
+      "matter": "HOUSING",
+      "urgency": "IMMEDIATE",
+      "title": "Draft Motion to Set Aside Judgment — CCP §473(b)",
+      "description": "Draft complete Motion to Set Aside Judgment incorporating the full factual declaration, all legal arguments, motion skeleton, proxy declaration template, and proposed order. Must be ready the moment Kyle has legal representation or files pro per.",
+      "dependencies": [
+        "priority_1"
+      ]
+    },
+    {
+      "priority_number": 3,
+      "matter": "HOUSING",
+      "urgency": "URGENT",
+      "title": "Section 8 PHA Notification Letter",
+      "description": "Draft PHA notification letter informing Kyle's case manager of the pending UD, the motion to set aside, and requesting documentation of informal hearing rights under 24 CFR §982.555.",
+      "dependencies": []
+    },
+    {
+      "priority_number": 4,
+      "matter": "HOUSING",
+      "urgency": "ONGOING",
+      "title": "Monitor Ashley Ross Email Thread",
+      "description": "Monitor Ashley Ross email thread for responses to the witness confirmation request and the notice inquiry. Every response or non-response is evidentiary.",
+      "dependencies": []
+    },
+    {
+      "priority_number": 5,
+      "matter": "EMPLOYMENT",
+      "urgency": "PARALLEL",
+      "title": "Finalize FloodAid Demand Letter and Regulatory Filings",
+      "description": "Finalize and prepare the FloodAid demand letter for transmission. Prepare DLSE and CRD filing documents ready to execute on Kyle's signal. $25,000 demand with 5-business-day deadline.",
+      "dependencies": []
+    }
+  ],
+  "critical_documents": [
+    {
+      "name": "Notice to Pay Rent or Quit (CARES Act) — December 8, 2025",
+      "holder": "Kyle Theus",
+      "notes": "Physical copy. Amount demanded $528, internal annotation shows $2,384 outstanding."
+    },
+    {
+      "name": "Notice of Belief of Abandonment — January 15, 2026",
+      "holder": "Kyle Theus",
+      "notes": "Signed by Ashley Ross. Sets termination date February 11, 2026 — one day after Answer filed."
+    },
+    {
+      "name": "Summons — Eviction filed January 16, 2026",
+      "holder": "Kyle Theus",
+      "notes": "Filed day after Abandonment Notice — mutually incompatible positions."
+    },
+    {
+      "name": "UD-105 Answer filed February 10, 2026",
+      "holder": "Kyle Theus",
+      "notes": "Filed one day before abandonment termination date. Preserves contest."
+    },
+    {
+      "name": "UD-100 Complaint — Martha Acosta verification dated January 9, 2025",
+      "holder": "Kyle Theus",
+      "notes": "Verification date one year before complaint filed — potential defect."
+    },
+    {
+      "name": "CIV-100 Request for Entry of Default — unnamed occupants only",
+      "holder": "Kyle Theus",
+      "notes": "Default entered against unnamed occupants only. Kyle was NOT defaulted — had filed Answer."
+    },
+    {
+      "name": "Case Register for 26STUD00430 — full three-page register",
+      "holder": "Kyle Theus",
+      "notes": "Complete case timeline confirmed."
+    },
+    {
+      "name": "Money orders and purchase receipts — $2,667.00 total",
+      "holder": "Kyle's brother (Keenan)",
+      "notes": "Continental Express $1,000 serial #31-400340925 plus USPS Money Orders $1,667.00."
+    },
+    {
+      "name": "Physical receipt issued by Ashley Ross — March 13, 2026",
+      "holder": "Kyle's brother (Keenan)",
+      "notes": "CRITICAL — must confirm brother retained this. Single most powerful individual document."
+    },
+    {
+      "name": "Email thread 'Re: No Payment Received' with money order photographs",
+      "holder": "Kyle Theus",
+      "notes": "SMOKING GUN — simultaneous proof of receipt and denial of receipt. Strength 5/5."
+    },
+    {
+      "name": "March 25, 2026 email confirming money orders not yet sent",
+      "holder": "Kyle Theus",
+      "notes": "Ashley: 'Yes, that is the address I have. I will let you know once we send them out.'"
+    },
+    {
+      "name": "Voicemail transcript documenting the institutional reversal",
+      "holder": "Kyle Theus",
+      "notes": "March 16 reversal communication."
+    },
+    {
+      "name": "Martha blocked number call transcript — verbatim",
+      "holder": "Kyle Theus",
+      "notes": "Martha: 'We want judgment. We want possession. We don't want the money; we want possession.'"
+    },
+    {
+      "name": "DRN Legal Strategy Report — 15-page comprehensive legal analysis",
+      "holder": "Kyle Theus",
+      "notes": "Prior comprehensive analysis."
+    },
+    {
+      "name": "Stay Housed LA intake confirmation",
+      "holder": "Kyle Theus",
+      "notes": "Intake completed March 25, 2026. Priority area assigned."
+    }
+  ],
+  "opening_prompt": "Cowork — continuing case file for Kyle Theus, case 26STUD00430, Gateways Apartment LP v. Kyle Theus, Stanley Mosk Superior Court Los Angeles. Active writ of possession issued March 17, 2026. No sheriff posting yet as of March 25. Defendant currently in Tulare California managing remotely. Full case context in dispatch document. Immediate task: draft complete Ex Parte Application for Stay of Execution ready for filing in Department 1 at 1:30 PM. All ten evidentiary layers documented. Legal aid intake completed with Stay Housed LA. Inner City Law Center, Bet Tzedek, and Neighborhood Legal Services have received voicemails. Section 8 voucher protection is the primary goal alongside clean exit from tenancy with no eviction record. What is the first task you need to execute?",
+  "field_state": "Λ = {C, I, L} | ψ = INTACT"
+}

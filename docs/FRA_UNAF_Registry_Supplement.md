@@ -27,14 +27,14 @@ UNAF's 8 layers map directly to the Field Resonance Architecture's Five-Phase Me
 
 | UNAF Layer | FRA Phase | Function |
 |-----------|-----------|----------|
-| L0 Contextual Grounding | **Seeding** | Establishes the analytical container and scope |
-| L1 Textual Parsing | **Tension Induction** | Raw data capture before analysis (separates observation from interpretation) |
-| L2 Elemental Deconstruction | **Tension Induction** | Breaking down components into constituent parts |
-| L3 Inter-elemental Dynamics | **Extraction** | Identifying relationships and patterns between elements |
-| L4 Counter-factual Stress Testing | **Extraction** | Built-in adversarial testing (strongest counter-argument before concluding) |
-| L5 Meta-structural Mapping | **Formalization** | Layered independence — each layer logically independent |
-| L6 Synthesis and Reconstruction | **Formalization** | Proportionate claiming — calibrated qualifiers, no overclaiming |
-| L7 Operational Framing | **Actualization** | Actionable output with specific proportionate action and fallback position |
+| L0 Exact Capture | **Seeding** / **Tension Induction** | Raw data capture before analysis (separates observation from interpretation) |
+| L1 Hidden Assumptions | **Tension Induction** | Identifying unstated premises and counter-evidence |
+| L2 Question Behind the Question | **Tension Induction** | Excavating the underlying needs, fears, and power dynamics |
+| L3 Structural Patterns | **Extraction** | Mapping sequences, cycles, inconsistencies, and framing devices |
+| L4 Alternative Interpretations & Skeptic's Challenge | **Extraction** | Built-in adversarial testing (strongest counter-argument before concluding) |
+| L5 Evidence Weighting & Fallacy Check | **Formalization** | Assigning epistemic weight and auditing cognitive biases |
+| L6 Decision & Response | **Actualization** | Actionable output with specific proportionate action and fallback position |
+| L7 Summary Generator | **Actualization** | Auto-assembling summaries and plain language synthesis |
 | 18-Check Self-Audit | **Validation** | Uncertainty acknowledgment — explicit statement of what is not known |
 
 ---

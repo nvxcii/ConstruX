@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CASE 26STUD00430 — Unified Case Manifest</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --red: #dc2626;
+      --amber: #d97706;
+      --green: #16a34a;
+      --blue: #1d4ed8;
+      --slate: #0f172a;
+    }
+    body { background: #0f172a; color: #e2e8f0; font-family: 'Courier New', monospace; }
+    .tier1 { border-left: 4px solid #dc2626; }
+    .tier2 { border-left: 4px solid #d97706; }
+    .tier3 { border-left: 4px solid #3b82f6; }
+    .status-pulled { background: #14532d; color: #86efac; }
+    .status-pending { background: #1e3a5f; color: #93c5fd; }
+    .status-reserve { background: #3b1f00; color: #fbbf24; }
+    .stage-card { transition: all 0.2s ease; }
+    .stage-card:hover { transform: translateY(-2px); }
+    .accordion-content { display: none; }
+    .accordion-content.open { display: block; }
+    .checklist-item { cursor: pointer; user-select: none; }
+    .checklist-item.done .check-label { text-decoration: line-through; opacity: 0.5; }
+    .checklist-item .check-box {
+      width: 18px; height: 18px; border: 2px solid #475569; border-radius: 3px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-right: 8px; transition: all 0.15s;
+    }
+    .checklist-item.done .check-box { background: #16a34a; border-color: #16a34a; }
+    .log-row:nth-child(even) { background: rgba(255,255,255,0.03); }
+    .tab-btn.active { background: #1e40af; color: white; }
+    .tab-btn { background: #1e293b; color: #94a3b8; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .macro-node { position: relative; }
+    .macro-node::after {
+      content: '↓';
+      display: block;
+      text-align: center;
+      color: #475569;
+      font-size: 1.2rem;
+      line-height: 1;
+      margin: 4px 0;
+    }
+    .macro-node:last-child::after { display: none; }
+    @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .pulse-red { animation: pulse-red 1.5s infinite; }
+    @media print {
+      .no-print { display: none; }
+      body { background: white; color: black; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<!-- ── HEADER ── -->
+<header class="bg-slate-900 border-b border-red-900 px-6 py-4 sticky top-0 z-50 no-print">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <div class="flex items-center gap-3">
+        <span class="text-red-500 text-xs font-bold tracking-widest uppercase pulse-red">● ACTIVE</span>
+        <h1 class="text-white font-bold text-lg">CASE 26STUD00430</h1>
+      </div>
+      <p class="text-slate-400 text-sm mt-0.5">Gateways Apartment LP v. Kyle Theus — Unified Case Manifest</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="bg-slate-800 rounded px-3 py-1.5 text-center">
+        <div class="text-green-400 text-xs font-bold">GOAL</div>
+        <div class="text-slate-300 text-xs">Stipulated Dismissal · Voucher Intact · $2,667 Returned</div>
+      </div>
+      <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs px-3 py-1.5 rounded no-print">
+        ⎙ Print
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="max-w-7xl mx-auto px-4 py-6 space-y-8">
+
+  <!-- ── PRELIMINARY ASSUMPTIONS BANNER ── -->
+  <section class="bg-amber-950 border border-amber-700 rounded-lg p-5">
+    <h2 class="text-amber-400 font-bold text-sm tracking-widest uppercase mb-3">⚠ Preliminary: Break These Assumptions First</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div class="bg-slate-900 bg-opacity-60 rounded p-3">
+        <div class="text-red-400 font-bold text-xs mb-1">✗ "More arguments = stronger position"</div>
+        <div class="text-slate-400 text-xs">Pick 2–3 linchpin defects. Sixteen arguments reads as desperation, not strength.</div>
+      </div>
+      <div class="bg-slate-900 bg-opacity-60 rounded p-3">
+        <div class="text-red-400 font-bold text-xs mb-1">✗ "The frameworks ARE the case"</div>
+        <div class="text-slate-400 text-xs">RRIA/DRN/UNAF are internal scaffolding. What goes in a motion: statutes, documented facts, admissible evidence.</div>
+      </div>
+      <div class="bg-slate-900 bg-opacity-60 rounded p-3">
+        <div class="text-red-400 font-bold text-xs mb-1">✗ "Silence from the other side is evidence"</div>
+        <div class="text-slate-400 text-xs">Silence only becomes useful after court-compelled discovery — not in a pre-litigation demand letter.</div>
+      </div>
+      <div class="bg-slate-900 bg-opacity-60 rounded p-3">
+        <div class="text-red-400 font-bold text-xs mb-1">✗ "The goal is to win the case"</div>
+        <div class="text-slate-400 text-xs">The goal is a clean exit: stipulated dismissal, no eviction record, voucher intact, funds returned.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ARCHITECTURE FLOW ── -->
+  <section>
+    <h2 class="text-slate-300 font-bold text-sm tracking-widest uppercase mb-4">Architecture: Micro → Macro</h2>
+    <div class="flex flex-wrap items-center gap-2 justify-center">
+      <div class="macro-node text-center">
+        <div class="bg-slate-800 border border-slate-600 rounded px-4 py-2 text-xs font-bold text-slate-300">MICRO<br><span class="font-normal text-slate-500">Individual Facts</span></div>
+      </div>
+      <div class="text-slate-600 text-lg">→</div>
+      <div class="macro-node text-center">
+        <div class="bg-slate-800 border border-slate-600 rounded px-4 py-2 text-xs font-bold text-amber-400">PATTERN<br><span class="font-normal text-slate-500">Connected Facts = Leverage</span></div>
+      </div>
+      <div class="text-slate-600 text-lg">→</div>
+      <div class="macro-node text-center">
+        <div class="bg-slate-800 border border-blue-600 rounded px-4 py-2 text-xs font-bold text-blue-400">LEGAL THEORY<br><span class="font-normal text-slate-500">CA Law Labels the Pattern</span></div>
+      </div>
+      <div class="text-slate-600 text-lg">→</div>
+      <div class="macro-node text-center">
+        <div class="bg-slate-800 border border-slate-600 rounded px-4 py-2 text-xs font-bold text-slate-300">FILING<br><span class="font-normal text-slate-500">What Goes to the Court</span></div>
+      </div>
+      <div class="text-slate-600 text-lg">→</div>
+      <div class="macro-node text-center">
+        <div class="bg-slate-800 border border-slate-600 rounded px-4 py-2 text-xs font-bold text-slate-300">PRESSURE<br><span class="font-normal text-slate-500">Makes Settlement Rational</span></div>
+      </div>
+      <div class="text-slate-600 text-lg">→</div>
+      <div class="macro-node text-center">
+        <div class="bg-green-900 border border-green-600 rounded px-4 py-2 text-xs font-bold text-green-400">MACRO<br><span class="font-normal text-green-600">Stipulated Dismissal + Clean Exit</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── TABS ── -->
+  <div>
+    <div class="flex flex-wrap gap-1 mb-4 no-print">
+      <button class="tab-btn active text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'stages')">Stages 1–5</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'defects')">Defect Tiers</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'theory')">Legal Theory Map</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'filings')">Filing Sequence</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'pressure')">Pressure Levers</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'log')">Daily Log</button>
+      <button class="tab-btn text-xs px-4 py-2 rounded font-bold" onclick="switchTab(this, 'synthesis')">Master Synthesis</button>
+    </div>
+
+    <!-- ── TAB: STAGES ── -->
+    <div id="tab-stages" class="tab-panel active space-y-4">
+
+      <!-- Stage 1 -->
+      <div class="stage-card bg-slate-800 border border-slate-700 rounded-lg">
+        <button class="accordion-toggle w-full flex items-center justify-between p-4 text-left" onclick="toggleAccordion(this)">
+          <div>
+            <span class="text-red-400 font-bold text-xs uppercase tracking-wider">Stage 1</span>
+            <h3 class="text-white font-bold mt-0.5">The Linchpin Sort — Three-Defect Rule</h3>
+            <p class="text-slate-400 text-xs mt-1">Rank defects by one criterion: which most directly compels the court to set aside the judgment?</p>
+          </div>
+          <span class="text-slate-500 text-lg accordion-arrow">▼</span>
+        </button>
+        <div class="accordion-content px-4 pb-4 space-y-4">
+
+          <div class="bg-slate-900 tier1 rounded p-4">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <span class="text-red-400 font-bold text-xs">TIER 1-A · DISPOSITIVE</span>
+                <h4 class="text-white font-bold text-sm mt-0.5">Blank Execution Date on Notice to Vacate</h4>
+                <div class="text-slate-500 text-xs">CCP § 712.020(a) · T-12 / Constraint 7 · Exhibit EX-06, EX-07</div>
+              </div>
+              <span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded font-bold whitespace-nowrap">Visual Proof</span>
+            </div>
+            <div class="bg-slate-950 rounded p-3 text-xs text-green-300 font-mono mb-3">
+              "The Notice to Vacate served on May 9, 2026 (LASD Levying Officer File No. 2026030008) contains a blank field where the execution date is required by CCP § 712.020(a)."
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div class="bg-red-950 rounded p-2">
+                <div class="text-red-400 font-bold mb-1">Their best response:</div>
+                <div class="text-slate-400">Clerical error; no prejudice because LASD served in person and five-day period ran from actual service date.</div>
+              </div>
+              <div class="bg-green-950 rounded p-2">
+                <div class="text-green-400 font-bold mb-1">Your counter:</div>
+                <div class="text-slate-400">LASD officer acknowledged defect on record. "Shall" = mandatory. Kyle confirmed absent in Tulare at time of posting — no personal service anchor.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 tier1 rounded p-4">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <span class="text-red-400 font-bold text-xs">TIER 1-B · DISPOSITIVE</span>
+                <h4 class="text-white font-bold text-sm mt-0.5">Payment Accepted Same Day as Judgment</h4>
+                <div class="text-slate-500 text-xs">Civil Code § 1945 · T-10 / Constraint 5 · Exhibit EX-03, EX-04</div>
+              </div>
+              <span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded font-bold whitespace-nowrap">Post-Judgment Act</span>
+            </div>
+            <div class="bg-slate-950 rounded p-3 text-xs text-green-300 font-mono mb-3">
+              "Judgment was entered at approximately 10:00 AM on March 13, 2026. At approximately 4:30 PM the same day, Ashley Ross, property manager, accepted four postal money orders totaling $2,667.00 and issued a written receipt; no non-waiver letter was issued before or after this acceptance."
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div class="bg-red-950 rounded p-2">
+                <div class="text-red-400 font-bold mb-1">Their best response:</div>
+                <div class="text-slate-400">Funds never deposited; management immediately instructed non-deposit under supervisor direction.</div>
+              </div>
+              <div class="bg-green-950 rounded p-2">
+                <div class="text-green-400 font-bold mb-1">Your counter:</div>
+                <div class="text-slate-400">§ 1945 requires acceptance — not deposit. Receipt issued, retained 70+ days. Rejection of deposit is evidence of intentional withholding. EDC Associates: no non-waiver letter strengthens presumption.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-slate-900 tier1 rounded p-4">
+            <div class="flex items-start justify-between gap-2 mb-2">
+              <div>
+                <span class="text-red-400 font-bold text-xs">TIER 1-C · DISPOSITIVE</span>
+                <h4 class="text-white font-bold text-sm mt-0.5">Default Entered While Defendant Was Actively Defending</h4>
+                <div class="text-slate-500 text-xs">CCP § 473(b) · T-7 / Constraint 15 · Exhibit EX-01, EX-02, EX-03</div>
+              </div>
+              <span class="bg-red-900 text-red-300 text-xs px-2 py-0.5 rounded font-bold whitespace-nowrap">§ 473(b) Vehicle</span>
+            </div>
+            <div class="bg-slate-950 rounded p-3 text-xs text-green-300 font-mono mb-3">
+              "Kyle Theus filed a written Answer on February 10, 2026. The default judgment was entered on March 13, 2026. Between January 28, 2026 and March 13, 2026, Kyle Theus received no written or verbal notice of the trial date."
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+              <div class="bg-red-950 rounded p-2">
+                <div class="text-red-400 font-bold mb-1">Their best response:</div>
+                <div class="text-slate-400">Court records show notice was properly mailed per CCP § 1013 to defendant's address of record.</div>
+              </div>
+              <div class="bg-green-950 rounded p-2">
+                <div class="text-green-400 font-bold mb-1">Your counter:</div>
+                <div class="text-slate-400">Documented engagement through Jan 28 shows active monitoring. 44-day silence during cooperation facade = excusable neglect. If notice mailed, produce it — or the incorrect address is itself the error.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Exercise 1.1 Checklist -->
+          <div class="bg-slate-900 rounded p-4 border border-slate-700">
+            <div class="text-amber-400 font-bold text-xs uppercase mb-3">Exercise 1.1 Checklist</div>
+            <div class="space-y-2" id="ex11">
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written one pure-fact sentence for Defect A (no conclusions, no "void," no "retaliatory")</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written one pure-fact sentence for Defect B</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written one pure-fact sentence for Defect C</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Each sentence tested: does it contain ONLY verifiable facts you can swear to?</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="stage-card bg-slate-800 border border-slate-700 rounded-lg">
+        <button class="accordion-toggle w-full flex items-center justify-between p-4 text-left" onclick="toggleAccordion(this)">
+          <div>
+            <span class="text-blue-400 font-bold text-xs uppercase tracking-wider">Stage 2</span>
+            <h3 class="text-white font-bold mt-0.5">The Legal Theory Map — Statute → Fact → Relief</h3>
+            <p class="text-slate-400 text-xs mt-1">Build the three-column table before touching a form. Each filing must follow this logic.</p>
+          </div>
+          <span class="text-slate-500 text-lg accordion-arrow">▼</span>
+        </button>
+        <div class="accordion-content px-4 pb-4">
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-900">
+                  <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Statute</th>
+                  <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Documented Fact That Activates It</th>
+                  <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Relief Requested</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">CCP § 712.020(a)</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">Blank execution date on Notice to Vacate</td>
+                  <td class="p-3 border border-slate-800 text-green-400">Motion to Quash Writ + Stay of Execution</td>
+                </tr>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">Civil Code § 1945</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">$2,667 accepted March 13 with signed receipt; no non-waiver letter; funds retained 70+ days</td>
+                  <td class="p-3 border border-slate-800 text-green-400">Motion to Set Aside Judgment (tenancy revived)</td>
+                </tr>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">CCP § 473(b)</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">Answer filed Feb. 10; no trial notice received; 44-day facade of cooperation documented</td>
+                  <td class="p-3 border border-slate-800 text-green-400">Motion to Set Aside Default (excusable neglect)</td>
+                </tr>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">CCP § 473(d)</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">Verification predates complaint 364 days; lease never admitted</td>
+                  <td class="p-3 border border-slate-800 text-green-400">Motion to Set Aside as Void Judgment</td>
+                </tr>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">Civil Code § 1942.5</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">Martha: "paid late, don't want that relationship"; eviction within 180 days of protected activity</td>
+                  <td class="p-3 border border-slate-800 text-green-400">Affirmative defense (retaliation) in Answer</td>
+                </tr>
+                <tr class="log-row">
+                  <td class="p-3 border border-slate-800 text-amber-300 font-mono font-bold">24 CFR § 982.310</td>
+                  <td class="p-3 border border-slate-800 text-slate-300">Section 8 tenancy; no PHA notice copy confirmed</td>
+                  <td class="p-3 border border-slate-800 text-blue-400">HUD / HACLA complaint (pressure lever)</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-4 bg-slate-900 rounded p-4 border border-slate-700">
+            <div class="text-amber-400 font-bold text-xs uppercase mb-3">Exercise 2.2 — Adversarial Test (UNAF Layer 4) Checklist</div>
+            <div class="space-y-2" id="ex22">
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written Plaintiff's strongest response to Defect A — and identified evidence that defeats it</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written Plaintiff's strongest response to Defect B — and identified evidence that defeats it</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">Written Plaintiff's strongest response to Defect C — and identified evidence that defeats it</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 3 -->
+      <div class="stage-card bg-slate-800 border border-slate-700 rounded-lg">
+        <button class="accordion-toggle w-full flex items-center justify-between p-4 text-left" onclick="toggleAccordion(this)">
+          <div>
+            <span class="text-green-400 font-bold text-xs uppercase tracking-wider">Stage 3</span>
+            <h3 class="text-white font-bold mt-0.5">The Filing Sequence — Urgency × Impact</h3>
+            <p class="text-slate-400 text-xs mt-1">Actual execution order, not ideal theoretical order. Branching based on lockout status.</p>
+          </div>
+          <span class="text-slate-500 text-lg accordion-arrow">▼</span>
+        </button>
+        <div class="accordion-content px-4 pb-4 space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <div class="text-green-400 font-bold text-xs uppercase mb-2">If Writ NOT Yet Executed (Pre-Lockout)</div>
+              <div class="space-y-2">
+                <div class="bg-red-950 border border-red-800 rounded p-3">
+                  <div class="text-red-400 font-bold text-xs">1 · IMMEDIATE</div>
+                  <div class="text-white text-sm font-bold mt-1">Ex Parte Application for Stay of Execution</div>
+                  <div class="text-slate-400 text-xs mt-1">CCP § 1176 + CCP § 128(a)</div>
+                  <div class="text-slate-400 text-xs mt-1"><span class="text-amber-400">Lead:</span> Blank execution date = writ facially deficient</div>
+                  <div class="text-slate-400 text-xs"><span class="text-amber-400">Supporting:</span> CC § 1945 post-judgment payment acceptance</div>
+                  <div class="text-slate-500 text-xs mt-1 italic">📍 Stanley Mosk, Room 102, before 8:30 AM</div>
+                </div>
+                <div class="bg-blue-950 border border-blue-800 rounded p-3">
+                  <div class="text-blue-400 font-bold text-xs">2 · SAME DAY / NEXT DAY</div>
+                  <div class="text-white text-sm font-bold mt-1">Motion to Set Aside</div>
+                  <div class="text-slate-400 text-xs mt-1">CCP §§ 473(b), 473(d)</div>
+                  <div class="text-slate-400 text-xs mt-1"><span class="text-amber-400">Lead:</span> Excusable neglect + void judgment elements</div>
+                  <div class="text-slate-400 text-xs"><span class="text-amber-400">Attach:</span> Proposed Answer (UD-105) with all affirmative defenses</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="text-red-400 font-bold text-xs uppercase mb-2">If Lockout Has Already Occurred (Post-Lockout)</div>
+              <div class="space-y-2">
+                <div class="bg-red-950 border border-red-800 rounded p-3">
+                  <div class="text-red-400 font-bold text-xs">1 · EMERGENCY</div>
+                  <div class="text-white text-sm font-bold mt-1">Motion to Restore Possession</div>
+                  <div class="text-slate-400 text-xs mt-1">CCP § 1174.3</div>
+                  <div class="text-slate-400 text-xs mt-1">Available if CP10.5 was not properly served</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded p-3">
+                  <div class="text-slate-400 font-bold text-xs">2 · PARALLEL</div>
+                  <div class="text-white text-sm font-bold mt-1">Motion to Set Aside — CCP § 473(b)</div>
+                </div>
+                <div class="bg-slate-900 border border-slate-700 rounded p-3">
+                  <div class="text-slate-400 font-bold text-xs">3 · PARALLEL</div>
+                  <div class="text-white text-sm font-bold mt-1">Application to Stay Enforcement Pending Appeal</div>
+                  <div class="text-slate-400 text-xs mt-1">CCP § 918</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Declaration Structure -->
+          <div class="bg-slate-900 rounded p-4 border border-amber-900">
+            <div class="text-amber-400 font-bold text-xs uppercase mb-3">Exercise 3.2 — Declaration Structure (Most Important Document)</div>
+            <p class="text-slate-400 text-xs mb-3">The declaration is NOT a legal argument. It is a sworn factual narrative, chronological order, with exhibit references.</p>
+            <div class="space-y-2" id="decl-checklist">
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶1 — Identity: who you are, nine years at unit, Section 8 voucher</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶2 — Jan 28, 2026: cooperative meeting; Abandonment Response; Mailsuite receipt (Exhibit __)</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶3 — Jan 28 → Mar 13: no trial notice received; continued communication with management</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶4 — Mar 13 PM: payment of $2,667; receipt signed by Ashley Ross (Exhibit __)</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶5 — Mar 13 AM: judgment entered in your absence</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶6 — Mar 16: Martha's blocked-number call; "want possession, not money" (recording Exhibit __)</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶7 — May 9: Notice to Vacate posted; blank execution date (photograph Exhibit __)</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶8 — May 22: LASD Raul acknowledges blank date; states enforcement proceeds (recording Exhibit __)</span>
+              </div>
+              <div class="checklist-item flex items-start text-xs text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">¶9 — Funds retained X days as of filing; no deposit, no return, no non-waiver letter</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 4 -->
+      <div class="stage-card bg-slate-800 border border-slate-700 rounded-lg">
+        <button class="accordion-toggle w-full flex items-center justify-between p-4 text-left" onclick="toggleAccordion(this)">
+          <div>
+            <span class="text-purple-400 font-bold text-xs uppercase tracking-wider">Stage 4</span>
+            <h3 class="text-white font-bold mt-0.5">Pressure Architecture — Make Possession Expensive</h3>
+            <p class="text-slate-400 text-xs mt-1">The clean exit requires Gateways to want to dismiss. Every lever makes continued litigation more costly than settlement.</p>
+          </div>
+          <span class="text-slate-500 text-lg accordion-arrow">▼</span>
+        </button>
+        <div class="accordion-content px-4 pb-4 space-y-3">
+          <div class="space-y-2" id="lever-list">
+            <div class="flex items-start gap-3 bg-slate-900 rounded p-3">
+              <span class="bg-green-900 text-green-300 text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap status-pulled">PULLED</span>
+              <div>
+                <div class="text-white text-sm font-bold">Lever 1 — Interrogatory Letter to Martha Acosta</div>
+                <div class="text-slate-400 text-xs mt-1">Value now is the documented request. Non-response noted in declaration as evidence of non-cooperation.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-slate-900 rounded p-3">
+              <span class="bg-blue-900 text-blue-300 text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap status-pending">PENDING</span>
+              <div>
+                <div class="text-white text-sm font-bold">Lever 2 — Court Filings (Motion to Quash + Motion to Set Aside)</div>
+                <div class="text-slate-400 text-xs mt-1">Every filing creates compliance cost for Kimball, Tirey & St. John. Blank-date writ + CC § 1945 combination is difficult to rebut cleanly.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-slate-900 rounded p-3">
+              <span class="bg-blue-900 text-blue-300 text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap status-pending">PENDING</span>
+              <div>
+                <div class="text-white text-sm font-bold">Lever 3 — HUD Region 9 Complaint</div>
+                <div class="text-slate-400 text-xs mt-1">24 CFR § 5.2005 (retaliation) + Section 8 just-cause. SROHC as HUD-funded nonprofit has compliance obligations a private landlord does not. Not about winning — about creating regulatory exposure.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-slate-900 rounded p-3">
+              <span class="bg-blue-900 text-blue-300 text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap status-pending">PENDING</span>
+              <div>
+                <div class="text-white text-sm font-bold">Lever 4 — HACLA Complaint</div>
+                <div class="text-slate-400 text-xs mt-1">Triggers inspection obligation and HAP payment review. SROHC's income from this unit depends on HACLA continuing to pay.</div>
+              </div>
+            </div>
+            <div class="flex items-start gap-3 bg-slate-900 rounded p-3">
+              <span class="bg-amber-950 text-amber-300 text-xs font-bold px-2 py-0.5 rounded whitespace-nowrap status-reserve">RESERVE</span>
+              <div>
+                <div class="text-white text-sm font-bold">Lever 5 — Tia Boatman Patterson / Contact to Anita U. Nelson (SROHC CEO)</div>
+                <div class="text-slate-400 text-xs mt-1">Hold in reserve. Deploy ONLY if Levers 1–4 produce no movement. Not public, not a threat — quiet notification that a stipulated dismissal resolves a regulatory exposure cleanly.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settlement Frame -->
+          <div class="bg-green-950 border border-green-800 rounded p-4">
+            <div class="text-green-400 font-bold text-xs uppercase mb-3">Exercise 4.2 — Settlement Frame</div>
+            <p class="text-green-300 text-sm font-bold mb-3">"Both parties have an exit that costs less than continued litigation."</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+              <div>
+                <div class="text-green-400 font-bold mb-1">Kyle receives:</div>
+                <ul class="text-slate-300 space-y-1 list-disc list-inside">
+                  <li>Stipulated dismissal of UD action</li>
+                  <li>No adverse credit bureau reporting</li>
+                  <li>No eviction record</li>
+                  <li>Return of $2,667.00</li>
+                  <li>HACLA voucher portable and intact</li>
+                </ul>
+              </div>
+              <div>
+                <div class="text-blue-400 font-bold mb-1">Gateways receives:</div>
+                <ul class="text-slate-300 space-y-1 list-disc list-inside">
+                  <li>No HUD exposure</li>
+                  <li>No HACLA inspection</li>
+                  <li>No regulatory complaint</li>
+                  <li>No ongoing attorney's fees</li>
+                  <li>Unit available</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stage 5 -->
+      <div class="stage-card bg-slate-800 border border-slate-700 rounded-lg">
+        <button class="accordion-toggle w-full flex items-center justify-between p-4 text-left" onclick="toggleAccordion(this)">
+          <div>
+            <span class="text-cyan-400 font-bold text-xs uppercase tracking-wider">Stage 5</span>
+            <h3 class="text-white font-bold mt-0.5">Daily Operational Discipline — Layer 0 + UNAF Check</h3>
+            <p class="text-slate-400 text-xs mt-1">Document everything. Run the five-second check before every action.</p>
+          </div>
+          <span class="text-slate-500 text-lg accordion-arrow">▼</span>
+        </button>
+        <div class="accordion-content px-4 pb-4 space-y-4">
+          <div class="bg-cyan-950 border border-cyan-800 rounded p-4">
+            <div class="text-cyan-400 font-bold text-xs uppercase mb-2">UNAF Check — Before ANY Action</div>
+            <div class="space-y-2 text-xs">
+              <div class="checklist-item flex items-start text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">1. Is this action traceable to a documented fact?</span>
+              </div>
+              <div class="checklist-item flex items-start text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">2. Does it serve the clean exit goal?</span>
+              </div>
+              <div class="checklist-item flex items-start text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">3. Am I claiming something I can prove, or am I claiming the conclusion?</span>
+              </div>
+              <div class="checklist-item flex items-start text-slate-300" onclick="toggleCheck(this)">
+                <div class="check-box mt-0.5"></div>
+                <span class="check-label">4. What is the fallback if this move fails?</span>
+              </div>
+            </div>
+            <p class="text-cyan-700 text-xs mt-3 italic">If you cannot answer all four in 30 seconds, do not make the move yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: DEFECTS ── -->
+    <div id="tab-defects" class="tab-panel space-y-4">
+      <div>
+        <h3 class="text-red-400 font-bold text-xs uppercase tracking-widest mb-3">Tier 1 — Dispositive (judgment cannot stand if proven)</h3>
+        <div class="space-y-3">
+          <div class="tier1 bg-slate-800 rounded p-4 text-xs">
+            <div class="flex gap-2 mb-2"><span class="text-red-400 font-bold">T1-A</span><span class="text-white font-bold">Blank Execution Date — CCP § 712.020(a)</span></div>
+            <div class="text-slate-400">Constraint T-12 / 7 · Exhibits EX-06, EX-07 · Relief: Motion to Quash Writ + Stay</div>
+          </div>
+          <div class="tier1 bg-slate-800 rounded p-4 text-xs">
+            <div class="flex gap-2 mb-2"><span class="text-red-400 font-bold">T1-B</span><span class="text-white font-bold">Payment Accepted Same Day as Judgment — Civil Code § 1945</span></div>
+            <div class="text-slate-400">Constraint T-10 / 5 · Exhibits EX-03, EX-04 · Relief: Motion to Set Aside Judgment</div>
+          </div>
+          <div class="tier1 bg-slate-800 rounded p-4 text-xs">
+            <div class="flex gap-2 mb-2"><span class="text-red-400 font-bold">T1-C</span><span class="text-white font-bold">Default While Actively Defending — CCP § 473(b)</span></div>
+            <div class="text-slate-400">Constraint T-7 / 15 · Exhibits EX-01, EX-02, EX-03 · Relief: Motion to Set Aside Default</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-amber-400 font-bold text-xs uppercase tracking-widest mb-3">Tier 2 — Supporting (strengthens motion, doesn't carry alone)</h3>
+        <div class="space-y-2">
+          <div class="tier2 bg-slate-800 rounded p-3 text-xs"><span class="text-amber-400 font-bold">T2-A</span> <span class="text-white">Verification predates complaint 364 days</span> <span class="text-slate-500">— CCP § 473(d)</span></div>
+          <div class="tier2 bg-slate-800 rounded p-3 text-xs"><span class="text-amber-400 font-bold">T2-B</span> <span class="text-white">Lease never admitted into evidence</span> <span class="text-slate-500">— undermines evidentiary basis</span></div>
+          <div class="tier2 bg-slate-800 rounded p-3 text-xs"><span class="text-amber-400 font-bold">T2-C</span> <span class="text-white">$528 demand vs. $2,384 stated balance discrepancy</span> <span class="text-slate-500">— CCP § 1161(2) notice defect (Constraint 8)</span></div>
+          <div class="tier2 bg-slate-800 rounded p-3 text-xs"><span class="text-amber-400 font-bold">T2-D</span> <span class="text-white">Dual service method ambiguity</span> <span class="text-slate-500">— CCP § 1162 jurisdictional seam (Constraint 11)</span></div>
+          <div class="tier2 bg-slate-800 rounded p-3 text-xs"><span class="text-amber-400 font-bold">T2-E</span> <span class="text-white">Wrong deadline in complaint</span> <span class="text-slate-500">— T-1, potential motion to dismiss</span></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-3">Tier 3 — Regulatory Pressure (levers, not court filings)</h3>
+        <div class="space-y-2">
+          <div class="tier3 bg-slate-800 rounded p-3 text-xs"><span class="text-blue-400 font-bold">T3-A</span> <span class="text-white">HUD Region 9 Complaint</span> <span class="text-slate-500">— 24 CFR § 5.2005 · Martha's admission + Section 8 voucher</span></div>
+          <div class="tier3 bg-slate-800 rounded p-3 text-xs"><span class="text-blue-400 font-bold">T3-B</span> <span class="text-white">HACLA Complaint</span> <span class="text-slate-500">— HAP contract compliance · triggers inspection + payment review</span></div>
+          <div class="tier3 bg-slate-800 rounded p-3 text-xs"><span class="text-blue-400 font-bold">T3-C</span> <span class="text-white">Martha's Recorded Admission</span> <span class="text-slate-500">— Civil Code § 1942.5 · affirmative defense in Answer</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: THEORY ── -->
+    <div id="tab-theory" class="tab-panel">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="bg-slate-900">
+              <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Statute</th>
+              <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Documented Fact That Activates It</th>
+              <th class="text-left p-3 text-blue-400 font-bold border border-slate-700">Relief Requested</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">CCP § 712.020(a)</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">Blank execution date on Notice to Vacate</td><td class="p-3 border border-slate-800 text-green-400 text-xs">Motion to Quash Writ + Stay of Execution</td></tr>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">Civil Code § 1945</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">$2,667 accepted March 13 with signed receipt; no non-waiver letter; funds retained 70+ days</td><td class="p-3 border border-slate-800 text-green-400 text-xs">Motion to Set Aside Judgment (tenancy revived)</td></tr>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">CCP § 473(b)</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">Answer filed Feb. 10; no trial notice received; 44-day facade documented</td><td class="p-3 border border-slate-800 text-green-400 text-xs">Motion to Set Aside Default (excusable neglect)</td></tr>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">CCP § 473(d)</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">Verification predates complaint 364 days; lease never admitted</td><td class="p-3 border border-slate-800 text-green-400 text-xs">Motion to Set Aside as Void Judgment</td></tr>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">Civil Code § 1942.5</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">Martha: "paid late, don't want that relationship"; eviction within 180 days of protected activity</td><td class="p-3 border border-slate-800 text-green-400 text-xs">Affirmative defense (retaliation) in Answer</td></tr>
+            <tr class="log-row"><td class="p-3 border border-slate-800 text-amber-300 font-bold font-mono text-xs">24 CFR § 982.310</td><td class="p-3 border border-slate-800 text-slate-300 text-xs">Section 8 tenancy; no PHA notice copy confirmed</td><td class="p-3 border border-slate-800 text-blue-400 text-xs">HUD / HACLA complaint (pressure lever)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── TAB: FILINGS ── -->
+    <div id="tab-filings" class="tab-panel space-y-6">
+      <div>
+        <h3 class="text-green-400 font-bold text-xs uppercase tracking-widest mb-3">Pre-Lockout Sequence</h3>
+        <div class="space-y-3">
+          <div class="bg-red-950 border border-red-800 rounded p-4">
+            <div class="text-red-400 font-bold text-xs mb-1">ORDER 1 · IMMEDIATE</div>
+            <div class="text-white font-bold">Ex Parte Application for Stay of Execution</div>
+            <div class="text-slate-400 text-xs mt-2">Authority: CCP § 1176 + CCP § 128(a)</div>
+            <div class="mt-2 text-xs space-y-1">
+              <div><span class="text-amber-400">Lead argument:</span> <span class="text-slate-300">Blank execution date = writ facially deficient</span></div>
+              <div><span class="text-amber-400">Supporting:</span> <span class="text-slate-300">CC § 1945 post-judgment payment acceptance</span></div>
+              <div><span class="text-amber-400">Location:</span> <span class="text-slate-300">Stanley Mosk, Room 102, before 8:30 AM</span></div>
+            </div>
+          </div>
+          <div class="bg-blue-950 border border-blue-800 rounded p-4">
+            <div class="text-blue-400 font-bold text-xs mb-1">ORDER 2 · SAME DAY / NEXT DAY</div>
+            <div class="text-white font-bold">Motion to Set Aside — CCP §§ 473(b), 473(d)</div>
+            <div class="mt-2 text-xs space-y-1">
+              <div><span class="text-amber-400">Lead:</span> <span class="text-slate-300">Excusable neglect + void judgment elements</span></div>
+              <div><span class="text-amber-400">Attach:</span> <span class="text-slate-300">Proposed Answer (UD-105) with all affirmative defenses</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="text-red-400 font-bold text-xs uppercase tracking-widest mb-3">Post-Lockout Sequence</h3>
+        <div class="space-y-3">
+          <div class="bg-red-950 border border-red-800 rounded p-4">
+            <div class="text-red-400 font-bold text-xs mb-1">ORDER 1 · EMERGENCY</div>
+            <div class="text-white font-bold">Motion to Restore Possession — CCP § 1174.3</div>
+            <div class="text-slate-400 text-xs mt-1">Available if CP10.5 was not properly served</div>
+          </div>
+          <div class="bg-slate-800 border border-slate-700 rounded p-4">
+            <div class="text-slate-400 font-bold text-xs mb-1">ORDER 2 · PARALLEL</div>
+            <div class="text-white font-bold">Motion to Set Aside — CCP § 473(b)</div>
+          </div>
+          <div class="bg-slate-800 border border-slate-700 rounded p-4">
+            <div class="text-slate-400 font-bold text-xs mb-1">ORDER 3 · PARALLEL</div>
+            <div class="text-white font-bold">Application to Stay Enforcement Pending Appeal — CCP § 918</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: PRESSURE ── -->
+    <div id="tab-pressure" class="tab-panel space-y-3">
+      <div id="pressure-levers" class="space-y-3">
+        <div class="flex items-start gap-3 bg-slate-800 rounded p-4">
+          <span class="status-pulled text-xs font-bold px-2 py-1 rounded whitespace-nowrap">PULLED</span>
+          <div class="flex-1">
+            <div class="text-white font-bold text-sm">Lever 1 — Interrogatory Letter to Martha Acosta</div>
+            <div class="text-slate-400 text-xs mt-1">Primary value is the documented request. Non-response noted in declaration as evidence of non-cooperation.</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-slate-800 rounded p-4">
+          <span class="status-pending text-xs font-bold px-2 py-1 rounded whitespace-nowrap">PENDING</span>
+          <div class="flex-1">
+            <div class="text-white font-bold text-sm">Lever 2 — Court Filings</div>
+            <div class="text-slate-400 text-xs mt-1">Every filing creates compliance cost for Kimball, Tirey & St. John. Blank-date writ + CC § 1945 combination is difficult to rebut cleanly.</div>
+            <button class="mt-2 text-xs text-blue-400 hover:text-blue-300" onclick="markLever(this, 2)">Mark as Filed →</button>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-slate-800 rounded p-4">
+          <span class="status-pending text-xs font-bold px-2 py-1 rounded whitespace-nowrap">PENDING</span>
+          <div class="flex-1">
+            <div class="text-white font-bold text-sm">Lever 3 — HUD Region 9 Complaint</div>
+            <div class="text-slate-400 text-xs mt-1">24 CFR § 5.2005 + Section 8 just-cause requirements. SROHC as HUD-funded nonprofit has compliance obligations a private landlord does not.</div>
+            <button class="mt-2 text-xs text-blue-400 hover:text-blue-300" onclick="markLever(this, 3)">Mark as Filed →</button>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-slate-800 rounded p-4">
+          <span class="status-pending text-xs font-bold px-2 py-1 rounded whitespace-nowrap">PENDING</span>
+          <div class="flex-1">
+            <div class="text-white font-bold text-sm">Lever 4 — HACLA Complaint</div>
+            <div class="text-slate-400 text-xs mt-1">Triggers inspection obligation and HAP payment review. SROHC's income from this unit depends on HACLA continuing to pay.</div>
+            <button class="mt-2 text-xs text-blue-400 hover:text-blue-300" onclick="markLever(this, 4)">Mark as Filed →</button>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 bg-slate-800 rounded p-4 border border-amber-900">
+          <span class="status-reserve text-xs font-bold px-2 py-1 rounded whitespace-nowrap">RESERVE</span>
+          <div class="flex-1">
+            <div class="text-white font-bold text-sm">Lever 5 — Tia Boatman Patterson / Anita U. Nelson (SROHC CEO)</div>
+            <div class="text-slate-400 text-xs mt-1">⚠ Hold in reserve. Deploy ONLY if Levers 1–4 produce no movement. Quiet notification — not public, not a threat — that a stipulated dismissal resolves the regulatory exposure cleanly.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TAB: LOG ── -->
+    <div id="tab-log" class="tab-panel">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-slate-300 font-bold text-xs uppercase tracking-widest">Layer 0 — Daily Event Log</h3>
+        <button onclick="addLogEntry()" class="text-xs bg-blue-800 hover:bg-blue-700 text-blue-200 px-3 py-1.5 rounded">+ Add Entry</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-xs border-collapse" id="event-log">
+          <thead>
+            <tr class="bg-slate-900">
+              <th class="text-left p-2 text-slate-400 border border-slate-800 w-24">Date</th>
+              <th class="text-left p-2 text-slate-400 border border-slate-800 w-16">Time</th>
+              <th class="text-left p-2 text-slate-400 border border-slate-800">Event</th>
+              <th class="text-left p-2 text-slate-400 border border-slate-800 w-28">Method</th>
+              <th class="text-left p-2 text-slate-400 border border-slate-800 w-28">Witness / Record</th>
+            </tr>
+          </thead>
+          <tbody id="log-body">
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-01-28</td>
+              <td class="p-2 border border-slate-800 text-slate-400">—</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Cooperative meeting with management; Abandonment Response delivered</td>
+              <td class="p-2 border border-slate-800 text-slate-400">In-person + Mailsuite</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-01</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-02-10</td>
+              <td class="p-2 border border-slate-800 text-slate-400">—</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Filed written Answer (UD-105)</td>
+              <td class="p-2 border border-slate-800 text-slate-400">Court filing</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-02</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-03-13</td>
+              <td class="p-2 border border-slate-800 text-slate-400">~10:00 AM</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Default judgment entered in absence</td>
+              <td class="p-2 border border-slate-800 text-slate-400">Court record</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-03</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-03-13</td>
+              <td class="p-2 border border-slate-800 text-slate-400">~4:30 PM</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Ashley Ross accepted $2,667 (four PMOs); written receipt issued; no non-waiver letter</td>
+              <td class="p-2 border border-slate-800 text-slate-400">In-person payment</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-04</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-03-16</td>
+              <td class="p-2 border border-slate-800 text-slate-400">—</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Martha Acosta (blocked number): "we already won judgment, we want possession, not the money"</td>
+              <td class="p-2 border border-slate-800 text-slate-400">Phone (recorded)</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-05</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-05-09</td>
+              <td class="p-2 border border-slate-800 text-slate-400">—</td>
+              <td class="p-2 border border-slate-800 text-slate-300">Notice to Vacate posted — execution date field BLANK (LASD File No. 2026030008)</td>
+              <td class="p-2 border border-slate-800 text-slate-400">LASD posting</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-06</td>
+            </tr>
+            <tr class="log-row">
+              <td class="p-2 border border-slate-800 text-slate-400">2026-05-22</td>
+              <td class="p-2 border border-slate-800 text-slate-400">—</td>
+              <td class="p-2 border border-slate-800 text-slate-300">LASD Officer Raul acknowledged blank date; stated enforcement would proceed regardless</td>
+              <td class="p-2 border border-slate-800 text-slate-400">In-person (recorded)</td>
+              <td class="p-2 border border-slate-800 text-blue-400">EX-07</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-slate-600 text-xs mt-3 italic">Format: DATE | TIME | EVENT | METHOD | WITNESS/RECORD — Document every call, letter, filing, and non-response.</p>
+    </div>
+
+    <!-- ── TAB: SYNTHESIS ── -->
+    <div id="tab-synthesis" class="tab-panel space-y-4">
+      <div class="text-center mb-4">
+        <h2 class="text-white font-bold text-lg">The Master Synthesis</h2>
+        <p class="text-slate-500 text-xs">Micro → Pattern → Legal Theory → Macro</p>
+      </div>
+      <div class="bg-slate-800 border-l-4 border-red-600 rounded p-5">
+        <div class="text-red-400 font-bold text-xs uppercase mb-2">The Micro</div>
+        <p class="text-slate-300 text-sm leading-relaxed">On March 13, 2026, at approximately 10:00 AM, a default judgment was entered against Kyle Theus in his absence, despite his having filed an Answer and maintained active documented communication with management through January 28, having received no notice of the trial date during a 44-day period in which management maintained a facade of cooperation while secretly prosecuting the eviction. At approximately 4:30 PM the same day, Ashley Ross accepted $2,667.00 in postal money orders and issued a written receipt. No non-waiver letter was issued. Funds were retained for 70+ days. On May 9, 2026, a Notice to Vacate was posted with the execution date field left blank.</p>
+      </div>
+      <div class="bg-slate-800 border-l-4 border-amber-500 rounded p-5">
+        <div class="text-amber-400 font-bold text-xs uppercase mb-2">The Pattern</div>
+        <p class="text-slate-300 text-sm leading-relaxed">The documents reveal a sequence — wrong deadline, underclaimed damages, delayed service, held proof of service, coordinated default, minimal trial notice, judgment before payment, blank-dated writ — each step reducing the defendant's ability to respond, each individually explicable as error, collectively consistent with strategic manipulation of procedure.</p>
+      </div>
+      <div class="bg-slate-800 border-l-4 border-blue-500 rounded p-5">
+        <div class="text-blue-400 font-bold text-xs uppercase mb-2">The Legal Theory</div>
+        <p class="text-slate-300 text-sm leading-relaxed">The judgment may be set aside under CCP § 473(b) (excusable neglect) and § 473(d) (void judgment elements); the writ may be quashed under CCP § 712.020 (blank date, mandatory content); and the tenancy may be argued to have been legally renewed under Civil Code § 1945 by the post-judgment payment acceptance without a non-waiver letter.</p>
+      </div>
+      <div class="bg-green-900 border-l-4 border-green-500 rounded p-5">
+        <div class="text-green-400 font-bold text-xs uppercase mb-2">The Macro — The Destination</div>
+        <p class="text-green-200 text-sm leading-relaxed font-bold">A stipulated dismissal resolves all of this — cleanly, quickly, without trial, without appeal, without HUD exposure, without HACLA inspection, without a published eviction record. That is the destination. Every filing, every letter, every lever exists to make that the rational choice for the other side.</p>
+      </div>
+      <div class="bg-amber-950 border border-amber-800 rounded p-4 text-xs text-amber-300">
+        ⚖ This document is analytical scaffolding, not legal advice. Kyle should seek consultation with a California tenant-rights attorney or legal aid organization alongside any filings. Legal arguments are grounded in the statutes identified; their application requires verification against current filings and court records.
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+  function switchTab(btn, name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleAccordion(btn) {
+    const content = btn.nextElementSibling;
+    const arrow = btn.querySelector('.accordion-arrow');
+    const isOpen = content.classList.contains('open');
+    content.classList.toggle('open', !isOpen);
+    if (arrow) arrow.textContent = isOpen ? '▼' : '▲';
+  }
+
+  function toggleCheck(el) {
+    el.classList.toggle('done');
+    saveState();
+  }
+
+  function markLever(btn, leverNum) {
+    const row = btn.closest('.flex');
+    const badge = row.querySelector('span');
+    badge.textContent = 'FILED';
+    badge.className = 'status-pulled text-xs font-bold px-2 py-1 rounded whitespace-nowrap';
+    btn.remove();
+    saveState();
+  }
+
+  function addLogEntry() {
+    const tbody = document.getElementById('log-body');
+    const today = new Date().toISOString().split('T')[0];
+    const tr = document.createElement('tr');
+    tr.className = 'log-row';
+    tr.innerHTML = `
+      <td class="p-2 border border-slate-800"><input class="bg-transparent text-slate-300 text-xs w-full outline-none" value="${today}" /></td>
+      <td class="p-2 border border-slate-800"><input class="bg-transparent text-slate-300 text-xs w-full outline-none" placeholder="—" /></td>
+      <td class="p-2 border border-slate-800"><input class="bg-transparent text-slate-300 text-xs w-full outline-none" placeholder="Describe event..." /></td>
+      <td class="p-2 border border-slate-800"><input class="bg-transparent text-slate-300 text-xs w-full outline-none" placeholder="Method" /></td>
+      <td class="p-2 border border-slate-800"><input class="bg-transparent text-slate-300 text-xs w-full outline-none" placeholder="Exhibit / witness" /></td>
+    `;
+    tbody.appendChild(tr);
+    tr.querySelector('input:nth-child(1)').focus();
+  }
+
+  function saveState() {
+    const state = {};
+    document.querySelectorAll('.checklist-item').forEach((el, i) => {
+      state['check_' + i] = el.classList.contains('done');
+    });
+    document.querySelectorAll('#pressure-levers .flex').forEach((el, i) => {
+      const badge = el.querySelector('span');
+      state['lever_' + i] = badge ? badge.textContent === 'FILED' : false;
+    });
+    try { localStorage.setItem('case26stud00430', JSON.stringify(state)); } catch(e) {}
+  }
+
+  function loadState() {
+    try {
+      const state = JSON.parse(localStorage.getItem('case26stud00430') || '{}');
+      document.querySelectorAll('.checklist-item').forEach((el, i) => {
+        if (state['check_' + i]) el.classList.add('done');
+      });
+      document.querySelectorAll('#pressure-levers .flex').forEach((el, i) => {
+        if (state['lever_' + i]) {
+          const badge = el.querySelector('span');
+          if (badge) {
+            badge.textContent = 'FILED';
+            badge.className = 'status-pulled text-xs font-bold px-2 py-1 rounded whitespace-nowrap';
+          }
+          const btn = el.querySelector('button');
+          if (btn) btn.remove();
+        }
+      });
+    } catch(e) {}
+  }
+
+  // Open Stage 1 accordion by default
+  document.addEventListener('DOMContentLoaded', () => {
+    const first = document.querySelector('.accordion-toggle');
+    if (first) toggleAccordion(first);
+    loadState();
+  });
+</script>
+</body>
+</html>

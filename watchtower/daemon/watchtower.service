@@ -1,0 +1,21 @@
+[Unit]
+Description=Watchtower Field Daemon
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=%h
+ExecStart=/usr/bin/python3 -m watchtower.daemon.daemon_service start
+Restart=on-failure
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Environment
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=default.target
